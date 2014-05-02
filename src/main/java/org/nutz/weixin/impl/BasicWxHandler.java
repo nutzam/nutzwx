@@ -5,7 +5,17 @@ import org.nutz.weixin.bean.WxOutMsg;
 import org.nutz.weixin.spi.WxHandler;
 import org.nutz.weixin.util.Wxs;
 
-public class AbstractWxHandler implements WxHandler {
+public class BasicWxHandler implements WxHandler {
+	
+	protected String token;
+	
+	public BasicWxHandler(String token) {
+		this.token = token;
+	}
+
+	public boolean check(String signature, String timestamp, String nonce) {
+		return Wxs.check(token, signature, timestamp, nonce);
+	}
 
 	public WxOutMsg text(WxInMsg msg) {
 		return defaultMsg(msg);

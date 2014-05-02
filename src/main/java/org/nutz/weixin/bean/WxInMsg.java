@@ -1,16 +1,15 @@
 package org.nutz.weixin.bean;
 
-import java.util.Date;
 
 public class WxInMsg {
 	
 	private String fromUserName;
-	private String ToUserName;
+	private String toUserName;
 	private String event;
 	private String eventKey;
 	private String msgType;
 	private String content;
-	private Date createTime;
+	private long createTime;
 	private long msgId;
 	private String picUrl;
 	private String mediaId;
@@ -38,11 +37,11 @@ public class WxInMsg {
 	}
 
 	public String getToUserName() {
-		return ToUserName;
+		return toUserName;
 	}
 
 	public void setToUserName(String toUserName) {
-		ToUserName = toUserName;
+		this.toUserName = toUserName;
 	}
 
 	public String getEvent() {
@@ -77,11 +76,11 @@ public class WxInMsg {
 		this.content = content;
 	}
 
-	public Date getCreateTime() {
+	public long getCreateTime() {
 		return createTime;
 	}
 
-	public void setCreateTime(Date createTime) {
+	public void setCreateTime(long createTime) {
 		this.createTime = createTime;
 	}
 

@@ -1,5 +1,6 @@
 package org.nutz.weixin.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -14,9 +15,12 @@ import java.util.Map.Entry;
 
 import org.nutz.json.Json;
 import org.nutz.lang.Lang;
+import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 import org.nutz.lang.Xmls;
 import org.nutz.lang.util.NutMap;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
 import org.nutz.weixin.bean.WxArticle;
 import org.nutz.weixin.bean.WxEventType;
 import org.nutz.weixin.bean.WxImage;
@@ -29,12 +33,24 @@ import org.nutz.weixin.bean.WxVoice;
 import org.nutz.weixin.spi.WxHandler;
 
 public class Wxs {
+	
+	private static final Log log = Logs.get();
+	
+	private static boolean DEV_MODE = false;
+	
+	public static void enableDevMode() {
+		DEV_MODE = true;
+		log.warn("nutzwx DevMode=true now");
+	}
 
 	public static WxInMsg convert(InputStream in) {
 		Map<String, Object> map = Xmls.asMap(Xmls.xml(in).getDocumentElement());
 		Map<String, Object> tmp = new HashMap<String, Object>();
 		for (Entry<String, Object> en : map.entrySet()) {
 			tmp.put(Strings.lowerFirst(en.getKey()), en.getValue());
+		}
+		if (DEV_MODE) {
+			log.debug("Income >> \n" + Json.toJson(map));
 		}
 		return Lang.map2Object(tmp, WxInMsg.class);
 	}
@@ -45,7 +61,8 @@ public class Wxs {
 		tmp.add(timestamp);
 		tmp.add(nonce);
 		Collections.sort(tmp);
-		return Lang.sha1(Lang.concat("", tmp)).equalsIgnoreCase(signature);
+		String key = Lang.concat("", tmp).toString();
+		return Lang.sha1(key).equalsIgnoreCase(signature);
 	}
 	
 	public static WxOutMsg handle(WxInMsg msg, WxHandler handler) {
@@ -105,7 +122,7 @@ public class Wxs {
 	public static WxOutMsg fix(WxInMsg in, WxOutMsg out) {
 		out.setFromUserName(in.getToUserName());
 		out.setToUserName(in.getFromUserName());
-		out.setCreateTime(System.currentTimeMillis());
+		out.setCreateTime(System.currentTimeMillis()/1000);
 		return out;
 	}
 	
@@ -201,6 +218,10 @@ public class Wxs {
 	}
 	
 	public static void asXml(Writer writer, WxOutMsg msg) throws IOException {
+		Writer _out = writer;
+		if (DEV_MODE) {
+			writer = new StringWriter();
+		}
 		writer.write("<xml>\n");
 		writer.write(tag("ToUserName", cdata(msg.getToUserName())));
 		writer.write(tag("FromUserName", cdata(msg.getFromUserName())));
@@ -260,6 +281,11 @@ public class Wxs {
 			break;
 		}
 		writer.write("</xml>");
+		if (DEV_MODE) {
+			String str = writer.toString();
+			log.debug("Outcome >>\n" + str);
+			_out.write(str);
+		}
 	}
 	
 	public static void asJson(Writer writer, WxOutMsg msg) {

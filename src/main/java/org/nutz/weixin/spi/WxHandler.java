@@ -4,6 +4,8 @@ import org.nutz.weixin.bean.WxInMsg;
 import org.nutz.weixin.bean.WxOutMsg;
 
 public interface WxHandler {
+	
+	boolean check(String signature, String timestamp, String nonce);
 
 	WxOutMsg text(WxInMsg msg);
 	WxOutMsg image(WxInMsg msg);
