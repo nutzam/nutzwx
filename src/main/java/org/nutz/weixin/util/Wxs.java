@@ -1,6 +1,5 @@
 package org.nutz.weixin.util;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -15,7 +14,6 @@ import java.util.Map.Entry;
 
 import org.nutz.json.Json;
 import org.nutz.lang.Lang;
-import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 import org.nutz.lang.Xmls;
 import org.nutz.lang.util.NutMap;

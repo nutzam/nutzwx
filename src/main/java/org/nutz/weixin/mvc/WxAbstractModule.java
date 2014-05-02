@@ -4,6 +4,9 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.nutz.mvc.annotation.At;
+import org.nutz.mvc.annotation.Fail;
+import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.view.HttpStatusView;
 import org.nutz.mvc.view.RawView;
 import org.nutz.mvc.view.ViewWrapper;
@@ -13,9 +16,12 @@ import org.nutz.weixin.spi.WxHandler;
 import org.nutz.weixin.util.Wxs;
 
 public abstract class WxAbstractModule{
+	
+	protected WxHandler wxHandler;
 
-	//@AdaptBy(type = WxAdaptor.class)
-	//@At({"/weixin", "/weixin/?")
+	@At({"/weixin", "/weixin/?"})
+	@Ok("wx")
+	@Fail("http:200")
 	public Object msgIn(String key, HttpServletRequest req) throws IOException {
 		WxHandler wxHandler = getWxHandler(key);
 		if (wxHandler == null) {
@@ -34,5 +40,7 @@ public abstract class WxAbstractModule{
 		return out;
 	}
 	
-	public abstract WxHandler getWxHandler(String key);
+	public WxHandler getWxHandler(String key) {
+		return wxHandler;
+	}
 }
