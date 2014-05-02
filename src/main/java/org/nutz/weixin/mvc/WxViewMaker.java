@@ -8,6 +8,8 @@ import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.View;
 import org.nutz.mvc.ViewMaker;
+import org.nutz.weixin.bean.WxOutMsg;
+import org.nutz.weixin.util.Wxs;
 
 public class WxViewMaker implements ViewMaker {
 
@@ -22,6 +24,7 @@ public class WxViewMaker implements ViewMaker {
 					log.debug("NULL resp...");
 					return;
 				}
+				Wxs.asXml(resp.getWriter(), (WxOutMsg) obj);
 			}
 		};
 	}

@@ -3,6 +3,7 @@ package org.nutz.weixin.impl;
 import org.nutz.weixin.bean.WxInMsg;
 import org.nutz.weixin.bean.WxOutMsg;
 import org.nutz.weixin.spi.WxHandler;
+import org.nutz.weixin.util.Wxs;
 
 public class AbstractWxHandler implements WxHandler {
 
@@ -51,9 +52,6 @@ public class AbstractWxHandler implements WxHandler {
 	}
 
 	public WxOutMsg defaultMsg(WxInMsg msg) {
-		WxOutMsg out = WxOutMsg.init(msg);
-		out.setMsgType("text");
-		out.setContent("haha");
-		return out;
+		return Wxs.respText("haha");
 	}
 }
