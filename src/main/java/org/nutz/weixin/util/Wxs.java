@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.nutz.json.Json;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
@@ -19,6 +21,9 @@ import org.nutz.lang.Xmls;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+import org.nutz.mvc.view.HttpStatusView;
+import org.nutz.mvc.view.RawView;
+import org.nutz.mvc.view.ViewWrapper;
 import org.nutz.weixin.bean.WxArticle;
 import org.nutz.weixin.bean.WxEventType;
 import org.nutz.weixin.bean.WxImage;
@@ -28,6 +33,7 @@ import org.nutz.weixin.bean.WxMusic;
 import org.nutz.weixin.bean.WxOutMsg;
 import org.nutz.weixin.bean.WxVideo;
 import org.nutz.weixin.bean.WxVoice;
+import org.nutz.weixin.mvc.WxView;
 import org.nutz.weixin.spi.WxHandler;
 
 public class Wxs {
@@ -54,6 +60,13 @@ public class Wxs {
 	}
 	
 	public static boolean check(String token, String signature, String timestamp, String nonce) {
+		// 防范长密文攻击
+		if (signature == null || signature.length() > 128 
+				|| timestamp == null || timestamp.length() > 128
+				|| nonce == null || nonce.length() > 128) {
+			log.warnf("bad check : signature=%s,timestamp=%s,nonce=%s", signature, timestamp, nonce);
+			return false;
+		}
 		ArrayList<String> tmp = new ArrayList<String>();
 		tmp.add(token);
 		tmp.add(timestamp);
@@ -88,6 +101,8 @@ public class Wxs {
 			out = handleEvent(msg, handler);
 			break;
 		default:
+			log.infof("New MsyType=%s ? fallback to defaultMsg", msg.getMsgType());
+			out = handler.defaultMsg(msg);
 			break;
 		}
 		return out;
@@ -112,6 +127,8 @@ public class Wxs {
 			out = handler.eventView(msg);
 			break;
 		default:
+			log.infof("New EventType=%s ? fallback to defaultMsg", msg.getMsgType());
+			out = handler.defaultMsg(msg);
 			break;
 		}
 		return out;
@@ -161,7 +178,6 @@ public class Wxs {
 	public static WxOutMsg respNews(List<WxArticle> articles) {
 		WxOutMsg out = new WxOutMsg("news");
 		out.setArticles(articles);
-		out.setArticleCount(articles.size());
 		return out;
 	}
 	
@@ -344,6 +360,23 @@ public class Wxs {
 			break;
 		}
 		Json.toJson(writer, map);
+	}
+	
+	public static Object handle(WxHandler wxHandler, HttpServletRequest req) throws IOException {
+		if (wxHandler == null) {
+			return HttpStatusView.HTTP_502;
+		}
+		if (!wxHandler.check(req.getParameter("signature"), req.getParameter("timestamp"), req.getParameter("nonce"))) {
+			return HttpStatusView.HTTP_502;
+		}
+		if ("GET".equalsIgnoreCase(req.getMethod())) {
+			return new ViewWrapper(new RawView(null), req.getParameter("echostr"));
+		}
+		WxInMsg in = Wxs.convert(req.getInputStream());
+		WxOutMsg out = Wxs.handle(in, wxHandler);
+		if (out != null)
+			Wxs.fix(in, out);
+		return new ViewWrapper(WxView.me, out);
 	}
 	
 	public static void main(String[] args) throws IOException {

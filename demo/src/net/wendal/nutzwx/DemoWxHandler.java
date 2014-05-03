@@ -13,7 +13,6 @@ public class DemoWxHandler extends BasicWxHandler {
 		super(token);
 	}
 
-	@Override
 	public WxOutMsg text(WxInMsg msg) {
 		if ("god".equals(msg.getContent()))
 			return Wxs.respText("Oh my God!");

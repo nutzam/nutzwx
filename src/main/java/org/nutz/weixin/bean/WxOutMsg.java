@@ -13,7 +13,6 @@ public class WxOutMsg {
 	private WxVideo video;
 	private WxMusic music;
 	private List<WxArticle> articles;
-	private int articleCount;
 	
 	public WxOutMsg() {
 		createTime = System.currentTimeMillis();
@@ -98,14 +97,5 @@ public class WxOutMsg {
 	public void setArticles(List<WxArticle> articles) {
 		this.articles = articles;
 	}
-
-	public int getArticleCount() {
-		return articleCount;
-	}
-
-	public void setArticleCount(int articleCount) {
-		this.articleCount = articleCount;
-	}
-	
 	
 }
