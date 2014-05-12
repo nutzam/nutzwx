@@ -92,5 +92,17 @@ public class WxMaster {
 		this.access_token_expires = access_token_expires;
 	}
 	
+	public String toString() {
+		return openid + "@wx";
+	}
 	
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return toString().equals(String.valueOf(obj));
+	}
 }
