@@ -314,17 +314,17 @@ public class Wxs {
 		map.put("msgtype", msg.getMsgType());
 		switch (WxMsgType.valueOf(msg.getMsgType())) {
 		case text:
-			map.put("text", new NutMap().addv("content", msg.getContent()));
+			map.put("text", new NutMap().setv("content", msg.getContent()));
 			break;
 		case image :
-			map.put("image", new NutMap().addv("media_id", msg.getImage().getMediaId()));
+			map.put("image", new NutMap().setv("media_id", msg.getImage().getMediaId()));
 			break;
 		case voice:
-			map.put("voice", new NutMap().addv("media_id", msg.getVoice().getMediaId()));
+			map.put("voice", new NutMap().setv("media_id", msg.getVoice().getMediaId()));
 			break;
 		case video:
 			NutMap _video = new NutMap();
-			_video.addv("media_id", msg.getVideo().getMediaId());
+			_video.setv("media_id", msg.getVideo().getMediaId());
 			if (msg.getVideo().getTitle() != null)
 				_video.put("title", cdata(msg.getVideo().getTitle()));
 			if (msg.getVideo().getDescription() != null)

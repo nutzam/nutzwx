@@ -13,6 +13,8 @@ import org.nutz.weixin.impl.WxApiImpl;
 import org.nutz.weixin.spi.WxAPI;
 
 public class WxContext {
+	
+	public static final String DEF = "default";
 
 	public WxContext(){}
 	
@@ -22,13 +24,13 @@ public class WxContext {
 	
 	public WxAPI getAPI(String openid) {
 		if (openid == null)
-			openid = "default";
+			openid = DEF;
 		return apis.get(openid);
 	}
 	
 	public WxMaster get(String openid) {
 		if (openid == null)
-			openid = "default";
+			openid = DEF;
 		return masters.get(openid);
 	}
 	
@@ -44,15 +46,15 @@ public class WxContext {
 	public void setPath(String path) {
 		PropertiesProxy pp = new PropertiesProxy(path);
 		Map<String, Object> map = new LinkedHashMap(pp.toMap());
-		if (pp.get("appid") != null) {
-			String appid = pp.get("appid");
+		if (pp.get("openid") != null) {
+			String appid = pp.get("openid");
 			WxMaster def = Lang.map2Object(map, WxMaster.class);
 			masters.put(appid, def);
 			apis.put(appid, new WxApiImpl(def));
 		}
 		for (Entry<String, Object> en : map.entrySet()) {
 			String key = en.getKey();
-			if (key.endsWith(".appid")) {
+			if (key.endsWith(".openid")) {
 				key = key.substring(0, key.indexOf('.'));
 				Map<String, Object> tmp = filter(map, key + ".", null, null, null);
 				WxMaster one = Lang.map2Object(tmp, WxMaster.class);
@@ -67,7 +69,7 @@ public class WxContext {
 		Map<String, WxMaster> map = new LinkedHashMap<String, WxMaster>(masters);
 		for (Entry<String, WxMaster> en : map.entrySet()) {
 			String prefix = null;
-			if ("default".equals(en.getKey())) {
+			if (DEF.equals(en.getKey())) {
 				prefix = "";
 			} else {
 				prefix = en.getKey() + ".";

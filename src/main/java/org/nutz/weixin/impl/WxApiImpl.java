@@ -38,11 +38,13 @@ public class WxApiImpl implements WxAPI {
 	}
 
 	public void send(WxOutMsg out) {
+		if (out.getFromUserName() == null)
+			out.setFromUserName(master.getOpenid());
 		call("/message/custom/send", METHOD.POST, Wxs.asJson(out));
 	}
 
 	public WxGroup createGroup(WxGroup group) {
-		Map<String, Object> map = call("/groups/create", METHOD.POST, Json.toJson(new NutMap().addv("group", group)));
+		Map<String, Object> map = call("/groups/create", METHOD.POST, Json.toJson(new NutMap().setv("group", group)));
 		return Lang.map2Object((Map<String, Object>)map.get("group"), WxGroup.class);
 	}
 
@@ -57,7 +59,7 @@ public class WxApiImpl implements WxAPI {
 	}
 
 	public int userGroup(String openid) {
-		Map<String, Object> map = call("/groups/getid", METHOD.POST, Json.toJson(new NutMap().addv("openid", openid)));
+		Map<String, Object> map = call("/groups/getid", METHOD.POST, Json.toJson(new NutMap().setv("openid", openid)));
 		return ((Number)map.get("groupid")).intValue();
 	}
 
@@ -66,7 +68,7 @@ public class WxApiImpl implements WxAPI {
 	}
 
 	public void moveUser2Group(String openid, String groupid) {
-		call("/groups/members/update", METHOD.POST, Json.toJson(new NutMap().addv("openid", openid).addv("groupid", groupid)));
+		call("/groups/members/update", METHOD.POST, Json.toJson(new NutMap().setv("openid", openid).setv("groupid", groupid)));
 	}
 
 	public WxUser fetchUser(String openid, String lang) {
@@ -124,12 +126,12 @@ public class WxApiImpl implements WxAPI {
 	}
 
 	public String tmpQr(int expire_seconds, String scene_id) {
-		NutMap map = new NutMap().addv("expire_seconds", expire_seconds).addv("action_name", "QR_SCENE").addv("scene", new NutMap().addv("scene_id", scene_id));
+		NutMap map = new NutMap().setv("expire_seconds", expire_seconds).setv("action_name", "QR_SCENE").setv("scene", new NutMap().setv("scene_id", scene_id));
 		return call("", METHOD.POST, Json.toJson(map)).get("ticket").toString();
 	}
 
 	public String godQr(int scene_id) {
-		NutMap map = new NutMap().addv("action_name", "QR_LIMIT_SCENE").addv("scene", new NutMap().addv("scene_id", scene_id));
+		NutMap map = new NutMap().setv("action_name", "QR_LIMIT_SCENE").setv("scene", new NutMap().setv("scene_id", scene_id));
 		return call("", METHOD.POST, Json.toJson(map)).get("ticket").toString();
 	}
 
