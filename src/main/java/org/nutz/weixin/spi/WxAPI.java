@@ -18,11 +18,11 @@ public interface WxAPI {
 	
 	List<WxGroup> listGroup();
 	
-	WxGroup userGroup(String openid);
+	int userGroup(String openid);
 	
-	WxGroup renameGroup(WxGroup group);
+	void renameGroup(WxGroup group);
 	
-	void moveUser2Group(String openid, WxGroup group);
+	void moveUser2Group(String openid, String groupid);
 	
 	//-----------------------------------------------
 	
@@ -42,7 +42,9 @@ public interface WxAPI {
 	
 	String tmpQr(int expire_seconds, String scene_id);
 	
-	String godQr(String scene_id);
+	String godQr(int scene_id);
 	
-	String qrUrl(String token);
+	String qrUrl(String ticket);
+	
+	void reflushAccessToken();
 }

@@ -302,6 +302,12 @@ public class Wxs {
 		}
 	}
 	
+	public static String asJson(WxOutMsg msg) {
+		StringWriter sw = new StringWriter();
+		asJson(sw, msg);
+		return sw.toString();
+	}
+	
 	public static void asJson(Writer writer, WxOutMsg msg) {
 		NutMap map = new NutMap();
 		map.put("touser", msg.getToUserName());
