@@ -21,6 +21,7 @@ import org.nutz.lang.Xmls;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+import org.nutz.mvc.View;
 import org.nutz.mvc.view.HttpStatusView;
 import org.nutz.mvc.view.RawView;
 import org.nutz.mvc.view.ViewWrapper;
@@ -368,7 +369,7 @@ public class Wxs {
 		Json.toJson(writer, map);
 	}
 	
-	public static Object handle(WxHandler wxHandler, HttpServletRequest req) throws IOException {
+	public static View handle(WxHandler wxHandler, HttpServletRequest req) throws IOException {
 		if (wxHandler == null) {
 			return HttpStatusView.HTTP_502;
 		}
