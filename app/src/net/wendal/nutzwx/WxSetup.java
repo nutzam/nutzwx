@@ -2,7 +2,7 @@ package net.wendal.nutzwx;
 
 import net.wendal.nutzwx.bean.AdminUser;
 import net.wendal.nutzwx.bean.AdminUserDetail;
-import net.wendal.nutzwx.service.NutWxContext;
+import net.wendal.nutzwx.service.NutDaoWxContext;
 import net.wendal.nutzwx.util.Toolkit;
 
 import org.nutz.dao.Dao;
@@ -53,7 +53,7 @@ public class WxSetup implements Setup {
 			log.warn("Scheduler start fail", e);
 		}
 
-		nc.getIoc().get(NutWxContext.class);
+		nc.getIoc().get(NutDaoWxContext.class);
 	}
 
 	@Override

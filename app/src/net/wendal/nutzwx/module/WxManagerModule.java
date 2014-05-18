@@ -2,7 +2,7 @@ package net.wendal.nutzwx.module;
 
 import java.io.InputStream;
 
-import net.wendal.nutzwx.service.NutWxContext;
+import net.wendal.nutzwx.service.NutDaoWxContext;
 
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
@@ -16,7 +16,7 @@ import org.nutz.mvc.annotation.POST;
 @IocBean
 public class WxManagerModule {
 
-	@Inject protected NutWxContext wxctx;
+	@Inject protected NutDaoWxContext wxctx;
 	
 	@At("/console/?")
 	@AdaptBy(type=VoidAdaptor.class)

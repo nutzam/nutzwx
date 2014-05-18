@@ -24,12 +24,16 @@ import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.Mvcs;
 import org.nutz.mvc.annotation.At;
+import org.nutz.mvc.annotation.By;
+import org.nutz.mvc.annotation.Filters;
 import org.nutz.mvc.annotation.Param;
+import org.nutz.mvc.filter.CheckSession;
 import org.nutz.resource.Scans;
 import org.nutz.trans.Atom;
 
 @IocBean(create="init")
 @At("/curd")
+@Filters(@By(type=CheckSession.class, args={"/"}))
 public class SimpleCURDModule {
 	
 	private static final Log log = Logs.get();

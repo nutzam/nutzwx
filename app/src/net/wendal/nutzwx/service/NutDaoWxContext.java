@@ -11,7 +11,7 @@ import org.nutz.weixin.impl.WxApiImpl;
 import org.nutz.weixin.util.WxContext;
 
 @IocBean(name="wxctx", create="init")
-public class NutWxContext extends WxContext {
+public class NutDaoWxContext extends WxContext {
 
 	@Inject protected Dao dao;
 	
