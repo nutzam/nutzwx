@@ -1,5 +1,6 @@
 package org.nutz.weixin.bean;
 
+import org.nutz.dao.entity.annotation.ColDefine;
 import org.nutz.dao.entity.annotation.Name;
 
 /**
@@ -37,6 +38,7 @@ public class WxMaster {
 	/**
 	 * 访问微信API所必须,但有效期短,变化的值
 	 */
+	@ColDefine(width=1024)
 	private String access_token;
 	/**
 	 * 记录access_token失效的时间

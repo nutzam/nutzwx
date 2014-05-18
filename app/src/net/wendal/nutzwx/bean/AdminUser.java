@@ -9,7 +9,7 @@ import org.nutz.dao.entity.annotation.Table;
  *
  */
 @Table("wx_admin_user")
-public class User {
+public class AdminUser {
 
 	@Name
 	private String name;

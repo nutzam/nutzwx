@@ -8,9 +8,9 @@ var ioc = {
 	dataSource : {
 		type : "com.alibaba.druid.pool.DruidDataSource",
 		fields : {
-			url : {java : "$config.get('url')"},
-			username : {java : "$config.get('username')"},
-			password : {java : "$config.get('password')"},
+			url : {java : "$config.get('jdbc.url')"},
+			username : {java : "$config.get('jdbc.username')"},
+			password : {java : "$config.get('jdbc.password')"},
 		},
 		events : {
 			depose : "close"
