@@ -2,11 +2,11 @@ package net.wendal.nutzwx;
 
 import net.wendal.nutzwx.bean.AdminUser;
 import net.wendal.nutzwx.bean.AdminUserDetail;
-import net.wendal.nutzwx.service.NutDaoWxContext;
 import net.wendal.nutzwx.util.Toolkit;
 
 import org.nutz.dao.Dao;
 import org.nutz.dao.util.Daos;
+import org.nutz.ioc.Ioc;
 import org.nutz.ioc.impl.PropertiesProxy;
 import org.nutz.lang.random.R;
 import org.nutz.log.Log;
@@ -25,8 +25,9 @@ public class WxSetup implements Setup {
 
 	@Override
 	public void init(NutConfig nc) {
-		Dao dao = nc.getIoc().get(Dao.class);
-		PropertiesProxy pp = nc.getIoc().get(PropertiesProxy.class, "config");
+		Ioc ioc = nc.getIoc();
+		Dao dao = ioc.get(Dao.class);
+		PropertiesProxy pp = ioc.get(PropertiesProxy.class, "config");
 		Daos.createTablesInPackage(dao, AdminUser.class.getPackage().getName(), false);
 		if (dao.count(AdminUser.class) == 0) {
 			AdminUser user = new AdminUser();
@@ -53,7 +54,9 @@ public class WxSetup implements Setup {
 			log.warn("Scheduler start fail", e);
 		}
 
-		nc.getIoc().get(NutDaoWxContext.class);
+		for(String beanName: ioc.getNames()) {
+			ioc.get(null, beanName);
+		}
 	}
 
 	@Override

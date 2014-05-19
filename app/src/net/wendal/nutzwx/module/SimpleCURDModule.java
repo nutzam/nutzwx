@@ -33,7 +33,7 @@ import org.nutz.trans.Atom;
 
 @IocBean(create="init")
 @At("/curd")
-@Filters(@By(type=CheckSession.class, args={"/"}))
+@Filters(@By(type=CheckSession.class, args={"usr", "/"}))
 public class SimpleCURDModule {
 	
 	private static final Log log = Logs.get();

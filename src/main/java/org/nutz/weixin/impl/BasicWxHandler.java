@@ -64,4 +64,8 @@ public class BasicWxHandler implements WxHandler {
 	public WxOutMsg defaultMsg(WxInMsg msg) {
 		return Wxs.respText("haha -> " + msg.getCreateTime());
 	}
+	
+	public WxOutMsg handle(WxInMsg in) {
+		return Wxs.handle(in, this);
+	}
 }

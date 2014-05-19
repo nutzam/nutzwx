@@ -22,4 +22,6 @@ public interface WxHandler {
 	WxOutMsg eventView(WxInMsg msg);
 
 	WxOutMsg defaultMsg(WxInMsg msg);
+	
+	WxOutMsg handle(WxInMsg in);
 }

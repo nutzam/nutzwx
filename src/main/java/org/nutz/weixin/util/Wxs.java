@@ -380,7 +380,7 @@ public class Wxs {
 			return new ViewWrapper(new RawView(null), req.getParameter("echostr"));
 		}
 		WxInMsg in = Wxs.convert(req.getInputStream());
-		WxOutMsg out = Wxs.handle(in, wxHandler);
+		WxOutMsg out = wxHandler.handle(in);
 		if (out != null)
 			Wxs.fix(in, out);
 		return new ViewWrapper(WxView.me, out);

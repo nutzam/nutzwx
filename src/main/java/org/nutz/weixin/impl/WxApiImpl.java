@@ -141,7 +141,10 @@ public class WxApiImpl implements WxAPI {
 
 	public void reflushAccessToken() {
 		String url = String.format("%s/token?grant_type=client_credential&appid=%s&secret=%s", base, master.getAppid(), master.getAppsecret());
-		String str = Http.get(url).getContent();
+		Response resp = Http.get(url);
+		if (!resp.isOK())
+			throw new IllegalArgumentException("reflushAccessToken FAIL , openid="+ master.getOpenid());
+		String str = resp.getContent();
 		Map<String, Object> map = (Map<String, Object>) Json.fromJson(str);
 		master.setAccess_token(map.get("access_token").toString());
 		master.setAccess_token_expires(System.currentTimeMillis() + (((Number)map.get("expires_in")).intValue() - 60)  * 1000);

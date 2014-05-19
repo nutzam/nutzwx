@@ -8,7 +8,7 @@ import org.nutz.weixin.mvc.WxAbstractModule;
 import org.nutz.weixin.spi.WxHandler;
 import org.nutz.weixin.util.Wxs;
 
-@IocBean(fields="wxHandler")
+@IocBean()
 public class BasicWxModule extends WxAbstractModule {
 
 	public BasicWxModule() {
@@ -19,10 +19,12 @@ public class BasicWxModule extends WxAbstractModule {
 			Wxs.enableDevMode();
 	}
 	
-	@Inject protected NutDaoWxContext ctx;
+	@Inject protected NutDaoWxContext wxctx;
 	
 	@Override
 	public WxHandler getWxHandler(String key) {
-		return ctx.getHandler(key);
+		return wxctx.getHandler(key);
 	}
+	
+	
 }
