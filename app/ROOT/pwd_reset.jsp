@@ -4,15 +4,17 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>用户之家</title>
+<title>忘记密码了?</title>
 </head>
 <body>
 <div>
-<a href="${base}/usr/logout">退出登录</a><p/>
-</div>
-<div>
-	<b>您帐号下的公众帐号列表</b>
-	<div id="usr_mp_list"></div>
+<form action="${base}/usr/pwd_reset">
+	<b>用户名</b><input name="name" type="text"><p/>
+	<b>邮箱</b><input name="email" type="text"><p/>
+	<b>验证码</b><input name="captcha" type="text"><p/>
+	<img alt="" src="${base}/toolkit/captcha/update">
+	<input type="submit"><p/>
+</form>
 </div>
 </body>
 </html>

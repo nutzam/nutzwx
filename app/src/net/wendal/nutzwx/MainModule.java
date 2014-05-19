@@ -23,13 +23,13 @@ import org.nutz.mvc.view.JspView;
 @SetupBy(WxSetup.class)
 public class MainModule {
 	
-	protected static View usrLogin = new ForwardView("/login.html");
+	protected static View usrLogin = new ForwardView("/login.jsp");
 	protected static JspView USER_HOME_PAGE = new JspView("jsp.usr.index");
 	
 	@At({"/", "/index"})
 	public View index() {
-		HttpSession session = Mvcs.getHttpSession(false);
-		if (session == null || session.getAttribute("usr") == null)
+		HttpSession session = Mvcs.getHttpSession();
+		if (session.getAttribute("usr") == null)
 			return usrLogin;
 		return USER_HOME_PAGE;
 	}

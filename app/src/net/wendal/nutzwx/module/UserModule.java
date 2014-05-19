@@ -40,8 +40,8 @@ public class UserModule {
 	protected PropertiesProxy config;
 	
 	@At
-	public boolean login(@Param("username")String name,
-					  @Param("password")String password,
+	public boolean login(@Param("name")String name,
+					  @Param("passwd")String password,
 					  @Param("captcha")String captcha){
 		if (name == null || password == null || captcha == null)
 			return false;
@@ -85,7 +85,7 @@ public class UserModule {
 	}
 	
 	@At("/pwd_reset")
-	public boolean requirePasswdReset(@Param("username")String name,
+	public boolean requirePasswdReset(@Param("name")String name,
 			  @Param("email")String email,
 			  @Param("captcha")String captcha) {
 		if (name == null || email == null || captcha == null)
@@ -104,8 +104,10 @@ public class UserModule {
 			return false; // 验证码不过? 没门!
 		}
 		AdminUserDetail detail = dao.fetch(AdminUserDetail.class, name);
-		if (detail == null || !email.equalsIgnoreCase(detail.getEmail()))
+		if (detail == null || !email.equalsIgnoreCase(detail.getEmail())) {
+			log.debug("email not match");
 			return false;
+		}
 		AdminUser usr = dao.fetch(AdminUser.class, name);
 		if (usr == null)
 			return false;

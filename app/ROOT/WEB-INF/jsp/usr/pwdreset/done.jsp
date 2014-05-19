@@ -4,15 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>用户之家</title>
+<title>重置完成</title>
 </head>
 <body>
-<div>
-<a href="${base}/usr/logout">退出登录</a><p/>
-</div>
-<div>
-	<b>您帐号下的公众帐号列表</b>
-	<div id="usr_mp_list"></div>
-</div>
+重置成功,新密码已经发送到你的邮箱.
 </body>
 </html>
