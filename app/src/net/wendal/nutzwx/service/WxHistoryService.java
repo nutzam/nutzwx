@@ -37,7 +37,7 @@ public class WxHistoryService implements Runnable {
 		if (tmp == null)
 			return;
 		try {
-			tmp.put(null);
+			tmp.put(new WxInMsg());
 		} catch (InterruptedException e) {
 			log.info("insert NULL item to close WxHistoryService.thread fail?", e);
 		}
@@ -60,7 +60,7 @@ public class WxHistoryService implements Runnable {
 				break;
 			try {
 				msg = tmp.poll(5, TimeUnit.SECONDS);
-				if (msg == null)
+				if (msg == null || msg.getFromUserName() == null)
 					continue;
 				dao.insert("wx_history_" + msg.getToUserName(), Chain.from(msg));
 			} catch (InterruptedException e) {

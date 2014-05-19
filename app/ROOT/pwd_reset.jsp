@@ -5,10 +5,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>忘记密码了?</title>
+<jsp:include page="/rs.jsp"></jsp:include>
 </head>
 <body>
 <div>
-<form action="${base}/usr/pwd_reset">
+<form action="${base}/usr/pwd_reset" method="post">
 	<b>用户名</b><input name="name" type="text"><p/>
 	<b>邮箱</b><input name="email" type="text"><p/>
 	<b>验证码</b><input name="captcha" type="text"><p/>

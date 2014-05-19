@@ -5,22 +5,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>请先登录</title>
-<!-- 最新 Bootstrap 核心 CSS 文件 -->
-<link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
-
-<!-- 可选的Bootstrap主题文件（一般不用引入） -->
-<link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap-theme.min.css">
-
-<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-<script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
-
-<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-<script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<jsp:include page="/rs.jsp"></jsp:include>
 </head>
 <body>
 <div class="container" id="login_div">
-<form action="${base}/usr/login" role="form">
+<form action="${base}/usr/login" role="form" method="post">
 	<div class="form-group">
     	<label for="login_name">Username</label>
     	<input name="name" type="text" class="form-control" id="login_name" placeholder="Enter Username">
