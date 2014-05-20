@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 
 import net.wendal.nutzwx.bean.WxMpInfo;
 import net.wendal.nutzwx.service.NutDaoWxContext;
+import net.wendal.nutzwx.util.Toolkit;
 
 import org.keplerproject.luajava.LuaException;
 import org.keplerproject.luajava.LuaJavaAPI;
@@ -51,35 +52,14 @@ public class WxManagerModule {
 			lua.pushJavaObject(wxapi);
 			lua.setGlobal("wxapi");
 			int re = lua.LloadString(str);
+			if (re != 0) {
+				return "lua error re="+re + ", msg=" + lua.getLuaObject(1);
+			}
 			lua.pcall(0, 1, 0);
-			LuaObject luaobj = lua.getLuaObject(1);
-			if (luaobj.isJavaObject()) {
-				return luaobj.getObject();
+			if (re != 0) {
+				return "lua error re="+re + ", msg=" + lua.getLuaObject(1);
 			}
-			if (luaobj.isJavaFunction()) {
-				return "JavaFunction";
-			}
-			if (luaobj.isNil()) {
-				return null;
-			}
-			if (luaobj.isNumber()) {
-				return luaobj.getNumber();
-			}
-			if (luaobj.isBoolean()) {
-				return luaobj.getBoolean();
-			}
-			if (luaobj.isString())
-				return luaobj.getString();
-			if (luaobj.isTable()) {
-				return  "lua.table";
-			}
-			if (luaobj.isUserdata()) {
-				return "lua.userdata";
-			}
-			if (luaobj.isFunction()) {
-				return "lua.function";
-			}
-			return "re="+re;
+			return Toolkit.toJavaObject(lua.getLuaObject(1));
 		} finally {
 			lua.close();
 		}
@@ -125,4 +105,6 @@ public class WxManagerModule {
 		Lang.quiteSleep(2000);
 //		System.out.println(System.currentTimeMillis());
 	}
+	
+	
 }
