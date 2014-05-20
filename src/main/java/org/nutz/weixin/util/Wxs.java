@@ -142,43 +142,55 @@ public class Wxs {
 		return out;
 	}
 	
-	public static WxOutMsg respText(String content) {
+	public static WxOutMsg respText(String to, String content) {
 		WxOutMsg out = new WxOutMsg("text");
 		out.setContent(content);
+		if (to != null)
+			out.setToUserName(to);
 		return out;
 	}
 	
-	public static WxOutMsg respImage(String mediaId) {
+	public static WxOutMsg respImage(String to, String mediaId) {
 		WxOutMsg out = new WxOutMsg("image");
 		out.setImage(new WxImage(mediaId));
+		if (to != null)
+			out.setToUserName(to);
 		return out;
 	}
 	
-	public static WxOutMsg respVoice(String mediaId) {
+	public static WxOutMsg respVoice(String to, String mediaId) {
 		WxOutMsg out = new WxOutMsg("voice");
 		out.setVoice(new WxVoice(mediaId));
+		if (to != null)
+			out.setToUserName(to);
 		return out;
 	}
 	
-	public static WxOutMsg respVideo(String mediaId, String title, String description) {
+	public static WxOutMsg respVideo(String to, String mediaId, String title, String description) {
 		WxOutMsg out = new WxOutMsg("video");
 		out.setVideo(new WxVideo(mediaId, title, description));
+		if (to != null)
+			out.setToUserName(to);
 		return out;
 	}
 	
-	public static WxOutMsg respMusic(String title, String description, String musicURL, String hQMusicUrl, String thumbMediaId) {
+	public static WxOutMsg respMusic(String to, String title, String description, String musicURL, String hQMusicUrl, String thumbMediaId) {
 		WxOutMsg out = new WxOutMsg("music");
 		out.setMusic(new WxMusic(title, description, musicURL, hQMusicUrl, thumbMediaId));
+		if (to != null)
+			out.setToUserName(to);
 		return out;
 	}
 	
-	public static WxOutMsg respNews(WxArticle...articles) {
-		return respNews(Arrays.asList(articles));
+	public static WxOutMsg respNews(String to, WxArticle...articles) {
+		return respNews(to, Arrays.asList(articles));
 	}
 	
-	public static WxOutMsg respNews(List<WxArticle> articles) {
+	public static WxOutMsg respNews(String to, List<WxArticle> articles) {
 		WxOutMsg out = new WxOutMsg("news");
 		out.setArticles(articles);
+		if (to != null)
+			out.setToUserName(to);
 		return out;
 	}
 	
@@ -394,7 +406,7 @@ public class Wxs {
 			System.out.printf("WxOutMsg event%s(WxInMsg msg);\n", Strings.upperFirst(obj.toString().toLowerCase()));
 		}
 		StringWriter sw = new StringWriter();
-		asXml(sw, respText("Hi"));
+		asXml(sw, respText(null, "Hi"));
 		System.out.println(sw.toString());
 	}
 }

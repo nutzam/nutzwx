@@ -15,8 +15,8 @@ public class DemoWxHandler extends BasicWxHandler {
 
 	public WxOutMsg text(WxInMsg msg) {
 		if ("god".equals(msg.getContent()))
-			return Wxs.respText("Oh my God!");
+			return Wxs.respText(null, "Oh my God!");
 		else
-			return Wxs.respText("Out of my way!");
+			return Wxs.respText(null, "Out of my way!");
 	}
 }

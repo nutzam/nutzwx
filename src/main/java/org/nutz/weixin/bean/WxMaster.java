@@ -14,11 +14,8 @@ public class WxMaster {
 	 * 该公众帐号的openid, 一般以gh_开头,作为数据库主键
 	 */
 	@Name
+	@ColDefine(width=128)
 	private String openid;
-	/**
-	 * 别名,当作配置的key使用
-	 */
-	private String alias;
 	/**
 	 * 昵称,显示用
 	 */
@@ -26,14 +23,17 @@ public class WxMaster {
 	/**
 	 * 核心参数,必须有,应用的token值
 	 */
+	@ColDefine(width=128)
 	private String token;
 	/**
 	 * 关键参数,服务号才有
 	 */
+	@ColDefine(width=128)
 	private String appid;
 	/**
 	 * 关键参数,服务号才有
 	 */
+	@ColDefine(width=128)
 	private String appsecret;
 	/**
 	 * 访问微信API所必须,但有效期短,变化的值
@@ -50,12 +50,6 @@ public class WxMaster {
 	}
 	public void setOpenid(String openid) {
 		this.openid = openid;
-	}
-	public String getAlias() {
-		return alias;
-	}
-	public void setAlias(String alias) {
-		this.alias = alias;
 	}
 	public String getNickname() {
 		return nickname;
