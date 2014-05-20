@@ -172,7 +172,7 @@ public class WxApiImpl implements WxAPI {
 		if (!resp.isOK())
 			throw new IllegalArgumentException("resp code=" + resp.getStatus());
 		Map<String, Object> map = (Map<String, Object>) Json.fromJson(resp.getReader());
-		if (map.containsKey("errcode") && ((Number)map.get("error")).intValue() != 0) {
+		if (map != null && map.containsKey("errcode") && ((Number)map.get("errcode")).intValue() != 0) {
 			throw new IllegalArgumentException(map.toString());
 		}
 		return map;

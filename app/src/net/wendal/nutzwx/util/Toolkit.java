@@ -98,6 +98,9 @@ public class Toolkit {
 	
 	public static Object toJavaObject(LuaObject luaobj) throws LuaException {
 		if (luaobj.isJavaObject()) {
+			Object obj = luaobj.getObject();
+			if (obj instanceof Throwable)
+				log.info("lua Err?", (Throwable)obj);
 			return luaobj.getObject();
 		}
 		if (luaobj.isJavaFunction()) {
