@@ -3,8 +3,10 @@ package net.wendal.nutzwx.service;
 import java.util.List;
 
 import net.wendal.nutzwx.bean.WxMpInfo;
+import net.wendal.nutzwx.bean.WxMsgHistory;
 
 import org.nutz.dao.Dao;
+import org.nutz.dao.TableName;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.log.Log;
@@ -37,12 +39,25 @@ public class NutDaoWxContext extends WxContext {
 					super.reflushAccessToken();
 					dao.update(mp, "^(access_token)");
 				}
+				@Override
+				public void send(WxOutMsg out) {
+					super.send(out);
+					wxHistory.push(out);
+				}
 			};
 			apis.put(mp.getOpenid(), api);
 			handlers.put(mp.getOpenid(), new BasicWxHandler(mp.getToken()) {
 				public WxOutMsg handle(WxInMsg in) {
 					wxHistory.push(in);
-					return NutDaoWxContext.this.handle(this, in);
+					WxOutMsg out = NutDaoWxContext.this.handle(this, in);
+					if (out != null)
+						wxHistory.push(out);
+					return out;
+				}
+			});
+			TableName.run(mp.getOpenid(), new Runnable() {
+				public void run() {
+					dao.create(WxMsgHistory.class, false);
 				}
 			});
 		}

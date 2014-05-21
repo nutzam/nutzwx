@@ -11,4 +11,5 @@ import java.lang.annotation.Target;
 @Documented
 public @interface SimpleCURD {
 	String[] cnd() default {};
+	String[] tableName() default {};
 }

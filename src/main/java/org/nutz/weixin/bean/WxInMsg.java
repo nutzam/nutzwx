@@ -1,5 +1,7 @@
 package org.nutz.weixin.bean;
 
+import org.nutz.json.JsonIgnore;
+
 
 public class WxInMsg {
 	
@@ -16,8 +18,11 @@ public class WxInMsg {
 	private String format;
 	private String thumbMediaId;
 	
+	@JsonIgnore(null_double=0)
 	private double location_X;
+	@JsonIgnore(null_double=0)
 	private double location_Y;
+	@JsonIgnore(null_double=0)
 	private double scale;
 	private String label;
 

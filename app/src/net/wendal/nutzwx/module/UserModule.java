@@ -23,6 +23,7 @@ import org.nutz.mvc.Mvcs;
 import org.nutz.mvc.annotation.At;
 import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.Param;
+import org.nutz.mvc.view.ServerRedirectView;
 
 @IocBean(create="init")
 @At("/usr")
@@ -70,6 +71,13 @@ public class UserModule {
 		// TODO 记录到系统操作日志中
 		session.setAttribute("usr", name); // session里面只放用户名哦
 		return true;
+	}
+	
+	protected Object loginFail() {
+		boolean isAjax = Mvcs.getReq().getHeader("") != null;
+		if (isAjax)
+			return true;
+		return new ServerRedirectView("/");
 	}
 	
 	@At

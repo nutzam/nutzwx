@@ -26,8 +26,9 @@ public class MainModule {
 	protected static View usrLogin = new ForwardView("/login.jsp");
 	protected static JspView USER_HOME_PAGE = new JspView("jsp.usr.index");
 	
-	@At({"/", "/index"})
+	@At("/home")
 	public View index() {
+		System.out.println(Mvcs.getReq().getRequestURI());
 		HttpSession session = Mvcs.getHttpSession();
 		if (session.getAttribute("usr") == null)
 			return usrLogin;

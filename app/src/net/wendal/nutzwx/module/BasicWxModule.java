@@ -12,11 +12,7 @@ import org.nutz.weixin.util.Wxs;
 public class BasicWxModule extends WxAbstractModule {
 
 	public BasicWxModule() {
-	}
-
-	public BasicWxModule(boolean devMode) {
-		if (devMode)
-			Wxs.enableDevMode();
+		Wxs.enableDevMode();
 	}
 	
 	@Inject protected NutDaoWxContext wxctx;
