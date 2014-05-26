@@ -1,5 +1,6 @@
 package net.wendal.nutzwx.service;
 
+import java.io.ByteArrayInputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -7,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import net.wendal.nutzwx.bean.WxMsgHistory;
 
 import org.nutz.dao.Dao;
-import org.nutz.dao.TableName;
+import org.nutz.dao.util.ExtDaos;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.json.Json;
@@ -15,7 +16,6 @@ import org.nutz.json.JsonFormat;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.weixin.bean.WxInMsg;
-import org.nutz.weixin.bean.WxMsgType;
 import org.nutz.weixin.bean.WxOutMsg;
 
 @IocBean(name = "wxHistory", create = "init", depose = "depose")
@@ -23,8 +23,8 @@ public class WxHistoryService {
 
 	private static final Log log = Logs.get();
 
-	@Inject
-	protected Dao dao;
+	@Inject protected Dao dao;
+	@Inject ResourceService resourceService;
 
 	protected ExecutorService es;
 
@@ -50,40 +50,13 @@ public class WxHistoryService {
 		}
 		es.submit(new Runnable() {
 			public void run() {
-				final WxMsgHistory msgHistory = new WxMsgHistory(in.getMsgId(),
-						in.getFromUserName(), in.getMsgType(), null, 0, in.getCreateTime()*1000L, Json
-								.toJson(in, JsonFormat.compact()));
-				switch (WxMsgType.valueOf(in.getMsgType())) {
-				case text:
-					msgHistory.setMsgContent(in.getContent());
-					break;
-				case image:
-					msgHistory.setMsgContent(in.getMediaId());
-					break;
-				case voice:
-					msgHistory.setMsgContent(in.getMediaId());
-					break;
-				case video:
-					msgHistory.setMsgContent(in.getMediaId());
-					break;
-				case location:
-					msgHistory.setMsgContent(in.getLocation_X() + "x"
-							+ in.getLocation_Y());
-					break;
-				case link:
-					msgHistory.setMsgContent(in.getUrl());
-					break;
-				case event:
-					msgHistory.setMsgContent(in.getEventKey());
-					break;
-				default:
-					break;
+				try {
+					final WxMsgHistory history = new WxMsgHistory(in.getMsgId(),in.getFromUserName(), in.getMsgType(), 0, in.getCreateTime()*1000L);
+					ExtDaos.ext(dao, in.getToUserName()).insert(history);
+					resourceService.put(history.getMsgkey(), new ByteArrayInputStream(Json.toJson(in, JsonFormat.compact()).getBytes()));
+				} catch (Throwable e) {
+					log.info("record in msg fail", e);
 				}
-				TableName.run(in.getToUserName(), new Runnable() {
-					public void run() {
-						dao.fastInsert(msgHistory);
-					}
-				});
 			}
 		});
 	}
@@ -96,21 +69,13 @@ public class WxHistoryService {
 		}
 		es.submit(new Runnable() {
 			public void run() {
-				final WxMsgHistory msgHistory = new WxMsgHistory(0, out
-						.getToUserName(), out.getMsgType(), null, 1, System.currentTimeMillis(), Json
-						.toJson(out, JsonFormat.compact()));
-				switch (WxMsgType.valueOf(out.getMsgType())) {
-				case text:
-					msgHistory.setMsgContent(out.getContent());
-					break;
-				default:
-					break;
+				try {
+					final WxMsgHistory history = new WxMsgHistory(0, out.getToUserName(), out.getMsgType(), 1, System.currentTimeMillis());
+					ExtDaos.ext(dao, out.getFromUserName()).insert(history);
+					resourceService.put(history.getMsgkey(), new ByteArrayInputStream(Json.toJson(out, JsonFormat.compact()).getBytes()));
+				} catch (Throwable e) {
+					log.info("record out msg fail", e);
 				}
-				TableName.run(out.getFromUserName(), new Runnable() {
-					public void run() {
-						dao.fastInsert(msgHistory);
-					}
-				});
 			}
 		});
 	}

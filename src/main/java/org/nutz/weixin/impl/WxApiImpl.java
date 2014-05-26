@@ -1,6 +1,10 @@
 package org.nutz.weixin.impl;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +13,7 @@ import org.nutz.http.Request;
 import org.nutz.http.Request.METHOD;
 import org.nutz.http.Response;
 import org.nutz.http.Sender;
+import org.nutz.http.sender.FilePostSender;
 import org.nutz.json.Json;
 import org.nutz.lang.ContinueLoop;
 import org.nutz.lang.Each;
@@ -17,6 +22,7 @@ import org.nutz.lang.Lang;
 import org.nutz.lang.LoopException;
 import org.nutz.lang.Strings;
 import org.nutz.lang.util.NutMap;
+import org.nutz.resource.NutResource;
 import org.nutz.weixin.bean.WxGroup;
 import org.nutz.weixin.bean.WxMaster;
 import org.nutz.weixin.bean.WxMenu;
@@ -151,15 +157,7 @@ public class WxApiImpl implements WxAPI {
 	}
 	
 	protected Map<String, Object> call(String URL, METHOD method, String body) {
-		String token = master.getAccess_token();
-		if (token == null || master.getAccess_token_expires() < System.currentTimeMillis()) {
-			synchronized (master) {
-				if (token == null || master.getAccess_token_expires() < System.currentTimeMillis()) {
-					reflushAccessToken();
-					token = master.getAccess_token();
-				}
-			}
-		}
+		String token = getAccessToken();
 		if (URL.contains("?")) {
 			URL = base + URL + "&access_token=" + token;
 		} else {
@@ -178,4 +176,72 @@ public class WxApiImpl implements WxAPI {
 		return map;
 	}
 	
+	protected String getAccessToken() {
+		String token = master.getAccess_token();
+		if (token == null || master.getAccess_token_expires() < System.currentTimeMillis()) {
+			synchronized (master) {
+				if (token == null || master.getAccess_token_expires() < System.currentTimeMillis()) {
+					reflushAccessToken();
+					token = master.getAccess_token();
+				}
+			}
+		}
+		return token;
+	}
+	
+	@Override
+	public String mediaUpload(String type, File f) {
+		if (type == null)
+			throw new NullPointerException("media type is NULL");
+		if (f == null)
+			throw new NullPointerException("meida file is NULL");
+		String url = "http://file.api.weixin.qq.com/cgi-bin/media/upload";
+		Request req = Request.create(url, METHOD.POST);
+		req.getParams().put("type", type);
+		req.getParams().put("access_token", getAccessToken());
+		req.getParams().put("file", f);
+		Response resp = FilePostSender.create(url).send();
+		if (!resp.isOK())
+			throw new IllegalStateException("media upload file, resp code="+resp.getStatus());
+		Map<String, Object> map = (Map<String, Object>) Json.fromJson(resp.getReader());
+		if (map != null && map.containsKey("errcode") && ((Number)map.get("errcode")).intValue() != 0) {
+			throw new IllegalArgumentException(map.toString());
+		}
+		return map.get("media_id").toString();
+	}
+	
+	@Override
+	public NutResource mediaGet(String mediaId) {
+		String url = "http://file.api.weixin.qq.com/cgi-bin/media/get";
+		Map<String, Object> params = new HashMap<>();
+		params.put("access_token", getAccessToken());
+		params.put("media_id", mediaId);
+		final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();
+		if (!resp.isOK())
+			throw new IllegalStateException("download media file, resp code="+resp.getStatus());
+		final String disposition = resp.getHeader().get("Content-disposition");
+		if (disposition == null) {
+			throw new IllegalArgumentException(Json.fromJson(resp.getReader()).toString());
+		}
+		return new NutResource() {
+
+			public String getName() {
+				for(String str: disposition.split(";")) {
+					if (str.startsWith("filename="))  {
+						str = str.substring("filename=".length());
+						if (str.startsWith("\""))
+							str = str.substring(1);
+						if (str.endsWith("\""))
+							str = str.substring(0, str.length() -1);
+						return str.trim().intern();
+					}
+				}
+				return "file.data";
+			}
+			
+			public InputStream getInputStream() throws IOException {
+				return resp.getStream();
+			}
+		};
+	}
 }

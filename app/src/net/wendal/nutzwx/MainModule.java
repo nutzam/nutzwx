@@ -28,7 +28,6 @@ public class MainModule {
 	
 	@At("/home")
 	public View index() {
-		System.out.println(Mvcs.getReq().getRequestURI());
 		HttpSession session = Mvcs.getHttpSession();
 		if (session.getAttribute("usr") == null)
 			return usrLogin;

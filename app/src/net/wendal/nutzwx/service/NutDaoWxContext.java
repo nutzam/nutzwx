@@ -9,6 +9,8 @@ import org.nutz.dao.Dao;
 import org.nutz.dao.TableName;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.json.Json;
+import org.nutz.json.JsonFormat;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.weixin.bean.WxInMsg;
@@ -53,6 +55,9 @@ public class NutDaoWxContext extends WxContext {
 					if (out != null)
 						wxHistory.push(out);
 					return out;
+				}
+				public WxOutMsg defaultMsg(WxInMsg msg) {
+					return Wxs.respText(null, Json.toJson(msg, JsonFormat.compact()));
 				}
 			});
 			TableName.run(mp.getOpenid(), new Runnable() {

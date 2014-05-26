@@ -3,6 +3,7 @@ package net.wendal.nutzwx.bean;
 import org.nutz.dao.entity.annotation.ColDefine;
 import org.nutz.dao.entity.annotation.Name;
 import org.nutz.dao.entity.annotation.Table;
+import org.nutz.json.JsonField;
 
 /**
  * 平台用户
@@ -15,8 +16,10 @@ public class AdminUser {
 	private String name;
 	
 	@ColDefine(width=256)
+	@JsonField(ignore=true)
 	private String passwd;
 	@ColDefine(width=128)
+	@JsonField(ignore=true)
 	private String slat;
 	
 	public String getName() {

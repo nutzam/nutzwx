@@ -1,8 +1,10 @@
 package org.nutz.weixin.spi;
 
+import java.io.File;
 import java.util.List;
 
 import org.nutz.lang.Each;
+import org.nutz.resource.NutResource;
 import org.nutz.weixin.bean.WxGroup;
 import org.nutz.weixin.bean.WxMenu;
 import org.nutz.weixin.bean.WxOutMsg;
@@ -47,4 +49,10 @@ public interface WxAPI {
 	String qrUrl(String ticket);
 	
 	void reflushAccessToken();
+	
+	//------------------------------------------------
+	
+	String mediaUpload(String type, File f);
+	
+	NutResource mediaGet(String mediaId);
 }

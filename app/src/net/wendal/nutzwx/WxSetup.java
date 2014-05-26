@@ -2,17 +2,24 @@ package net.wendal.nutzwx;
 
 import net.wendal.nutzwx.bean.AdminUser;
 import net.wendal.nutzwx.bean.AdminUserDetail;
+import net.wendal.nutzwx.service.ResourceService;
+import net.wendal.nutzwx.service.impl.DaoResourceService;
+import net.wendal.nutzwx.service.impl.SsdbResourceService;
 import net.wendal.nutzwx.util.Toolkit;
 
 import org.nutz.dao.Dao;
 import org.nutz.dao.util.Daos;
 import org.nutz.ioc.Ioc;
+import org.nutz.ioc.Ioc2;
+import org.nutz.ioc.ObjectProxy;
 import org.nutz.ioc.impl.PropertiesProxy;
 import org.nutz.lang.random.R;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.NutConfig;
 import org.nutz.mvc.Setup;
+import org.nutz.ssdb4j.SSDBs;
+import org.nutz.ssdb4j.spi.SSDB;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
@@ -47,12 +54,24 @@ public class WxSetup implements Setup {
 			dao.insert(detail);
 		}
 		
+		// 按需选择
+		ResourceService resourceService = null;
 		try {
-			scheduler = StdSchedulerFactory.getDefaultScheduler();
-			scheduler.startDelayed(5000);;
-		} catch (SchedulerException e) {
-			log.warn("Scheduler start fail", e);
+			SSDB ssdb = SSDBs.pool("127.0.0.1", 8888, 5000, null);
+			resourceService = new SsdbResourceService(ssdb);
+			((Ioc2)ioc).getIocContext().save("app", "resourceService", new ObjectProxy(resourceService));
+		} catch (Exception e) {
+			log.info("fail to connect ssdb? using DaoResourceService now", e);
+			resourceService = new DaoResourceService(dao);
+			((Ioc2)ioc).getIocContext().save("app", "resourceService", new ObjectProxy(resourceService));
 		}
+		
+//		try {
+//			scheduler = StdSchedulerFactory.getDefaultScheduler();
+//			scheduler.startDelayed(5000);;
+//		} catch (SchedulerException e) {
+//			log.warn("Scheduler start fail", e);
+//		}
 
 		for(String beanName: ioc.getNames()) {
 			ioc.get(null, beanName);

@@ -65,7 +65,15 @@ class ExtDaoInvocationHandler implements InvocationHandler {
 	protected Object tableName;
  
 	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
-		Molecule<Object> m = new ExtDaoMolecule(dao, method, args);
+		final Molecule<Object> m = new ExtDaoMolecule(dao, method, args);
+		if (filter != null && tableName != null) {
+			TableName.run(tableName, new Runnable() {
+				public void run() {
+					filter.run(m);
+				}
+			});
+			return m.getObj();
+		}
 		if (filter != null)
 			filter.run(m);
 		else
