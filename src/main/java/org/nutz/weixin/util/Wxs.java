@@ -48,6 +48,9 @@ public class Wxs {
 		log.warn("nutzwx DevMode=true now");
 	}
 
+	/**
+	 * 将一个输入流转为WxInMsg
+	 */
 	public static WxInMsg convert(InputStream in) {
 		Map<String, Object> map = Xmls.asMap(Xmls.xml(in).getDocumentElement());
 		Map<String, Object> tmp = new HashMap<String, Object>();
@@ -60,6 +63,9 @@ public class Wxs {
 		return Lang.map2Object(tmp, WxInMsg.class);
 	}
 	
+	/**
+	 * 检查signature是否合法
+	 */
 	public static boolean check(String token, String signature, String timestamp, String nonce) {
 		// 防范长密文攻击
 		if (signature == null || signature.length() > 128 
@@ -77,6 +83,9 @@ public class Wxs {
 		return Lang.sha1(key).equalsIgnoreCase(signature);
 	}
 	
+	/**
+	 * 根据不同的消息类型,调用WxHandler不同的方法
+	 */
 	public static WxOutMsg handle(WxInMsg msg, WxHandler handler) {
 		WxOutMsg out = null;
 		switch (WxMsgType.valueOf(msg.getMsgType())) {
@@ -109,6 +118,9 @@ public class Wxs {
 		return out;
 	}
 	
+	/**
+	 * 根据msg中Event的类型,调用不同的WxHandler方法
+	 */
 	public static WxOutMsg handleEvent(WxInMsg msg, WxHandler handler) {
 		WxOutMsg out = null;
 		switch (WxEventType.valueOf(msg.getEvent())) {
@@ -135,6 +147,9 @@ public class Wxs {
 		return out;
 	}
 	
+	/**
+	 * 根据输入信息,修正发送信息的发送者和接受者
+	 */
 	public static WxOutMsg fix(WxInMsg in, WxOutMsg out) {
 		out.setFromUserName(in.getToUserName());
 		out.setToUserName(in.getFromUserName());
@@ -142,6 +157,9 @@ public class Wxs {
 		return out;
 	}
 	
+	/**
+	 * 创建一条文本响应
+	 */
 	public static WxOutMsg respText(String to, String content) {
 		WxOutMsg out = new WxOutMsg("text");
 		out.setContent(content);
@@ -150,6 +168,9 @@ public class Wxs {
 		return out;
 	}
 	
+	/**
+	 * 创建一条图片响应
+	 */
 	public static WxOutMsg respImage(String to, String mediaId) {
 		WxOutMsg out = new WxOutMsg("image");
 		out.setImage(new WxImage(mediaId));
@@ -158,6 +179,9 @@ public class Wxs {
 		return out;
 	}
 	
+	/**
+	 * 创建一个语音响应
+	 */
 	public static WxOutMsg respVoice(String to, String mediaId) {
 		WxOutMsg out = new WxOutMsg("voice");
 		out.setVoice(new WxVoice(mediaId));
@@ -166,6 +190,9 @@ public class Wxs {
 		return out;
 	}
 	
+	/**
+	 * 创建一个视频响应
+	 */
 	public static WxOutMsg respVideo(String to, String mediaId, String title, String description) {
 		WxOutMsg out = new WxOutMsg("video");
 		out.setVideo(new WxVideo(mediaId, title, description));
@@ -174,6 +201,9 @@ public class Wxs {
 		return out;
 	}
 	
+	/**
+	 * 创建一个音乐响应
+	 */
 	public static WxOutMsg respMusic(String to, String title, String description, String musicURL, String hQMusicUrl, String thumbMediaId) {
 		WxOutMsg out = new WxOutMsg("music");
 		out.setMusic(new WxMusic(title, description, musicURL, hQMusicUrl, thumbMediaId));
@@ -182,10 +212,16 @@ public class Wxs {
 		return out;
 	}
 	
+	/**
+	 * 创建一个图文响应
+	 */
 	public static WxOutMsg respNews(String to, WxArticle...articles) {
 		return respNews(to, Arrays.asList(articles));
 	}
 	
+	/**
+	 * 创建一个图文响应
+	 */
 	public static WxOutMsg respNews(String to, List<WxArticle> articles) {
 		WxOutMsg out = new WxOutMsg("news");
 		out.setArticles(articles);
@@ -233,7 +269,7 @@ public class Wxs {
 //	}
 	
 	public static String cdata(String str) {
-		return "<![CDATA[" + str + "]]>";
+		return "<![CDATA[" + str.replaceAll("]]", "__") + "]]>";
 	}
 	
 	public static String tag(String key, String val) {
@@ -244,6 +280,9 @@ public class Wxs {
 		return sb.toString();
 	}
 	
+	/**
+	 * 将一个WxOutMsg转为被动响应所需要的XML文本
+	 */
 	public static void asXml(Writer writer, WxOutMsg msg) throws IOException {
 		Writer _out = writer;
 		if (DEV_MODE) {
@@ -315,12 +354,18 @@ public class Wxs {
 		}
 	}
 	
+	/**
+	 * 将一个WxOutMsg转为主动信息所需要的Json文本
+	 */
 	public static String asJson(WxOutMsg msg) {
 		StringWriter sw = new StringWriter();
 		asJson(sw, msg);
 		return sw.toString();
 	}
 	
+	/**
+	 * 将一个WxOutMsg转为主动信息所需要的Json文本
+	 */
 	public static void asJson(Writer writer, WxOutMsg msg) {
 		NutMap map = new NutMap();
 		map.put("touser", msg.getToUserName());
@@ -381,6 +426,9 @@ public class Wxs {
 		Json.toJson(writer, map);
 	}
 	
+	/**
+	 * 用一个wxHandler处理对应的用户请求
+	 */
 	public static View handle(WxHandler wxHandler, HttpServletRequest req) throws IOException {
 		if (wxHandler == null) {
 			log.info("WxHandler is NULL");

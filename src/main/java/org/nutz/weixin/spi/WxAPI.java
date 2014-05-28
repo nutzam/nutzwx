@@ -10,6 +10,10 @@ import org.nutz.weixin.bean.WxMenu;
 import org.nutz.weixin.bean.WxOutMsg;
 import org.nutz.weixin.bean.WxUser;
 
+/**
+ * 封装weixin的API
+ *
+ */
 public interface WxAPI {
 
 	void send(WxOutMsg out);
