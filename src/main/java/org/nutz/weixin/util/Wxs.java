@@ -383,12 +383,15 @@ public class Wxs {
 	
 	public static View handle(WxHandler wxHandler, HttpServletRequest req) throws IOException {
 		if (wxHandler == null) {
+			log.info("WxHandler is NULL");
 			return HttpStatusView.HTTP_502;
 		}
 		if (!wxHandler.check(req.getParameter("signature"), req.getParameter("timestamp"), req.getParameter("nonce"))) {
+			log.info("token is invalid");
 			return HttpStatusView.HTTP_502;
 		}
 		if ("GET".equalsIgnoreCase(req.getMethod())) {
+			log.info("GET? return echostr=" + req.getParameter("echostr"));
 			return new ViewWrapper(new RawView(null), req.getParameter("echostr"));
 		}
 		WxInMsg in = Wxs.convert(req.getInputStream());

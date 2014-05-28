@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import javax.sql.rowset.serial.SerialBlob;
 
+import net.wendal.nutzwx.bean.WxResourceBean;
 import net.wendal.nutzwx.service.ResourceService;
 
 import org.nutz.dao.Dao;

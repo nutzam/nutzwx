@@ -31,6 +31,8 @@ public class NutDaoWxContext extends WxContext {
 	
 	@Inject protected WxHistoryService wxHistory;
 	
+	@Inject protected MediaService mediaService;
+	
 	public void init() {
 		List<WxMpInfo> list = dao.query(WxMpInfo.class, null);
 		for (final WxMpInfo mp : list) {
@@ -50,7 +52,8 @@ public class NutDaoWxContext extends WxContext {
 			apis.put(mp.getOpenid(), api);
 			handlers.put(mp.getOpenid(), new BasicWxHandler(mp.getToken()) {
 				public WxOutMsg handle(WxInMsg in) {
-					wxHistory.push(in);
+					wxHistory.push(in); // 插入到历史记录
+					mediaService.loadFrom(in); // 查找media,如果存在就下载之
 					WxOutMsg out = NutDaoWxContext.this.handle(this, in);
 					if (out != null)
 						wxHistory.push(out);

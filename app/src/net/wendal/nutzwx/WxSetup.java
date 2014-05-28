@@ -56,15 +56,15 @@ public class WxSetup implements Setup {
 		
 		// 按需选择
 		ResourceService resourceService = null;
-		try {
-			SSDB ssdb = SSDBs.pool("127.0.0.1", 8888, 5000, null);
-			resourceService = new SsdbResourceService(ssdb);
-			((Ioc2)ioc).getIocContext().save("app", "resourceService", new ObjectProxy(resourceService));
-		} catch (Exception e) {
-			log.info("fail to connect ssdb? using DaoResourceService now", e);
+//		try {
+//			SSDB ssdb = SSDBs.pool("127.0.0.1", 8888, 5000, null);
+//			resourceService = new SsdbResourceService(ssdb);
+//			((Ioc2)ioc).getIocContext().save("app", "resourceService", new ObjectProxy(resourceService));
+//		} catch (Exception e) {
+//			log.info("fail to connect ssdb? using DaoResourceService now", e);
 			resourceService = new DaoResourceService(dao);
 			((Ioc2)ioc).getIocContext().save("app", "resourceService", new ObjectProxy(resourceService));
-		}
+//		}
 		
 //		try {
 //			scheduler = StdSchedulerFactory.getDefaultScheduler();

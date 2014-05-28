@@ -1,4 +1,4 @@
-package net.wendal.nutzwx.service.impl;
+package net.wendal.nutzwx.bean;
 
 import java.sql.Blob;
 
