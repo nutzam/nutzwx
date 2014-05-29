@@ -4,9 +4,10 @@ import java.util.List;
 
 import net.wendal.nutzwx.bean.WxMpInfo;
 import net.wendal.nutzwx.bean.WxMsgHistory;
+import net.wendal.nutzwx.bean.WxMsgStore;
 
 import org.nutz.dao.Dao;
-import org.nutz.dao.TableName;
+import org.nutz.dao.util.ExtDaos;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.json.Json;
@@ -37,41 +38,46 @@ public class NutDaoWxContext extends WxContext {
 		List<WxMpInfo> list = dao.query(WxMpInfo.class, null);
 		for (final WxMpInfo mp : list) {
 			log.debug("mp info > " + mp.getOpenid());
-			masters.put(mp.getOpenid(), mp);
-			WxAPI api = new WxApiImpl(mp) {
-				public void reflushAccessToken() {
-					super.reflushAccessToken();
-					dao.update(mp, "^(access_token)");
-				}
-				@Override
-				public void send(WxOutMsg out) {
-					super.send(out);
-					wxHistory.push(out);
-				}
-			};
-			apis.put(mp.getOpenid(), api);
-			handlers.put(mp.getOpenid(), new BasicWxHandler(mp.getToken()) {
-				public WxOutMsg handle(WxInMsg in) {
-					wxHistory.push(in); // 插入到历史记录
-					mediaService.loadFrom(in); // 查找media,如果存在就下载之
-					WxOutMsg out = NutDaoWxContext.this.handle(this, in);
-					if (out != null)
-						wxHistory.push(out);
-					return out;
-				}
-				public WxOutMsg defaultMsg(WxInMsg msg) {
-					return Wxs.respText(null, Json.toJson(msg, JsonFormat.compact()));
-				}
-			});
-			TableName.run(mp.getOpenid(), new Runnable() {
-				public void run() {
-					dao.create(WxMsgHistory.class, false);
-				}
-			});
+			addMP(mp);
 		}
 	}
 	
 	protected WxOutMsg handle(WxHandler handler, WxInMsg in) {
 		return Wxs.handle(in, handler);
+	}
+	
+	public void addMP(final WxMpInfo mp) {
+		if (mp == null || mp.getOpenid() == null)
+			return;
+		final Dao dao = ExtDaos.ext(this.dao, mp.getOpenid());
+		dao.create(WxMsgHistory.class, false);
+		dao.create(WxMsgStore.class, false);
+		
+		masters.put(mp.getOpenid(), mp);
+		WxAPI api = new WxApiImpl(mp) {
+			public void reflushAccessToken() {
+				super.reflushAccessToken();
+				dao.update(mp, "^(access_token)");
+			}
+			@Override
+			public void send(WxOutMsg out) {
+				super.send(out);
+				wxHistory.push(out);
+			}
+		};
+		apis.put(mp.getOpenid(), api);
+		handlers.put(mp.getOpenid(), new BasicWxHandler(mp.getToken()) {
+			public WxOutMsg handle(WxInMsg in) {
+				wxHistory.push(in); // 插入到历史记录
+				mediaService.loadFrom(in); // 查找media,如果存在就下载之
+				WxOutMsg out = NutDaoWxContext.this.handle(this, in);
+				if (out != null)
+					wxHistory.push(out);
+				return out;
+			}
+			public WxOutMsg defaultMsg(WxInMsg msg) {
+				return Wxs.respText(null, Json.toJson(msg, JsonFormat.compact()));
+			}
+		});
 	}
 }

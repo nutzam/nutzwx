@@ -1,12 +1,11 @@
 package net.wendal.nutzwx.service;
 
-import java.io.InputStream;
 
 public interface ResourceService {
 
-	boolean put(String key, InputStream obj);
+	boolean put(String openid, String key, String str);
 	
-	InputStream get(String key);
+	String get(String openid, String key);
 	
-	<T> T getAsJsonObjet(String key, Class<T> klass);
+	<T> T getAsJsonObjet(String openid, String key, Class<T> klass);
 }

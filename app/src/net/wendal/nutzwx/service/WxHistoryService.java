@@ -1,6 +1,5 @@
 package net.wendal.nutzwx.service;
 
-import java.io.ByteArrayInputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +52,7 @@ public class WxHistoryService {
 				try {
 					final WxMsgHistory history = new WxMsgHistory(in.getMsgId(),in.getFromUserName(), in.getMsgType(), 0, in.getCreateTime()*1000L);
 					ExtDaos.ext(dao, in.getToUserName()).insert(history);
-					resourceService.put(history.getMsgkey(), new ByteArrayInputStream(Json.toJson(in, JsonFormat.compact()).getBytes()));
+					resourceService.put(in.getToUserName(), history.getMsgkey(), Json.toJson(in, JsonFormat.compact()));
 				} catch (Throwable e) {
 					log.info("record in msg fail", e);
 				}
@@ -72,7 +71,7 @@ public class WxHistoryService {
 				try {
 					final WxMsgHistory history = new WxMsgHistory(0, out.getToUserName(), out.getMsgType(), 1, System.currentTimeMillis());
 					ExtDaos.ext(dao, out.getFromUserName()).insert(history);
-					resourceService.put(history.getMsgkey(), new ByteArrayInputStream(Json.toJson(out, JsonFormat.compact()).getBytes()));
+					resourceService.put(out.getFromUserName(), history.getMsgkey(), Json.toJson(out, JsonFormat.compact()));
 				} catch (Throwable e) {
 					log.info("record out msg fail", e);
 				}

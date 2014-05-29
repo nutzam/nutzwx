@@ -1,34 +1,30 @@
 package net.wendal.nutzwx.service.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import net.wendal.nutzwx.service.ResourceService;
 
 import org.nutz.json.Json;
 import org.nutz.ssdb4j.spi.SSDB;
-
-import net.wendal.nutzwx.service.ResourceService;
 
 public class SsdbResourceService implements ResourceService {
 	
 	protected SSDB ssdb;
 
-	public SsdbResourceService(SSDB ssdb) {
+	public SsdbResourceService(String openid, SSDB ssdb) {
 		super();
 		this.ssdb = ssdb;
 	}
 
-	public boolean put(String key, InputStream obj) {
-		ssdb.set(key, obj).check();
+	public boolean put(String openid, String key, String str) {
+		ssdb.set(openid + "_" + key, str).check();
 		return true;
 	}
 
-	public InputStream get(String key) {
-		return new ByteArrayInputStream(ssdb.get(key).check().datas.get(0));
+	public String get(String openid, String key) {
+		return ssdb.get(openid + "_" + key).check().asString();
 	}
 
-	public <T> T getAsJsonObjet(String key, Class<T> klass) {
-		return Json.fromJson(klass, new InputStreamReader(get(key)));
+	public <T> T getAsJsonObjet(String openid, String key, Class<T> klass) {
+		return Json.fromJson(klass, get(openid, key));
 	}
 
 }

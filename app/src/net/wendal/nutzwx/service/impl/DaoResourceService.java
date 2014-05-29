@@ -1,18 +1,17 @@
 package net.wendal.nutzwx.service.impl;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.SQLException;
 
-import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialClob;
 
-import net.wendal.nutzwx.bean.WxResourceBean;
+import net.wendal.nutzwx.bean.WxMsgStore;
 import net.wendal.nutzwx.service.ResourceService;
 
 import org.nutz.dao.Dao;
+import org.nutz.dao.util.ExtDaos;
 import org.nutz.json.Json;
-import org.nutz.lang.Streams;
+import org.nutz.lang.Lang;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 
@@ -25,10 +24,10 @@ public class DaoResourceService implements ResourceService {
 		this.dao = dao;
 	}
 
-	public boolean put(String key, InputStream obj) {
+	public boolean put(String openid, String key, String str) {
 		try {
-			Blob blob = new SerialBlob(Streams.readBytesAndClose(obj));
-			dao.insert(new WxResourceBean(key, blob));
+			Clob body = new SerialClob(str.toCharArray());
+			ExtDaos.ext(dao, openid).insert(new WxMsgStore(key, body));
 			return true;
 		} catch (Exception e) {
 			log.info("put fail", e);
@@ -36,11 +35,11 @@ public class DaoResourceService implements ResourceService {
 		return false;
 	}
 
-	public InputStream get(String key) {
-		WxResourceBean bean = dao.fetch(WxResourceBean.class, key);
+	public String get(String openid, String key) {
+		WxMsgStore bean = ExtDaos.ext(dao, openid).fetch(WxMsgStore.class, key);
 		if (bean != null)
 			try {
-				return bean.getBody().getBinaryStream();
+				return Lang.readAll(bean.getBody().getCharacterStream());
 			} catch (SQLException e) {
 				log.info("fail", e);
 			}
@@ -48,10 +47,10 @@ public class DaoResourceService implements ResourceService {
 	}
 	
 	@Override
-	public <T> T getAsJsonObjet(String key, Class<T> klass) {
-		InputStream in = get(key);
-		if (in != null)
-			return Json.fromJson(klass, new InputStreamReader(in));
+	public <T> T getAsJsonObjet(String openid, String key, Class<T> klass) {
+		String str = get(openid, key);
+		if (str != null)
+			return Json.fromJson(klass, str);
 		return null;
 	}
 }

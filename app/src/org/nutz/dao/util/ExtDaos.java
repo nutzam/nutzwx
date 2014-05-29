@@ -86,9 +86,9 @@ class ExtDaoInvocationHandler implements InvocationHandler {
 class ExtDaoMolecule extends Molecule<Object> {
 	protected Dao dao;
 	protected Method method;
-	protected Object args;
+	protected Object[] args;
 	
-	public ExtDaoMolecule(Dao dao, Method method, Object args) {
+	public ExtDaoMolecule(Dao dao, Method method, Object[] args) {
 		super();
 		this.dao = dao;
 		this.method = method;
