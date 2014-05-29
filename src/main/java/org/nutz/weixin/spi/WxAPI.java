@@ -52,7 +52,7 @@ public interface WxAPI {
 	
 	String qrUrl(String ticket);
 	
-	void reflushAccessToken();
+	String getAccessToken();
 	
 	//------------------------------------------------
 	

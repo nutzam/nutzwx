@@ -59,18 +59,24 @@ public class MediaService {
 		if (Strings.isBlank(mediaId))
 			return;
 		WxMsgType msgType = WxMsgType.valueOf(in.getMsgType());
-		if (WxMsgType.image != msgType) {
-			// 图片总是可以下载的, 其他就不是了
-			WxMaster master = wxctx.get(in.getToUserName());
-			if (master == null || Strings.isBlank(master.getAppid())) {
+		WxMaster master = wxctx.get(in.getToUserName());
+		switch (msgType) {
+		case video:
+			es.submit(new Runnable() {
+				public void run() {
+					download(in.getToUserName(), in.getThumbMediaId(), null);
+				}
+			});
+		default:
+			if (Strings.isBlank(in.getMediaId()) || Strings.isBlank(master.getAppid()))
 				return;
-			}
+			es.submit(new Runnable() {
+				public void run() {
+					download(in.getToUserName(), mediaId, in.getPicUrl());
+				}
+			});
+			break;
 		}
-		es.submit(new Runnable() {
-			public void run() {
-				download(in.getToUserName(), mediaId, in.getPicUrl());
-			}
-		});
 	}
 	
 	protected void download(String openid, String media_id, String url) {
@@ -85,8 +91,7 @@ public class MediaService {
 			File tmp = null;
 			try {
 				if (Strings.isBlank(url)) {
-					WxMaster master = wxctx.get(openid);
-					url = "http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=" + master.getAccess_token() + "&media_id" + media_id;
+					url = "http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=" + wxctx.getAPI(openid).getAccessToken() + "&media_id=" + media_id;
 				}
 				Response resp = Http.get(url, 60*1000);
 				if (resp.isOK()) {
@@ -98,6 +103,8 @@ public class MediaService {
 						f.delete();
 					Files.makeDir(f.getParentFile());
 					tmp.renameTo(f);
+					log.debug("media download success mediaId="+media_id);
+					break;
 				} else {
 					log.debugf("download %s fail, code=%s, content=%s", media_id, resp.getStatus(), resp.getContent());
 				}

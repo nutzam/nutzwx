@@ -176,7 +176,7 @@ public class WxApiImpl implements WxAPI {
 		return map;
 	}
 	
-	protected String getAccessToken() {
+	public String getAccessToken() {
 		String token = master.getAccess_token();
 		if (token == null || master.getAccess_token_expires() < System.currentTimeMillis()) {
 			synchronized (master) {
