@@ -220,12 +220,11 @@ public class WxApiImpl implements WxAPI {
 		if (!resp.isOK())
 			throw new IllegalStateException("download media file, resp code="+resp.getStatus());
 		final String disposition = resp.getHeader().get("Content-disposition");
-		if (disposition == null) {
-			throw new IllegalArgumentException(Json.fromJson(resp.getReader()).toString());
-		}
 		return new NutResource() {
 
 			public String getName() {
+				if (disposition == null)
+					return "file.data";
 				for(String str: disposition.split(";")) {
 					if (str.startsWith("filename="))  {
 						str = str.substring("filename=".length());

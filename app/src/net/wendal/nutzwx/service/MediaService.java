@@ -16,6 +16,7 @@ import org.nutz.http.Http;
 import org.nutz.http.Response;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.json.Json;
 import org.nutz.lang.Files;
 import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
@@ -23,6 +24,7 @@ import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.weixin.bean.WxInMsg;
 import org.nutz.weixin.bean.WxMaster;
+import org.nutz.weixin.bean.WxMedia;
 import org.nutz.weixin.bean.WxMsgType;
 
 @IocBean(create="init", depose="depose")
@@ -99,10 +101,28 @@ public class MediaService {
 					tmp = File.createTempFile("nutzwx_media", ".media");
 					out = new FileOutputStream(tmp);
 					Streams.writeAndClose(out, in);
+					// 检查一下是不是报错
+					if (tmp.length() < 128) {
+						byte[] data = Files.readBytes(f);
+						if (data[0] == '{') { // 看上去是个json,悲催了...
+							// 多媒体文件怎么可能是{开头,抛错吧
+							throw new IllegalArgumentException("mediaId="+media_id+ ","+new String(data));
+//							try {
+//								NutMap map = Json.fromJson(NutMap.class, new String(data));
+//								if (map.containsKey("errcode") && map.getInt("errcode") != 0)  {
+//									log.warn("download media fail >> " + new String(data));
+//								}
+//							} catch (Throwable e) {
+//								log.debug("not a json? ok", e);
+//							}
+						}
+					}
 					if (f.exists())
 						f.delete();
 					Files.makeDir(f.getParentFile());
 					tmp.renameTo(f);
+					WxMedia media = new WxMedia(media_id, resp.getHeader().getInt("Content-Length", 0), resp.getHeader().get("Content-Type"));
+					Json.toJsonFile(new File(f.getAbsolutePath()+".info"), media);
 					log.debug("media download success mediaId="+media_id);
 					break;
 				} else {
@@ -119,14 +139,17 @@ public class MediaService {
 		}
 	}
 	
-	public InputStream get(String openid, String mediaId) throws IOException {
-		File f = new File(mediaPath(openid, mediaId));
+	public WxMedia get(String openid, String mediaId) throws IOException {
+		String path = mediaPath(openid, mediaId);
+		File f = new File(path);
 		if (!f.exists())
 			return null;
-		return new FileInputStream(f);
+		WxMedia media = Json.fromJsonFile(WxMedia.class, new File(path + ".info"));
+		media.setStream(new FileInputStream(f));
+		return media;
 	}
 	
-	protected String mediaPath(String openid, String mediaId) {
+	public String mediaPath(String openid, String mediaId) {
 		return String.format("%s/%s/%s/%s/%s", mediaRoot, openid,  mediaId.substring(0,2) ,mediaId.substring(2, 4) ,mediaId.substring(4));
 	}
 }
