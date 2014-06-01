@@ -41,7 +41,7 @@ public class Wxs {
 	
 	private static final Log log = Logs.get();
 	
-	private static boolean DEV_MODE = false;
+	public static boolean DEV_MODE = false;
 	
 	public static void enableDevMode() {
 		DEV_MODE = true;
@@ -269,6 +269,8 @@ public class Wxs {
 //	}
 	
 	public static String cdata(String str) {
+		if (Strings.isBlank(str))
+			return "";
 		return "<![CDATA[" + str.replaceAll("]]", "__") + "]]>";
 	}
 	
@@ -384,23 +386,23 @@ public class Wxs {
 			NutMap _video = new NutMap();
 			_video.setv("media_id", msg.getVideo().getMediaId());
 			if (msg.getVideo().getTitle() != null)
-				_video.put("title", cdata(msg.getVideo().getTitle()));
+				_video.put("title", (msg.getVideo().getTitle()));
 			if (msg.getVideo().getDescription() != null)
-				_video.put("description", cdata(msg.getVideo().getDescription()));
+				_video.put("description", (msg.getVideo().getDescription()));
 			map.put("video", _video);
 			break;
 		case music :
 			NutMap _music = new NutMap();
 			WxMusic music = msg.getMusic();
 			if (music.getTitle() != null)
-				_music.put("title", cdata(music.getTitle()));
+				_music.put("title", (music.getTitle()));
 			if (music.getDescription() != null)
-				_music.put("description", cdata(music.getDescription()));
+				_music.put("description", (music.getDescription()));
 			if (music.getMusicUrl() != null)
-				_music.put("musicurl", cdata(music.getMusicUrl()));
+				_music.put("musicurl", (music.getMusicUrl()));
 			if (music.getHQMusicUrl() != null)
-				_music.put("hqmusicurl", cdata(music.getHQMusicUrl()));
-			_music.put("thumb_media_id", cdata(music.getThumbMediaId()));
+				_music.put("hqmusicurl", (music.getHQMusicUrl()));
+			_music.put("thumb_media_id", (music.getThumbMediaId()));
 			break;
 		case news:
 			NutMap _news = new NutMap();
@@ -408,13 +410,13 @@ public class Wxs {
 			for (WxArticle article : msg.getArticles()) {
 				NutMap item = new NutMap();
 				if (article.getTitle() != null)
-					item.put("title", cdata(article.getTitle()));
+					item.put("title", (article.getTitle()));
 				if (article.getDescription() != null)
-					item.put("description", cdata(article.getDescription()));
+					item.put("description", (article.getDescription()));
 				if (article.getPicUrl() != null)
-					item.put("picUrl", cdata(article.getPicUrl()));
+					item.put("picurl", (article.getPicUrl()));
 				if (article.getUrl() != null)
-					item.put("url", cdata(article.getUrl()));
+					item.put("url", (article.getUrl()));
 				list.add(item);
 			}
 			_news.put("articles", list);

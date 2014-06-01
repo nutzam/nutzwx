@@ -15,8 +15,8 @@ import org.nutz.mvc.ioc.provider.ComboIocProvider;
 import org.nutz.mvc.view.ForwardView;
 import org.nutz.mvc.view.JspView;
 
-@Modules(scanPackage=true)
-@IocBy(type=ComboIocProvider.class, args={"*js", "ioc/", "*annotation", "net.wendal.nutzwx"})
+@Modules(scanPackage=true, packages={"net.wendal.nutzwx", "com.danoo"})
+@IocBy(type=ComboIocProvider.class, args={"*js", "ioc/", "*annotation", "net.wendal.nutzwx", "com.danoo"})
 @Ok("json:full")
 @Fail("http:500")
 @Localization("msg")

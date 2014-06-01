@@ -2,7 +2,7 @@ package org.nutz.weixin.spi;
 
 import java.util.Enumeration;
 
-public interface WxSession {
+public interface WxSession { // 考虑继承HttpSession啦
 
 	public String getId();
 	public long getCreationTime();

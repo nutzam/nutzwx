@@ -4,7 +4,6 @@ import net.wendal.nutzwx.bean.AdminUser;
 import net.wendal.nutzwx.bean.AdminUserDetail;
 import net.wendal.nutzwx.service.ResourceService;
 import net.wendal.nutzwx.service.impl.DaoResourceService;
-import net.wendal.nutzwx.service.impl.SsdbResourceService;
 import net.wendal.nutzwx.util.Toolkit;
 
 import org.nutz.dao.Dao;
@@ -18,8 +17,6 @@ import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.NutConfig;
 import org.nutz.mvc.Setup;
-import org.nutz.ssdb4j.SSDBs;
-import org.nutz.ssdb4j.spi.SSDB;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
@@ -66,12 +63,12 @@ public class WxSetup implements Setup {
 			((Ioc2)ioc).getIocContext().save("app", "resourceService", new ObjectProxy(resourceService));
 //		}
 		
-//		try {
-//			scheduler = StdSchedulerFactory.getDefaultScheduler();
-//			scheduler.startDelayed(5000);;
-//		} catch (SchedulerException e) {
-//			log.warn("Scheduler start fail", e);
-//		}
+		try {
+			scheduler = StdSchedulerFactory.getDefaultScheduler();
+			scheduler.startDelayed(5000);;
+		} catch (SchedulerException e) {
+			log.warn("Scheduler start fail", e);
+		}
 
 		for(String beanName: ioc.getNames()) {
 			ioc.get(null, beanName);

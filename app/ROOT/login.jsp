@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>请先登录</title>
+<title>请先登录</title>
 <jsp:include page="/rs.jsp"></jsp:include>
 </head>
 <body>

@@ -20,7 +20,9 @@ import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.Mvcs;
+import org.nutz.mvc.Scope;
 import org.nutz.mvc.annotation.At;
+import org.nutz.mvc.annotation.Attr;
 import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.Param;
 import org.nutz.mvc.view.ServerRedirectView;
@@ -43,7 +45,11 @@ public class UserModule {
 	@At
 	public boolean login(@Param("name")String name,
 					  @Param("passwd")String password,
-					  @Param("captcha")String captcha){
+					  @Param("captcha")String captcha,
+					  @Attr(value="usr", scope=Scope.SESSION)String _usr){
+		if (_usr != null) {
+			return true;
+		}
 		if (name == null || password == null || captcha == null)
 			return false;
 		if (name.length() > 64 || password.length() > 64 || captcha.length() > 64)

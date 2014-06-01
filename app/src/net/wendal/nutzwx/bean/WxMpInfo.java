@@ -12,6 +12,8 @@ public class WxMpInfo extends WxMaster {
 	private String owner;
 	
 	private String disable;
+	
+	private String handlerClass;
 
 	public String getDisable() {
 		return disable;
@@ -27,6 +29,14 @@ public class WxMpInfo extends WxMaster {
 
 	public void setOwner(String owner) {
 		this.owner = owner;
+	}
+
+	public String getHandlerClass() {
+		return handlerClass;
+	}
+
+	public void setHandlerClass(String handlerClass) {
+		this.handlerClass = handlerClass;
 	}
 	
 }

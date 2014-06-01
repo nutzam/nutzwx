@@ -2,8 +2,8 @@ package net.wendal.nutzwx.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -139,17 +139,37 @@ public class MediaService {
 		}
 	}
 	
-	public WxMedia get(String openid, String mediaId) throws IOException {
+	public WxMedia get(String openid, String mediaId){
 		String path = mediaPath(openid, mediaId);
 		File f = new File(path);
-		if (!f.exists())
+		if (!f.exists()) {
+			log.info("Not exist " + f);
 			return null;
+		}
 		WxMedia media = Json.fromJsonFile(WxMedia.class, new File(path + ".info"));
-		media.setStream(new FileInputStream(f));
+		try {
+			media.setStream(new FileInputStream(f));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
 		return media;
 	}
 	
-	public String mediaPath(String openid, String mediaId) {
+	protected String mediaPath(String openid, String mediaId) {
 		return String.format("%s/%s/%s/%s/%s", mediaRoot, openid,  mediaId.substring(0,2) ,mediaId.substring(2, 4) ,mediaId.substring(4));
+	}
+	
+	public void save(String openid, WxMedia media, File f) {
+		File target = new File(mediaPath(openid, media.getId()));
+		Files.makeDir(target.getParentFile());
+		if (f != null) {
+			Files.copy(f, target);
+			media.setSize(f.length());
+		} else {
+			Files.write(target, media.getStream());
+		}
+		Json.toJsonFile(new File(target.getAbsolutePath() + ".info"), media);
+		log.info("save to " + target);
 	}
 }

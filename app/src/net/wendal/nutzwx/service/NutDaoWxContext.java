@@ -5,18 +5,18 @@ import java.util.List;
 import net.wendal.nutzwx.bean.WxMpInfo;
 import net.wendal.nutzwx.bean.WxMsgHistory;
 import net.wendal.nutzwx.bean.WxMsgStore;
+import net.wendal.nutzwx.util.EnhandWxHandler;
 
 import org.nutz.dao.Dao;
 import org.nutz.dao.util.ExtDaos;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
-import org.nutz.json.Json;
-import org.nutz.json.JsonFormat;
+import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+import org.nutz.mvc.Mvcs;
 import org.nutz.weixin.bean.WxInMsg;
 import org.nutz.weixin.bean.WxOutMsg;
-import org.nutz.weixin.impl.BasicWxHandler;
 import org.nutz.weixin.impl.WxApiImpl;
 import org.nutz.weixin.spi.WxAPI;
 import org.nutz.weixin.spi.WxHandler;
@@ -66,18 +66,18 @@ public class NutDaoWxContext extends WxContext {
 			}
 		};
 		apis.put(mp.getOpenid(), api);
-		handlers.put(mp.getOpenid(), new BasicWxHandler(mp.getToken()) {
-			public WxOutMsg handle(WxInMsg in) {
-				wxHistory.push(in); // 插入到历史记录
-				mediaService.loadFrom(in); // 查找media,如果存在就下载之
-				WxOutMsg out = NutDaoWxContext.this.handle(this, in);
-				if (out != null)
-					wxHistory.push(out);
-				return out;
+		WxHandler handler = null;
+		if (Strings.isBlank(mp.getHandlerClass())) {
+			handler = new EnhandWxHandler();
+		} else {
+			try {
+				handler = (WxHandler) Mvcs.ctx.getDefaultIoc().get(Class.forName(mp.getHandlerClass()));
+			} catch (Exception e) {
+				throw new RuntimeException(e);
 			}
-			public WxOutMsg defaultMsg(WxInMsg msg) {
-				return Wxs.respText(null, Json.toJson(msg, JsonFormat.compact()));
-			}
-		});
+		}
+		if (handler instanceof EnhandWxHandler)
+			((EnhandWxHandler)handler).setToken(mp.getToken());
+		handlers.put(mp.getOpenid(), handler);
 	}
 }

@@ -22,6 +22,8 @@ import org.nutz.lang.Lang;
 import org.nutz.lang.LoopException;
 import org.nutz.lang.Strings;
 import org.nutz.lang.util.NutMap;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
 import org.nutz.resource.NutResource;
 import org.nutz.weixin.bean.WxGroup;
 import org.nutz.weixin.bean.WxMaster;
@@ -33,6 +35,8 @@ import org.nutz.weixin.util.Wxs;
 
 @SuppressWarnings("unchecked")
 public class WxApiImpl implements WxAPI {
+	
+	private static final Log log = Logs.get();
 	
 	protected String base = "https://api.weixin.qq.com/cgi-bin";
 
@@ -46,7 +50,10 @@ public class WxApiImpl implements WxAPI {
 	public void send(WxOutMsg out) {
 		if (out.getFromUserName() == null)
 			out.setFromUserName(master.getOpenid());
-		call("/message/custom/send", METHOD.POST, Wxs.asJson(out));
+		String str = Wxs.asJson(out);
+		if (Wxs.DEV_MODE)
+			log.debug("api out msg>\n" + str);
+		call("/message/custom/send", METHOD.POST, str);
 	}
 
 	public WxGroup createGroup(WxGroup group) {
