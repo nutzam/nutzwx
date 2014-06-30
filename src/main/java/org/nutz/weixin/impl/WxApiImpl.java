@@ -220,7 +220,7 @@ public class WxApiImpl implements WxAPI {
 	@Override
 	public NutResource mediaGet(String mediaId) {
 		String url = "http://file.api.weixin.qq.com/cgi-bin/media/get";
-		Map<String, Object> params = new HashMap<>();
+		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("access_token", getAccessToken());
 		params.put("media_id", mediaId);
 		final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();

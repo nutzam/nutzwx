@@ -43,7 +43,7 @@ public class SsdbWxSession implements WxSession {
 
 	@Override
 	public Enumeration<String> getAttributeNames() {
-		Set<String> keys = new HashSet<>(ssdb.hkeys(id, "", "", -1).listString());
+		Set<String> keys = new HashSet<String>(ssdb.hkeys(id, "", "", -1).check().listString());
 		keys.remove("ctime");
 		keys.remove("latime");
 		return Collections.enumeration(keys);

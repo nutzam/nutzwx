@@ -24,7 +24,7 @@ public class WxContext {
 	
 	protected Map<String, WxAPI> apis = new HashMap<String, WxAPI>();
 	
-	protected Map<String, WxHandler> handlers = new HashMap<>();
+	protected Map<String, WxHandler> handlers = new HashMap<String, WxHandler>();
 	
 	public WxAPI getAPI(String openid) {
 		if (openid == null)

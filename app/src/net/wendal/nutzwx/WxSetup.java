@@ -63,12 +63,12 @@ public class WxSetup implements Setup {
 			((Ioc2)ioc).getIocContext().save("app", "resourceService", new ObjectProxy(resourceService));
 //		}
 		
-		try {
-			scheduler = StdSchedulerFactory.getDefaultScheduler();
-			scheduler.startDelayed(5000);;
-		} catch (SchedulerException e) {
-			log.warn("Scheduler start fail", e);
-		}
+//		try {
+//			scheduler = StdSchedulerFactory.getDefaultScheduler();
+//			scheduler.startDelayed(5000);;
+//		} catch (SchedulerException e) {
+//			log.warn("Scheduler start fail", e);
+//		}
 
 		for(String beanName: ioc.getNames()) {
 			ioc.get(null, beanName);
