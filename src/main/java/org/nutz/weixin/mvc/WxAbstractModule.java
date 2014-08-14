@@ -17,7 +17,7 @@ public abstract class WxAbstractModule{
 	@At({"/weixin", "/weixin/?"})
 	@Fail("http:200")
 	public View msgIn(String key, HttpServletRequest req) throws IOException {
-		return Wxs.handle(getWxHandler(key), req);
+		return Wxs.handle(getWxHandler(key), req, key);
 	}
 	
 	public WxHandler getWxHandler(String key) {

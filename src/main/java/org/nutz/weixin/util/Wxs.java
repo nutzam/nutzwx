@@ -431,12 +431,12 @@ public class Wxs {
 	/**
 	 * 用一个wxHandler处理对应的用户请求
 	 */
-	public static View handle(WxHandler wxHandler, HttpServletRequest req) throws IOException {
+	public static View handle(WxHandler wxHandler, HttpServletRequest req, String key) throws IOException {
 		if (wxHandler == null) {
 			log.info("WxHandler is NULL");
 			return HttpStatusView.HTTP_502;
 		}
-		if (!wxHandler.check(req.getParameter("signature"), req.getParameter("timestamp"), req.getParameter("nonce"))) {
+		if (!wxHandler.check(req.getParameter("signature"), req.getParameter("timestamp"), req.getParameter("nonce"), key)) {
 			log.info("token is invalid");
 			return HttpStatusView.HTTP_502;
 		}
@@ -445,21 +445,22 @@ public class Wxs {
 			return new ViewWrapper(new RawView(null), req.getParameter("echostr"));
 		}
 		WxInMsg in = Wxs.convert(req.getInputStream());
+		in.setExtkey(key);
 		WxOutMsg out = wxHandler.handle(in);
 		if (out != null)
 			Wxs.fix(in, out);
 		return new ViewWrapper(WxView.me, out);
 	}
 	
-	public static void main(String[] args) throws IOException {
-		for (Object obj : WxMsgType.values()) {
-			System.out.printf("WxOutMsg %s(WxInMsg msg);\n", obj);
-		}
-		for (Object obj : WxEventType.values()) {
-			System.out.printf("WxOutMsg event%s(WxInMsg msg);\n", Strings.upperFirst(obj.toString().toLowerCase()));
-		}
-		StringWriter sw = new StringWriter();
-		asXml(sw, respText(null, "Hi"));
-		System.out.println(sw.toString());
-	}
+//	public static void main(String[] args) throws IOException {
+//		for (Object obj : WxMsgType.values()) {
+//			System.out.printf("WxOutMsg %s(WxInMsg msg);\n", obj);
+//		}
+//		for (Object obj : WxEventType.values()) {
+//			System.out.printf("WxOutMsg event%s(WxInMsg msg);\n", Strings.upperFirst(obj.toString().toLowerCase()));
+//		}
+//		StringWriter sw = new StringWriter();
+//		asXml(sw, respText(null, "Hi"));
+//		System.out.println(sw.toString());
+//	}
 }

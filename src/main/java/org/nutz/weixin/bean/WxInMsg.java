@@ -30,6 +30,9 @@ public class WxInMsg {
 	private String description;
 	private String url;
 	
+	/**从页面传来的key值*/
+	private String extkey;
+	
 	public WxInMsg() {
 	}
 
@@ -183,6 +186,14 @@ public class WxInMsg {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getExtkey() {
+		return extkey;
+	}
+
+	public void setExtkey(String extkey) {
+		this.extkey = extkey;
 	}
 	
 	
