@@ -3,6 +3,7 @@ package net.wendal.nutzwx.bean;
 import net.wendal.nutzwx.annotation.SimpleCURD;
 
 import org.nutz.dao.entity.annotation.Table;
+import org.nutz.lang.Strings;
 import org.nutz.weixin.bean.WxMaster;
 
 @Table("wx_mp_info")
@@ -39,4 +40,7 @@ public class WxMpInfo extends WxMaster {
 		this.handlerClass = handlerClass;
 	}
 	
+	public boolean isServiceAccount() {
+		return !Strings.isBlank(getAppsecret());
+	}
 }

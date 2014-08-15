@@ -1,14 +1,12 @@
-package net.wendal.nutzwx.util;
+package net.wendal.basic.util;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import net.wendal.nutzwx.bean.AdminUser;
+import net.wendal.basic.bean.User;
 
-import org.keplerproject.luajava.LuaException;
-import org.keplerproject.luajava.LuaObject;
 import org.nutz.lang.Lang;
 import org.nutz.lang.random.R;
 import org.nutz.lang.util.NutMap;
@@ -18,7 +16,7 @@ import org.nutz.log.Logs;
 
 public class Toolkit {
 
-	private static final Log log = Logs.get();
+	public static final Log log = Logs.get();
 	
 	public static String captcha_attr = "nutz_captcha";
 
@@ -79,7 +77,7 @@ public class Toolkit {
 		return re;
 	}
 	
-	public static String randomPasswd(AdminUser usr) {
+	public static String randomPasswd(User usr) {
 		String passwd = R.sg(10).next();
 		String slat = R.sg(48).next();
 		usr.setSlat(slat);
@@ -94,38 +92,5 @@ public class Toolkit {
 			re[i] = (byte)r;
 		}
 		return re;
-	}
-	
-	public static Object toJavaObject(LuaObject luaobj) throws LuaException {
-		if (luaobj.isJavaObject()) {
-			Object obj = luaobj.getObject();
-			if (obj instanceof Throwable)
-				log.info("lua Err?", (Throwable)obj);
-			return luaobj.getObject();
-		}
-		if (luaobj.isJavaFunction()) {
-			return "JavaFunction";
-		}
-		if (luaobj.isNil()) {
-			return null;
-		}
-		if (luaobj.isNumber()) {
-			return luaobj.getNumber();
-		}
-		if (luaobj.isBoolean()) {
-			return luaobj.getBoolean();
-		}
-		if (luaobj.isString())
-			return luaobj.getString();
-		if (luaobj.isTable()) {
-			return  "lua.table";
-		}
-		if (luaobj.isUserdata()) {
-			return "lua.userdata";
-		}
-		if (luaobj.isFunction()) {
-			return "lua.function";
-		}
-		throw Lang.noImplement();
 	}
 }

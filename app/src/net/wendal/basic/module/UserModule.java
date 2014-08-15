@@ -1,11 +1,10 @@
-package net.wendal.nutzwx.module;
+package net.wendal.basic.module;
 
 import javax.servlet.http.HttpSession;
 
-import net.wendal.nutzwx.bean.AdminUser;
-import net.wendal.nutzwx.bean.AdminUserDetail;
+import net.wendal.basic.bean.User;
+import net.wendal.basic.util.Toolkit;
 import net.wendal.nutzwx.service.MailService;
-import net.wendal.nutzwx.util.Toolkit;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
@@ -67,7 +66,7 @@ public class UserModule {
 		}
 		
 		// TODO 下面是检查登录信息的逻辑,应当抽象为一个接口实现.
-		AdminUser usr = dao.fetch(AdminUser.class, Cnd.where("name", "=", name));
+		User usr = dao.fetch(User.class, Cnd.where("name", "=", name));
 		if (usr == null || !Toolkit.passwordEncode(password, usr.getSlat()).equals(usr.getPasswd())) {
 			Lang.sleep(1000); // 暂停1s再响应. TODO 容易导致DDOS
 			return false;
@@ -117,14 +116,11 @@ public class UserModule {
 			Lang.sleep(1000); // 暂停1s再响应. TODO 容易导致DDOS
 			return false; // 验证码不过? 没门!
 		}
-		AdminUserDetail detail = dao.fetch(AdminUserDetail.class, name);
-		if (detail == null || !email.equalsIgnoreCase(detail.getEmail())) {
+		User usr = dao.fetch(User.class, name);
+		if (usr == null || !email.equalsIgnoreCase(usr.getEmail())) {
 			log.debug("email not match");
 			return false;
 		}
-		AdminUser usr = dao.fetch(AdminUser.class, name);
-		if (usr == null)
-			return false;
 		String tpl = "URL: ${url}/callback/${token}";
 		Context ctx = Lang.context();
 		ctx.set("url", Mvcs.getReq().getRequestURL().toString());
@@ -133,7 +129,7 @@ public class UserModule {
 		if (token == null)
 			return false;
 		ctx.set("token", token);
-		return mailService.send(detail.getEmail(), "Password reset", tpl, ctx);
+		return mailService.send(usr.getEmail(), "Password reset", tpl, ctx);
 	}
 	
 	@At("/pwd_reset/callback/?")
@@ -151,15 +147,11 @@ public class UserModule {
 			throw new IllegalArgumentException("bad token=["+token+"] timeout");
 		}
 		String name = map.getString("u");
-		AdminUser usr = dao.fetch(AdminUser.class, name);
+		User usr = dao.fetch(User.class, name);
 		if (usr == null) {
 			throw new IllegalArgumentException("bad token=["+token+"]");
 		}
 		if (!usr.getSlat().equals(map.getString("slat"))) {
-			throw new IllegalArgumentException("bad token=["+token+"]");
-		}
-		AdminUserDetail detail = dao.fetch(AdminUserDetail.class, name);
-		if (detail == null) {
 			throw new IllegalArgumentException("bad token=["+token+"]");
 		}
 		// 看来都是正确的,那允许重置密码了
@@ -167,7 +159,7 @@ public class UserModule {
 		dao.update(usr, "(slat|passwd)"); // 重置slat,这样token就是一次性咯
 		// TODO 记入系统操作日志
 		log.info("AdminUser Password reset success >> " + name);
-		return mailService.send(detail.getEmail(), "New Password", "Password: ${pwd}", Lang.context().set("pwd", pwd));
+		return mailService.send(usr.getEmail(), "New Password", "Password: ${pwd}", Lang.context().set("pwd", pwd));
 	}
 	
 	protected byte[] pwdResetKey;

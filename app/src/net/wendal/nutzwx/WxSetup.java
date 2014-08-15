@@ -1,10 +1,9 @@
 package net.wendal.nutzwx;
 
-import net.wendal.nutzwx.bean.AdminUser;
-import net.wendal.nutzwx.bean.AdminUserDetail;
+import net.wendal.basic.bean.User;
+import net.wendal.basic.util.Toolkit;
 import net.wendal.nutzwx.service.ResourceService;
 import net.wendal.nutzwx.service.impl.DaoResourceService;
-import net.wendal.nutzwx.util.Toolkit;
 
 import org.nutz.dao.Dao;
 import org.nutz.dao.util.Daos;
@@ -12,6 +11,7 @@ import org.nutz.ioc.Ioc;
 import org.nutz.ioc.Ioc2;
 import org.nutz.ioc.ObjectProxy;
 import org.nutz.ioc.impl.PropertiesProxy;
+import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.lang.random.R;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
@@ -19,8 +19,8 @@ import org.nutz.mvc.NutConfig;
 import org.nutz.mvc.Setup;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.impl.StdSchedulerFactory;
 
+@IocBean
 public class WxSetup implements Setup {
 	
 	private static final Log log = Logs.get();
@@ -32,23 +32,21 @@ public class WxSetup implements Setup {
 		Ioc ioc = nc.getIoc();
 		Dao dao = ioc.get(Dao.class);
 		PropertiesProxy pp = ioc.get(PropertiesProxy.class, "config");
-		Daos.createTablesInPackage(dao, AdminUser.class.getPackage().getName(), false);
-		if (dao.count(AdminUser.class) == 0) {
-			AdminUser user = new AdminUser();
+		Daos.createTablesInPackage(dao, getClass().getPackage().getName(), false);
+		if (dao.count(User.class) == 0) {
+			User user = new User();
 			String passwd = R.UU16();
 			String slat = R.sg(48).next();
-			user.setName("admin");
+			user.setEmail("");
 			user.setPasswd(Toolkit.passwordEncode(passwd, slat));
 			user.setSlat(slat);
+
+			user.setName("admin");
+			user.setEmail(pp.get("mail.from"));
+			user.setAlias("God");
+			
 			dao.insert(user);
 			log.warn("init admin user as passwd " + passwd);
-		}
-		if (dao.fetch(AdminUserDetail.class, "admin") == null) {
-			AdminUserDetail detail = new AdminUserDetail();
-			detail.setName("admin");
-			detail.setEmail(pp.get("mail.from"));
-			detail.setAlias("God");
-			dao.insert(detail);
 		}
 		
 		// 按需选择
@@ -70,9 +68,7 @@ public class WxSetup implements Setup {
 //			log.warn("Scheduler start fail", e);
 //		}
 
-		for(String beanName: ioc.getNames()) {
-			ioc.get(null, beanName);
-		}
+
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package net.wendal.nutzwx;
+package net.wendal;
 
 import javax.servlet.http.HttpSession;
 
@@ -15,12 +15,12 @@ import org.nutz.mvc.ioc.provider.ComboIocProvider;
 import org.nutz.mvc.view.ForwardView;
 import org.nutz.mvc.view.JspView;
 
-@Modules(scanPackage=true, packages={"net.wendal.nutzwx", "com.danoo"})
-@IocBy(type=ComboIocProvider.class, args={"*js", "ioc/", "*annotation", "net.wendal.nutzwx", "com.danoo"})
+@Modules(scanPackage=true, packages={"net.wendal", "com.danoo"})
+@IocBy(type=ComboIocProvider.class, args={"*js", "ioc/", "*annotation", "net.wendal", "com.danoo"})
 @Ok("json:full")
 @Fail("http:500")
 @Localization("msg")
-@SetupBy(WxSetup.class)
+@SetupBy(MainSetup.class)
 public class MainModule {
 	
 	protected static View usrLogin = new ForwardView("/login.jsp");

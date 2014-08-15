@@ -1,13 +1,13 @@
-package net.wendal.nutzwx.module;
+package net.wendal.basic.module;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.wendal.basic.bean.SimpleCurdConfig;
+import net.wendal.basic.bean.User;
 import net.wendal.nutzwx.annotation.SimpleCURD;
-import net.wendal.nutzwx.bean.AdminUser;
-import net.wendal.nutzwx.bean.SimpleCurdConfig;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
@@ -45,7 +45,7 @@ public class SimpleCURDModule {
 	
 	public void init() {
 		klassMap = new HashMap<>();
-		for(Class<?> klass: Scans.me().scanPackage(AdminUser.class.getPackage().getName())){
+		for(Class<?> klass: Scans.me().scanPackage(User.class.getPackage().getName())){
 			SimpleCURD curd = klass.getAnnotation(SimpleCURD.class);
 			if (curd != null) {
 				log.debug("load SimpleCURD marked class >> " + klass);

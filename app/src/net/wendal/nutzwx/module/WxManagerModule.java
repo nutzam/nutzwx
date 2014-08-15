@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 
 import net.wendal.nutzwx.bean.WxMpInfo;
 import net.wendal.nutzwx.service.NutDaoWxContext;
-import net.wendal.nutzwx.util.Toolkit;
+import net.wendal.nutzwx.util.LUAs;
 
 import org.keplerproject.luajava.LuaException;
 import org.keplerproject.luajava.LuaState;
@@ -75,7 +75,7 @@ public class WxManagerModule {
 			if (re != 0) {
 				return "lua error re="+re + ", msg=" + lua.getLuaObject(1);
 			}
-			return Toolkit.toJavaObject(lua.getLuaObject(1));
+			return LUAs.toJavaObject(lua.getLuaObject(1));
 		} finally {
 			lua.close();
 		}

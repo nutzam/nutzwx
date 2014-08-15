@@ -1,1 +1,4 @@
 /build
+*.class
+*.jar
+src/conf/mail.properties

@@ -1,4 +1,4 @@
-package net.wendal.nutzwx.bean;
+package net.wendal.basic.bean;
 
 public class SimpleCurdConfig {
 
@@ -8,15 +8,11 @@ public class SimpleCurdConfig {
 	public SimpleCurdConfig() {
 	}
 	
-	
-	
 	public SimpleCurdConfig(Class<?> klass, String[] cnd) {
 		super();
 		this.klass = klass;
 		this.cnd = cnd;
 	}
-
-
 
 	public Class<?> getKlass() {
 		return klass;
