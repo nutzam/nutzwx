@@ -6,7 +6,6 @@ import net.wendal.iot.Iots;
 import net.wendal.iot.bean.IotDevice;
 import net.wendal.iot.bean.IotSensor;
 import net.wendal.iot.mvc.ApiKeyFilter;
-import net.wendal.iot.service.IotSensorService;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
@@ -35,9 +34,6 @@ public class IotAdminModule {
 	
 	@Inject
 	Dao dao;
-	
-	@Inject
-	IotSensorService itoSensorService;
 	
 	@At({"/ito/devices", "/v1.1/devices"})
 	@GET

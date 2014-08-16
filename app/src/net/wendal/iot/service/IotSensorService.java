@@ -35,7 +35,7 @@ import org.nutz.resource.Scans;
 @IocBean(create="init")
 public class IotSensorService {
 	
-	public static int PART = 20;
+	public static int PART = 5;
 	
 	@Inject Dao dao;
 

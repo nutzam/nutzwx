@@ -48,7 +48,7 @@ public class IotExchangeModule {
 	Dao dao;
 	
 	@Inject
-	IotSensorService itoSensorService;
+	IotSensorService iotSensorService;
 
 	@At({"/ito/device/?/sensor/?/datapoints", "/v1.1/device/?/sensor/?/datapoints"})
 	@POST
@@ -63,7 +63,7 @@ public class IotExchangeModule {
 		if (sensor.getLastUpdateTime() != null && System.currentTimeMillis() - sensor.getLastUpdateTime().getTime() < Iots.Limit_Sensor_Update_Interval * 1000 ) {
 			return ; // too fast
 		}
-		NutMap map = itoSensorService.upload(sensor, in);
+		NutMap map = iotSensorService.upload(sensor, in);
 		if (map == null || map.isEmpty()) {
 			return;
 		}
@@ -97,7 +97,7 @@ public class IotExchangeModule {
 				re.put(""+sensor_id, "too fast");
 				continue; // too fast
 			}
-			String tmp = itoSensorService.updateSensorValue(sensor, map);
+			String tmp = iotSensorService.updateSensorValue(sensor, map);
 			if (tmp == null)
 				re.put(""+sensor_id, "");
 			else
@@ -153,6 +153,6 @@ public class IotExchangeModule {
 			throw new RuntimeException("bad image", e);
 		}
         
-        itoSensorService.saveImage(sensor, in, width, height);
+		iotSensorService.saveImage(sensor, in, width, height);
 	}
 }
