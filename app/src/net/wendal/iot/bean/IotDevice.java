@@ -1,4 +1,4 @@
-package net.wendal.ito.bean;
+package net.wendal.iot.bean;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import org.nutz.dao.entity.annotation.TableIndexes;
 
 @Table("ito_device")
 @TableIndexes(@Index(fields="userId", name="uid", unique=false))
-public class ItoDevice {
+public class IotDevice {
 
 	@Id
 	private long id;
@@ -22,10 +22,10 @@ public class ItoDevice {
 	@Column
 	private String detail;
 	@Column("loc")
-	private ItoLocation loction;
+	private IotLocation loction;
 	
-	@Many(target=ItoSensor.class, field = "deviceId")
-	private List<ItoSensor> sensors;
+	@Many(target=IotSensor.class, field = "deviceId")
+	private List<IotSensor> sensors;
 
 	public long getId() {
 		return id;
@@ -59,19 +59,19 @@ public class ItoDevice {
 		this.detail = detail;
 	}
 
-	public ItoLocation getLoction() {
+	public IotLocation getLoction() {
 		return loction;
 	}
 
-	public void setLoction(ItoLocation loction) {
+	public void setLoction(IotLocation loction) {
 		this.loction = loction;
 	}
 
-	public List<ItoSensor> getSensors() {
+	public List<IotSensor> getSensors() {
 		return sensors;
 	}
 
-	public void setSensors(List<ItoSensor> sensors) {
+	public void setSensors(List<IotSensor> sensors) {
 		this.sensors = sensors;
 	}
 }

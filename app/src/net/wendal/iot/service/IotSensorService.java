@@ -1,4 +1,4 @@
-package net.wendal.ito.service;
+package net.wendal.iot.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,13 +10,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import net.wendal.ito.bean.ItoSensor;
-import net.wendal.ito.bean.ItoSensorTrigger;
-import net.wendal.ito.bean.svalue.ItoGpsHistory;
-import net.wendal.ito.bean.svalue.ItoImageHistory;
-import net.wendal.ito.bean.svalue.ItoNumberHistory;
-import net.wendal.ito.bean.svalue.ItoOnoffHistory;
-import net.wendal.ito.bean.svalue.ItoRawHistory;
+import net.wendal.iot.bean.IotSensor;
+import net.wendal.iot.bean.IotSensorTrigger;
+import net.wendal.iot.bean.svalue.IotGpsHistory;
+import net.wendal.iot.bean.svalue.IotImageHistory;
+import net.wendal.iot.bean.svalue.IotNumberHistory;
+import net.wendal.iot.bean.svalue.IotOnoffHistory;
+import net.wendal.iot.bean.svalue.IotRawHistory;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
@@ -33,32 +33,32 @@ import org.nutz.lang.util.NutMap;
 import org.nutz.resource.Scans;
 
 @IocBean(create="init")
-public class ItoSensorService {
+public class IotSensorService {
 	
 	public static int PART = 20;
 	
 	@Inject Dao dao;
 
 	@SuppressWarnings("unchecked")
-	public NutMap upload(ItoSensor sensor, InputStream in) throws IOException {
+	public NutMap upload(IotSensor sensor, InputStream in) throws IOException {
 		NutMap re = new NutMap();
 		re.put("status", 406);
+		Object data;
+		try {
+			data = Json.fromJson(new InputStreamReader(in));
+		} catch (Throwable e) {
+			re.put("error", "Bad json");
+			return re;
+		}
+		if (data == null) {
+			re.put("error", "null data");
+			return re;
+		}
 		switch (sensor.getType()) {
 		case number:
 		case gps:
 		case raw:
 		case onoff:
-			Object data = null;
-			try {
-				data = Json.fromJson(new InputStreamReader(in));
-			} catch (Throwable e) {
-				re.put("error", "Bad json");
-				return re;
-			}
-			if (data == null) {
-				re.put("error", "null data");
-				return re;
-			}
 			if (data instanceof List) {
 				List<Map<String, Object>> list = (List<Map<String, Object>>) data;
 				for (Map<String, Object> map : list) {
@@ -83,7 +83,7 @@ public class ItoSensorService {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public String updateSensorValue(ItoSensor sensor, Map<String, Object> map) {
+	public String updateSensorValue(IotSensor sensor, Map<String, Object> map) {
 		Object v = map.get("value");
 		Object t = map.get("timestamp");
 		Date time = null;
@@ -104,7 +104,7 @@ public class ItoSensorService {
 			} catch (Throwable e) {
 				return "bad value";
 			}
-			ItoNumberHistory h = new ItoNumberHistory();
+			IotNumberHistory h = new IotNumberHistory();
 			h.setSensorId(sensor.getId());
 			h.setValue(value);
 			h.setTimestamp(time);
@@ -115,9 +115,9 @@ public class ItoSensorService {
 			if (!tmp.containsKey("lan") || !tmp.containsKey("lat") || !tmp.containsKey("speed")) {
 				return "miss some gps key";
 			}
-			ItoGpsHistory gps = null;
+			IotGpsHistory gps = null;
 			try {
-				gps = Lang.map2Object(tmp, ItoGpsHistory.class);
+				gps = Lang.map2Object(tmp, IotGpsHistory.class);
 			} catch (Throwable e) {
 				return "bad gps data";
 			}
@@ -131,7 +131,7 @@ public class ItoSensorService {
 			if (Strings.isBlank(key)) {
 				return "key is blank or miss";
 			}
-			ItoRawHistory raw = new ItoRawHistory();
+			IotRawHistory raw = new IotRawHistory();
 			raw.setSensorId(sensor.getId());
 			raw.setTimestamp(time);
 			raw.setKey(key);
@@ -139,7 +139,7 @@ public class ItoSensorService {
 			partDao(sensor).insert(raw);
 			break;
 		case onoff:
-			ItoOnoffHistory onoff = new ItoOnoffHistory();
+			IotOnoffHistory onoff = new IotOnoffHistory();
 			onoff.setTimestamp(time);
 			if ("1".equals(String.valueOf(v))) {
 				onoff.setValue(1);
@@ -153,36 +153,40 @@ public class ItoSensorService {
 		default:
 			break;
 		}
-		List<ItoSensorTrigger> tirggers = partDao(sensor).query(ItoSensorTrigger.class, Cnd.where("sensorId", "=", sensor.getId()));
-		for (ItoSensorTrigger trigger : tirggers) {
+		sensor.setLastUpdateTime(new Date());
+		partDao(sensor).update(sensor, "^(lastUpdateTime)$");
+		List<IotSensorTrigger> tirggers = partDao(sensor).query(IotSensorTrigger.class, Cnd.where("sensorId", "=", sensor.getId()));
+		for (IotSensorTrigger trigger : tirggers) {
 			trigger.trigger(sensor, map, v);
 		}
 		return null;
 	}
 	
-	public Dao partDao(ItoSensor sensor) {
+	public Dao partDao(IotSensor sensor) {
 		long part = sensor.getId() / PART;
 		return Daos.ext(dao, "" + part);
 	}
 	
 	public static String imagePath = "/data/ito";
 	
-	public String uploadPhoto(ItoSensor sensor, InputStream in) {
+	public String uploadPhoto(IotSensor sensor, InputStream in) {
 		return null;
 	}
 	
-	public void saveImage(ItoSensor sensor, InputStream in, int w, int h) throws IOException {
-		ItoImageHistory img = new ItoImageHistory();
+	public void saveImage(IotSensor sensor, InputStream in, int w, int h) throws IOException {
+		IotImageHistory img = new IotImageHistory();
 		img.setSensorId(sensor.getId());
 		img.setWidth(w);
 		img.setHeight(h);
 		img.setTimestamp(new Date());
 		partDao(sensor).insert(img);
 		Files.write(String.format("%s/%s/%s", imagePath, sensor.getId(), img.getId()), in);
+		sensor.setLastUpdateTime(new Date());
+		partDao(sensor).update(sensor, "^(lastUpdateTime)$");
 	}
 	
 	public void init() {
-		List<Class<?>> ks = Scans.me().scanPackage(ItoNumberHistory.class);
+		List<Class<?>> ks = Scans.me().scanPackage(IotNumberHistory.class);
 		for (int i = 0; i < PART; i++) {
 			Dao dao = Daos.ext(this.dao, ""+i);
 			for (Class<?> klass : ks) {

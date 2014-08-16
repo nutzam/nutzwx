@@ -1,4 +1,4 @@
-package net.wendal.ito.bean;
+package net.wendal.iot.bean;
 
 import java.util.Date;
 
@@ -8,7 +8,7 @@ import org.nutz.dao.entity.annotation.Table;
 import org.nutz.json.JsonField;
 
 @Table("ito_sensor")
-public class ItoSensor {
+public class IotSensor {
 
 	@Id
 	private long id;
@@ -24,10 +24,10 @@ public class ItoSensor {
 	private String title;
 	
 	@Column("vb")
-	private ItoVisible visiable;
+	private IotVisible visiable;
 	
 	@Column("tp")
-	private ItoSensorType type;
+	private IotSensorType type;
 
 	@Column("ct")
 	private Date createTime;
@@ -67,19 +67,19 @@ public class ItoSensor {
 		this.title = title;
 	}
 
-	public ItoVisible getVisiable() {
+	public IotVisible getVisiable() {
 		return visiable;
 	}
 
-	public void setVisiable(ItoVisible visiable) {
+	public void setVisiable(IotVisible visiable) {
 		this.visiable = visiable;
 	}
 
-	public ItoSensorType getType() {
+	public IotSensorType getType() {
 		return type;
 	}
 
-	public void setType(ItoSensorType type) {
+	public void setType(IotSensorType type) {
 		this.type = type;
 	}
 

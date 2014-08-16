@@ -1,6 +1,6 @@
-package net.wendal.ito.mvc;
+package net.wendal.iot.mvc;
 
-import net.wendal.ito.bean.ItoUser;
+import net.wendal.iot.bean.IotUser;
 
 import org.nutz.dao.Dao;
 import org.nutz.ioc.loader.annotation.Inject;
@@ -8,7 +8,7 @@ import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.mvc.ActionContext;
 import org.nutz.mvc.ActionFilter;
 import org.nutz.mvc.View;
-import org.nutz.mvc.view.VoidView;
+import org.nutz.mvc.view.HttpStatusView;
 
 @IocBean
 public class ApiKeyFilter implements ActionFilter {
@@ -22,14 +22,15 @@ public class ApiKeyFilter implements ActionFilter {
 			apikey = ac.getRequest().getHeader("ApiKey");
 		}
 		if (apikey != null) {
-			ItoUser itokey = dao.fetch(ItoUser.class, apikey);
+			IotUser itokey = dao.fetch(IotUser.class, apikey);
 			if (itokey != null) {
 				ac.getRequest().setAttribute("userId", itokey.getUserId());
 				return null;
 			}
 		}
-		
-		ac.getResponse().setStatus(403);
-		return new VoidView();
+		if ("GET".equals(ac.getRequest().getMethod()) && !ac.getRequest().getRequestURI().endsWith("devices"))
+			return null;
+
+		return new HttpStatusView(403);
 	}
 }

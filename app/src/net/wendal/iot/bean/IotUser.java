@@ -1,4 +1,4 @@
-package net.wendal.ito.bean;
+package net.wendal.iot.bean;
 
 import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Id;
@@ -6,7 +6,7 @@ import org.nutz.dao.entity.annotation.Name;
 import org.nutz.dao.entity.annotation.Table;
 
 @Table("ito_user")
-public class ItoUser {
+public class IotUser {
 
 	@Id
 	@Column("uid")

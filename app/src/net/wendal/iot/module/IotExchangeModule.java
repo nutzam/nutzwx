@@ -1,4 +1,4 @@
-package net.wendal.ito.module;
+package net.wendal.iot.module;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,14 +14,16 @@ import javax.imageio.ImageReader;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.wendal.ito.Itos;
-import net.wendal.ito.bean.ItoDevice;
-import net.wendal.ito.bean.ItoSensor;
-import net.wendal.ito.service.ItoSensorService;
+import net.wendal.iot.Iots;
+import net.wendal.iot.bean.IotDevice;
+import net.wendal.iot.bean.IotSensor;
+import net.wendal.iot.mvc.ApiKeyFilter;
+import net.wendal.iot.service.IotSensorService;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.json.Json;
 import org.nutz.json.JsonFormat;
 import org.nutz.lang.util.NutMap;
@@ -30,11 +32,15 @@ import org.nutz.mvc.adaptor.VoidAdaptor;
 import org.nutz.mvc.annotation.AdaptBy;
 import org.nutz.mvc.annotation.At;
 import org.nutz.mvc.annotation.Attr;
+import org.nutz.mvc.annotation.By;
 import org.nutz.mvc.annotation.Fail;
+import org.nutz.mvc.annotation.Filters;
 import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.POST;
 
-public class ItoExchangeModule {
+@IocBean
+@Filters({@By(type=ApiKeyFilter.class, args="ioc:apiKeyFilter")})
+public class IotExchangeModule {
 	
 //	private static final Log log = Logs.get();
 	
@@ -42,7 +48,7 @@ public class ItoExchangeModule {
 	Dao dao;
 	
 	@Inject
-	ItoSensorService itoSensorService;
+	IotSensorService itoSensorService;
 
 	@At({"/ito/device/?/sensor/?/datapoints", "/v1.1/device/?/sensor/?/datapoints"})
 	@POST
@@ -50,11 +56,11 @@ public class ItoExchangeModule {
 	@Ok("void")
 	@Fail("http:406")
 	public void upload(String device_id, String sensor_id, InputStream in, @Attr("userId")long userId, HttpServletResponse resp) throws IOException {
-		ItoSensor sensor = dao.fetch(ItoSensor.class, Cnd.where("deviceId", "=", device_id).and("userId", "=", userId).and("id", "=", sensor_id));
+		IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where("deviceId", "=", device_id).and("userId", "=", userId).and("id", "=", sensor_id));
 		if (sensor == null) {
 			return;
 		}
-		if (sensor.getLastUpdateTime() != null && System.currentTimeMillis() - sensor.getLastUpdateTime().getTime() < Itos.Limit_Sensor_Update_Interval * 1000 ) {
+		if (sensor.getLastUpdateTime() != null && System.currentTimeMillis() - sensor.getLastUpdateTime().getTime() < Iots.Limit_Sensor_Update_Interval * 1000 ) {
 			return ; // too fast
 		}
 		NutMap map = itoSensorService.upload(sensor, in);
@@ -73,7 +79,7 @@ public class ItoExchangeModule {
 	@Ok("json:full")
 	@Fail("http:406")
 	public Object upload(String device_id, InputStream in, @Attr("userId")long userId, HttpServletResponse resp) throws IOException {
-		ItoDevice dev = dao.fetch(ItoDevice.class, Cnd.where("deviceId", "=", device_id).and("userId", "=", userId));
+		IotDevice dev = dao.fetch(IotDevice.class, Cnd.where("deviceId", "=", device_id).and("userId", "=", userId));
 		if (dev == null) {
 			return null;
 		}
@@ -82,12 +88,12 @@ public class ItoExchangeModule {
 		for (Object obj : list) {
 			Map<String, Object> map = (Map<String, Object>)obj;
 			long sensor_id = Long.parseLong(map.get("sensor_id").toString());
-			ItoSensor sensor = dao.fetch(ItoSensor.class, Cnd.where("deviceId", "=", device_id).and("userId", "=", userId).and("id", "=", sensor_id));
+			IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where("deviceId", "=", device_id).and("userId", "=", userId).and("id", "=", sensor_id));
 			if (sensor == null) {
 				re.put(""+sensor_id, "no such sensor");
 				continue;
 			}
-			if (sensor.getLastUpdateTime() != null && System.currentTimeMillis() - sensor.getLastUpdateTime().getTime() < Itos.Limit_Sensor_Update_Interval * 1000 ) {
+			if (sensor.getLastUpdateTime() != null && System.currentTimeMillis() - sensor.getLastUpdateTime().getTime() < Iots.Limit_Sensor_Update_Interval * 1000 ) {
 				re.put(""+sensor_id, "too fast");
 				continue; // too fast
 			}
@@ -111,32 +117,41 @@ public class ItoExchangeModule {
 			resp.setStatus(406);
 			return;
 		}
-		ItoSensor sensor = dao.fetch(ItoSensor.class, Cnd.where("deviceId", "=", device_id).and("userId", "=", userId).and("id", "=", sensor_id));
+		IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where("deviceId", "=", device_id).and("userId", "=", userId).and("id", "=", sensor_id));
 		if (sensor == null) {
+			resp.setStatus(406);
 			return;
 		}
-		if (sensor.getLastUpdateTime() != null && System.currentTimeMillis() - sensor.getLastUpdateTime().getTime() < Itos.Limit_Sensor_Update_Interval * 1000 ) {
+		if (sensor.getLastUpdateTime() != null && System.currentTimeMillis() - sensor.getLastUpdateTime().getTime() < Iots.Limit_Sensor_Update_Interval * 1000 ) {
+			resp.setStatus(406);
 			return ; // too fast
 		}
 		PushbackInputStream in = new PushbackInputStream(req.getInputStream(), 2048);
 		in.mark(2048);
-		byte[] buf = new byte[4];
+		byte[] buf = new byte[1];
 		in.read(buf);
 		String suffix = "jpg";
-		if (buf[0] == 1) {
+		if (buf[0] == 0x47) {
 			suffix = "gif";
-		} else if (buf[0] == 2) {
+		} else if (buf[0] == 0x89) {
 			suffix = "png";
 		}
 		in.reset();
 		in.mark(2048);
 		Iterator<ImageReader> it = ImageIO.getImageReadersBySuffix(suffix);
 		ImageReader r = it.next();
-		r.setInput(in);
-        int width = r.getWidth(r.getMinIndex());
-        int height = r.getHeight(r.getMinIndex());
-        r.dispose();
-        in.reset();
+		
+		int width;
+		int height;
+		try {
+			r.setInput(in);
+			width = r.getWidth(r.getMinIndex());
+			height = r.getHeight(r.getMinIndex());
+			r.dispose();
+			in.reset();
+		} catch (Exception e) {
+			throw new RuntimeException("bad image", e);
+		}
         
         itoSensorService.saveImage(sensor, in, width, height);
 	}

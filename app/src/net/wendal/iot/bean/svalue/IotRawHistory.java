@@ -1,31 +1,30 @@
-package net.wendal.ito.bean.svalue;
+package net.wendal.iot.bean.svalue;
 
 import java.util.Date;
 
+import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
 
-@Table("ito_image_history_${part}")
+@Table("ito_onoff_history_${part}")
 @TableIndexes({@Index(fields="sensorId", name="sensor_id", unique=false)})
-public class ItoImageHistory {
-
+public class IotRawHistory {
 	@Id
 	private long id;
+
+	@Column("sid")
 	private long sensorId;
-	private int width;
-	private int height;
 	
+	@Column("k")
+	private String key;
+	
+	@Column("v")
+	private String value;
+	
+	@Column("ct")
 	private Date timestamp;
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
 
 	public long getSensorId() {
 		return sensorId;
@@ -35,7 +34,13 @@ public class ItoImageHistory {
 		this.sensorId = sensorId;
 	}
 
+	public String getValue() {
+		return value;
+	}
 
+	public void setValue(String value) {
+		this.value = value;
+	}
 
 	public Date getTimestamp() {
 		return timestamp;
@@ -45,19 +50,19 @@ public class ItoImageHistory {
 		this.timestamp = timestamp;
 	}
 
-	public int getWidth() {
-		return width;
+	public String getKey() {
+		return key;
 	}
 
-	public void setWidth(int width) {
-		this.width = width;
+	public void setKey(String key) {
+		this.key = key;
 	}
 
-	public int getHeight() {
-		return height;
+	public long getId() {
+		return id;
 	}
 
-	public void setHeight(int height) {
-		this.height = height;
+	public void setId(long id) {
+		this.id = id;
 	}
 }

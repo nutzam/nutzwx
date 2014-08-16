@@ -1,23 +1,36 @@
-package net.wendal.ito.bean.svalue;
+package net.wendal.iot.bean.svalue;
 
 import java.util.Date;
 
-import net.wendal.ito.bean.ItoLocation;
-
 import org.nutz.dao.entity.annotation.Column;
+import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
 
-@Table("ito_gps_history_${part}")
+@Table("ito_image_history_${part}")
 @TableIndexes({@Index(fields="sensorId", name="sensor_id", unique=false)})
-public class ItoGpsHistory extends ItoLocation {
+public class IotImageHistory {
 
+	@Id
+	private long id;
 	@Column("sid")
 	private long sensorId;
+	@Column("w")
+	private int width;
+	@Column("h")
+	private int height;
 	
 	@Column("ct")
 	private Date timestamp;
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
 
 	public long getSensorId() {
 		return sensorId;
@@ -27,6 +40,8 @@ public class ItoGpsHistory extends ItoLocation {
 		this.sensorId = sensorId;
 	}
 
+
+
 	public Date getTimestamp() {
 		return timestamp;
 	}
@@ -35,5 +50,19 @@ public class ItoGpsHistory extends ItoLocation {
 		this.timestamp = timestamp;
 	}
 
-	
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
 }

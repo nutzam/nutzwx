@@ -1,4 +1,4 @@
-package net.wendal.ito.bean;
+package net.wendal.iot.bean;
 
 import java.util.Map;
 
@@ -7,7 +7,7 @@ import org.nutz.json.Json;
 import org.nutz.json.JsonField;
 import org.nutz.json.JsonFormat;
 
-public class ItoLocation {
+public class IotLocation {
 
 	@Column("lng")
 	@JsonField("lng")
@@ -22,10 +22,10 @@ public class ItoLocation {
 	@JsonField("offset")
 	private Boolean offset;
 	
-	public ItoLocation() {
+	public IotLocation() {
 	}
 	
-	public ItoLocation(String str) {
+	public IotLocation(String str) {
 		Map<String, Object> map = Json.fromJsonAsMap(Object.class, str);
 		longitude = ((Number)map.get("longitude")).floatValue();
 		latitude = ((Number)map.get("latitude")).floatValue();

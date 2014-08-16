@@ -1,25 +1,25 @@
-package net.wendal.ito.bean.svalue;
+package net.wendal.iot.bean.svalue;
 
 import java.util.Date;
 
 import org.nutz.dao.entity.annotation.Column;
+import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
 
-@Table("ito_onoff_history_${part}")
-@TableIndexes({@Index(fields="sensorId", name="sensor_id", unique=false)})
-public class ItoRawHistory {
+@Table("ito_number_history_${part}")
+@TableIndexes({ @Index(fields = "sensorId", name = "sensor_id", unique = false) })
+public class IotNumberHistory {
+	@Id
+	private long id;
 
 	@Column("sid")
 	private long sensorId;
-	
-	@Column("k")
-	private String key;
-	
-	@Column("v")
-	private String value;
-	
+
+	@Column("val")
+	private double value;
+
 	@Column("ct")
 	private Date timestamp;
 
@@ -31,11 +31,11 @@ public class ItoRawHistory {
 		this.sensorId = sensorId;
 	}
 
-	public String getValue() {
+	public double getValue() {
 		return value;
 	}
 
-	public void setValue(String value) {
+	public void setValue(double value) {
 		this.value = value;
 	}
 
@@ -47,11 +47,11 @@ public class ItoRawHistory {
 		this.timestamp = timestamp;
 	}
 
-	public String getKey() {
-		return key;
+	public long getId() {
+		return id;
 	}
 
-	public void setKey(String key) {
-		this.key = key;
+	public void setId(long id) {
+		this.id = id;
 	}
 }
