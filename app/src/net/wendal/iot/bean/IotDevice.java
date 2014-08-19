@@ -9,7 +9,7 @@ import org.nutz.dao.entity.annotation.Many;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
 
-@Table("ito_device")
+@Table("iot_device")
 @TableIndexes(@Index(fields="userId", name="uid", unique=false))
 public class IotDevice {
 

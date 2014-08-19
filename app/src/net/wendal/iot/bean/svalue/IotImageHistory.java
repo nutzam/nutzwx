@@ -8,7 +8,7 @@ import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
 
-@Table("ito_image_history_${part}")
+@Table("iot_image_history_${part}")
 @TableIndexes({@Index(fields="sensorId", name="sensor_id", unique=false)})
 public class IotImageHistory {
 

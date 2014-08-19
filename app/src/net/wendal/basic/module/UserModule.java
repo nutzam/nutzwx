@@ -74,7 +74,7 @@ public class UserModule {
 		
 		log.debug("User login success >> " + name);
 		// TODO 记录到系统操作日志中
-		session.setAttribute("usr", name); // session里面只放用户名哦
+		session.setAttribute("usr", usr.getId()); // session里面只放id哦
 		return true;
 	}
 	

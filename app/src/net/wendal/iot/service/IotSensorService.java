@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import net.wendal.iot.Iots;
 import net.wendal.iot.bean.IotSensor;
 import net.wendal.iot.bean.IotSensorTrigger;
 import net.wendal.iot.bean.svalue.IotGpsHistory;
@@ -20,7 +21,6 @@ import net.wendal.iot.bean.svalue.IotRawHistory;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
-import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.util.Daos;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
@@ -30,12 +30,9 @@ import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
 import org.nutz.lang.util.NutMap;
-import org.nutz.resource.Scans;
 
 @IocBean(create="init")
 public class IotSensorService {
-	
-	public static int PART = 5;
 	
 	@Inject Dao dao;
 
@@ -163,7 +160,7 @@ public class IotSensorService {
 	}
 	
 	public Dao partDao(IotSensor sensor) {
-		long part = sensor.getId() / PART;
+		long part = sensor.getId() / Iots.PART;
 		return Daos.ext(dao, "" + part);
 	}
 	
@@ -186,14 +183,6 @@ public class IotSensorService {
 	}
 	
 	public void init() {
-		List<Class<?>> ks = Scans.me().scanPackage(IotNumberHistory.class);
-		for (int i = 0; i < PART; i++) {
-			Dao dao = Daos.ext(this.dao, ""+i);
-			for (Class<?> klass : ks) {
-				if (klass.getAnnotation(Table.class) != null)
-					dao.create(klass, false);
-			}
-		}
 		Files.makeDir(new File(imagePath));
 	}
 }

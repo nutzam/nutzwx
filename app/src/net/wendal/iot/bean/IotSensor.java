@@ -7,7 +7,7 @@ import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.json.JsonField;
 
-@Table("ito_sensor")
+@Table("iot_sensor")
 public class IotSensor {
 
 	@Id

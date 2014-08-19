@@ -5,7 +5,7 @@ import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Name;
 import org.nutz.dao.entity.annotation.Table;
 
-@Table("ito_user")
+@Table("iot_user")
 public class IotUser {
 
 	@Id

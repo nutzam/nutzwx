@@ -5,12 +5,14 @@ import java.util.List;
 import net.wendal.iot.Iots;
 import net.wendal.iot.bean.IotDevice;
 import net.wendal.iot.bean.IotSensor;
+import net.wendal.iot.bean.IotUser;
 import net.wendal.iot.mvc.ApiKeyFilter;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.lang.random.R;
 import org.nutz.mvc.adaptor.JsonAdaptor;
 import org.nutz.mvc.annotation.AdaptBy;
 import org.nutz.mvc.annotation.At;
@@ -34,6 +36,39 @@ public class IotAdminModule {
 	
 	@Inject
 	Dao dao;
+	
+	@At("/ito/apikey")
+	@GET
+	@Filters()
+	public String readApikey(@Attr("usr")long userId) {
+		if (userId == 0)
+			return null;
+		IotUser usr = dao.fetch(IotUser.class, userId);
+		if (usr == null) {
+			usr = new IotUser();
+			usr.setApikey(R.sg(10).next());
+			dao.insert(usr);
+		}
+		return usr.getApikey();
+	}
+	
+	@At("/ito/apikey/reset")
+	@GET
+	@Filters()
+	public String resetApikey(@Attr("usr")long userId) {
+		if (userId == 0)
+			return null;
+		IotUser usr = dao.fetch(IotUser.class, userId);
+		if (usr == null) {
+			usr = new IotUser();
+			usr.setApikey(R.sg(10).next());
+			dao.insert(usr);
+		} else {
+			usr.setApikey(R.sg(10).next());
+			dao.update(usr);
+		}
+		return usr.getApikey();
+	}
 	
 	@At({"/ito/devices", "/v1.1/devices"})
 	@GET

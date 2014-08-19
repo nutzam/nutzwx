@@ -7,7 +7,7 @@ import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Table;
 
-@Table("ito_sensor_trigger_{part}")
+@Table("iot_sensor_trigger")
 public class IotSensorTrigger {
 	@Id
 	private long id;
