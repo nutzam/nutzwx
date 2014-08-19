@@ -127,6 +127,9 @@ public class Wxs {
 		case subscribe:
 			out = handler.eventSubscribe(msg);
 			break;
+		case unsubscribe:
+			out = handler.eventUnsubscribe(msg);
+			break;
 		case LOCATION:
 			out = handler.eventLocation(msg);
 			break;

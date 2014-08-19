@@ -16,6 +16,7 @@ public interface WxHandler {
 	//WxOutMsg event(WxInMsg msg);
 	
 	WxOutMsg eventSubscribe(WxInMsg msg);
+	WxOutMsg eventUnsubscribe(WxInMsg msg);
 	WxOutMsg eventScan(WxInMsg msg);
 	WxOutMsg eventLocation(WxInMsg msg);
 	WxOutMsg eventClick(WxInMsg msg);

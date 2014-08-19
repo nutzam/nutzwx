@@ -35,6 +35,10 @@ public abstract class AbstractWxHandler implements WxHandler {
 	public WxOutMsg eventSubscribe(WxInMsg msg) {
 		return defaultMsg(msg);
 	}
+	
+	public WxOutMsg eventUnsubscribe(WxInMsg msg) {
+		return defaultMsg(msg);
+	}
 
 	public WxOutMsg eventScan(WxInMsg msg) {
 		return defaultMsg(msg);
