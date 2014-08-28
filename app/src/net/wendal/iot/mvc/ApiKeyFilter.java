@@ -1,5 +1,6 @@
 package net.wendal.iot.mvc;
 
+import net.wendal.Zs;
 import net.wendal.iot.bean.IotUser;
 
 import org.nutz.dao.Dao;
@@ -24,7 +25,7 @@ public class ApiKeyFilter implements ActionFilter {
 		if (apikey != null) {
 			IotUser itokey = dao.fetch(IotUser.class, apikey);
 			if (itokey != null) {
-				ac.getRequest().setAttribute("userId", itokey.getUserId());
+				ac.getRequest().setAttribute(Zs.UID, itokey.getUserId());
 				return null;
 			}
 		}

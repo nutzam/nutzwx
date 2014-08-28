@@ -1,4 +1,4 @@
-package net.wendal.basic.bean;
+package net.wendal.base.bean;
 
 public class SimpleCurdConfig {
 

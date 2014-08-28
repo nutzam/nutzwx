@@ -2,7 +2,7 @@ package net.wendal;
 
 import java.util.List;
 
-import net.wendal.basic.bean.User;
+import net.wendal.base.bean.User;
 
 import org.nutz.dao.Dao;
 import org.nutz.dao.util.Daos;

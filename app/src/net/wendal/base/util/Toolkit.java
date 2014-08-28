@@ -1,11 +1,11 @@
-package net.wendal.basic.util;
+package net.wendal.base.util;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import net.wendal.basic.bean.User;
+import net.wendal.base.bean.User;
 
 import org.nutz.lang.Lang;
 import org.nutz.lang.random.R;

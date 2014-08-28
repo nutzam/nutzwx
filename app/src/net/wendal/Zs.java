@@ -1,5 +1,6 @@
 package net.wendal;
 
-public class Zs {
+public interface Zs {
 
+	String UID = "userId";
 }

@@ -1,6 +1,6 @@
 package net.wendal.nutzwx.bean;
 
-import net.wendal.nutzwx.annotation.SimpleCURD;
+import net.wendal.base.annotation.SimpleCURD;
 
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.lang.Strings;

@@ -1,10 +1,10 @@
-package net.wendal.basic.module;
+package net.wendal.base.module;
 
 import java.awt.image.BufferedImage;
 
 import javax.servlet.http.HttpSession;
 
-import net.wendal.basic.util.Toolkit;
+import net.wendal.base.util.Toolkit;
 import nl.captcha.Captcha;
 import nl.captcha.backgrounds.GradiatedBackgroundProducer;
 import nl.captcha.gimpy.FishEyeGimpyRenderer;

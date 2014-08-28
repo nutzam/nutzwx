@@ -1,7 +1,7 @@
 package net.wendal.nutzwx;
 
-import net.wendal.basic.bean.User;
-import net.wendal.basic.util.Toolkit;
+import net.wendal.base.bean.User;
+import net.wendal.base.util.Toolkit;
 import net.wendal.nutzwx.service.ResourceService;
 import net.wendal.nutzwx.service.impl.DaoResourceService;
 
@@ -11,6 +11,7 @@ import org.nutz.ioc.Ioc;
 import org.nutz.ioc.Ioc2;
 import org.nutz.ioc.ObjectProxy;
 import org.nutz.ioc.impl.PropertiesProxy;
+import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.lang.random.R;
 import org.nutz.log.Log;
@@ -25,6 +26,7 @@ public class WxSetup implements Setup {
 	
 	private static final Log log = Logs.get();
 	
+	@Inject(optional=true)
 	protected Scheduler scheduler;
 
 	@Override

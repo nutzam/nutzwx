@@ -1,9 +1,10 @@
-package net.wendal.basic.module;
+package net.wendal.base.module;
 
 import javax.servlet.http.HttpSession;
 
-import net.wendal.basic.bean.User;
-import net.wendal.basic.util.Toolkit;
+import net.wendal.Zs;
+import net.wendal.base.bean.User;
+import net.wendal.base.util.Toolkit;
 import net.wendal.nutzwx.service.MailService;
 
 import org.nutz.dao.Cnd;
@@ -19,12 +20,13 @@ import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.Mvcs;
-import org.nutz.mvc.Scope;
 import org.nutz.mvc.annotation.At;
 import org.nutz.mvc.annotation.Attr;
+import org.nutz.mvc.annotation.By;
+import org.nutz.mvc.annotation.Filters;
 import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.Param;
-import org.nutz.mvc.view.ServerRedirectView;
+import org.nutz.mvc.filter.CheckSession;
 
 @IocBean(create="init")
 @At("/usr")
@@ -45,8 +47,8 @@ public class UserModule {
 	public boolean login(@Param("name")String name,
 					  @Param("passwd")String password,
 					  @Param("captcha")String captcha,
-					  @Attr(value="usr", scope=Scope.SESSION)String _usr){
-		if (_usr != null) {
+					  @Attr(value=Zs.UID)Long uid){
+		if (uid != null) {
 			return true;
 		}
 		if (name == null || password == null || captcha == null)
@@ -74,15 +76,8 @@ public class UserModule {
 		
 		log.debug("User login success >> " + name);
 		// TODO 记录到系统操作日志中
-		session.setAttribute("usr", usr.getId()); // session里面只放id哦
+		session.setAttribute(Zs.UID, usr.getId()); // session里面只放id哦
 		return true;
-	}
-	
-	protected Object loginFail() {
-		boolean isAjax = Mvcs.getReq().getHeader("") != null;
-		if (isAjax)
-			return true;
-		return new ServerRedirectView("/");
 	}
 	
 	@At
@@ -94,6 +89,7 @@ public class UserModule {
 	
 	@At
 	@Ok("jsp:usr.index")
+	@Filters(value={@By(type=CheckSession.class, args={Zs.UID, "/"})})
 	public void home() {
 	}
 	

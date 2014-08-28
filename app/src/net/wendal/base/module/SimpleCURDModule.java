@@ -1,13 +1,13 @@
-package net.wendal.basic.module;
+package net.wendal.base.module;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.wendal.basic.bean.SimpleCurdConfig;
-import net.wendal.basic.bean.User;
-import net.wendal.nutzwx.annotation.SimpleCURD;
+import net.wendal.base.annotation.SimpleCURD;
+import net.wendal.base.bean.SimpleCurdConfig;
+import net.wendal.base.bean.User;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;

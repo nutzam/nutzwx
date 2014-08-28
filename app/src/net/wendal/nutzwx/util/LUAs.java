@@ -1,6 +1,6 @@
 package net.wendal.nutzwx.util;
 
-import net.wendal.basic.util.Toolkit;
+import net.wendal.base.util.Toolkit;
 
 import org.keplerproject.luajava.LuaException;
 import org.keplerproject.luajava.LuaObject;

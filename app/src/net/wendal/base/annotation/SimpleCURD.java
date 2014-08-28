@@ -1,4 +1,4 @@
-package net.wendal.nutzwx.annotation;
+package net.wendal.base.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

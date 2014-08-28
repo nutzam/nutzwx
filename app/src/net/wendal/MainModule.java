@@ -2,6 +2,8 @@ package net.wendal;
 
 import javax.servlet.http.HttpSession;
 
+import net.wendal.base.mvc.SmartViewMaker;
+
 import org.nutz.mvc.Mvcs;
 import org.nutz.mvc.View;
 import org.nutz.mvc.annotation.At;
@@ -11,6 +13,7 @@ import org.nutz.mvc.annotation.Localization;
 import org.nutz.mvc.annotation.Modules;
 import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.SetupBy;
+import org.nutz.mvc.annotation.Views;
 import org.nutz.mvc.ioc.provider.ComboIocProvider;
 import org.nutz.mvc.view.ForwardView;
 import org.nutz.mvc.view.JspView;
@@ -21,6 +24,7 @@ import org.nutz.mvc.view.JspView;
 @Fail("http:500")
 @Localization("msg")
 @SetupBy(MainSetup.class)
+@Views(value=SmartViewMaker.class)
 public class MainModule {
 	
 	protected static View usrLogin = new ForwardView("/login.jsp");
