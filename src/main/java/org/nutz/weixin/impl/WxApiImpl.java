@@ -29,6 +29,7 @@ import org.nutz.weixin.bean.WxGroup;
 import org.nutz.weixin.bean.WxMaster;
 import org.nutz.weixin.bean.WxMenu;
 import org.nutz.weixin.bean.WxOutMsg;
+import org.nutz.weixin.bean.WxTemplateData;
 import org.nutz.weixin.bean.WxUser;
 import org.nutz.weixin.spi.WxAPI;
 import org.nutz.weixin.util.Wxs;
@@ -249,5 +250,16 @@ public class WxApiImpl implements WxAPI {
 				return resp.getStream();
 			}
 		};
+	}
+	
+	public String sendTemplateMsg(String touser, String template_id, String topcolor, Map<String, WxTemplateData> data) {
+	    if (Strings.isBlank(topcolor))
+	        topcolor = WxTemplateData.DFT_COLOR;
+	    NutMap map = new NutMap();
+	    map.put("touser", touser);
+	    map.put("template_id", template_id);
+	    map.put("topcolor", topcolor);
+	    map.put("data", data);
+	    return call("/message/template/send", METHOD.POST, Json.toJson(map)).get("msgid").toString();
 	}
 }

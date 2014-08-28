@@ -55,6 +55,10 @@ public abstract class AbstractWxHandler implements WxHandler {
 	public WxOutMsg eventView(WxInMsg msg) {
 		return defaultMsg(msg);
 	}
+	
+	public WxOutMsg eventTemplateJobFinish(WxInMsg msg) {
+	    return defaultMsg(msg);
+	}
 
 	public WxOutMsg defaultMsg(WxInMsg msg) {
 		return Wxs.respText(null, "haha -> " + msg.getCreateTime());

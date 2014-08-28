@@ -21,6 +21,7 @@ public interface WxHandler {
 	WxOutMsg eventLocation(WxInMsg msg);
 	WxOutMsg eventClick(WxInMsg msg);
 	WxOutMsg eventView(WxInMsg msg);
+	WxOutMsg eventTemplateJobFinish(WxInMsg msg);
 
 	WxOutMsg defaultMsg(WxInMsg msg);
 	

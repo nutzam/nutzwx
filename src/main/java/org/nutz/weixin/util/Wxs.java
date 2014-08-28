@@ -142,6 +142,9 @@ public class Wxs {
 		case VIEW:
 			out = handler.eventView(msg);
 			break;
+		case TEMPLATESENDJOBFINISH:
+		    out = handler.eventTemplateJobFinish(msg);
+		    break;
 		default:
 			log.infof("New EventType=%s ? fallback to defaultMsg", msg.getMsgType());
 			out = handler.defaultMsg(msg);
