@@ -262,4 +262,12 @@ public class WxApiImpl implements WxAPI {
 	    map.put("data", data);
 	    return call("/message/template/send", METHOD.POST, Json.toJson(map)).get("msgid").toString();
 	}
+	
+	public void userRemark(String openid, String remark) {
+	    NutMap map = new NutMap();
+	    map.put("openid", openid);
+	    map.put("remark", remark);
+	    call("/user/info/updateremark", METHOD.POST, Json.toJson(map));
+	}
+	
 }

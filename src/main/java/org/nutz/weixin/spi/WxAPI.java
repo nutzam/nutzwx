@@ -63,4 +63,6 @@ public interface WxAPI {
 	NutResource mediaGet(String mediaId);
 	
 	String sendTemplateMsg(String touser, String template_id, String topcolor, Map<String, WxTemplateData> data);
+	
+	void userRemark(String openid, String remark);
 }
