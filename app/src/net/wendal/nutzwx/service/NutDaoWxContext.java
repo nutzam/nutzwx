@@ -71,7 +71,7 @@ public class NutDaoWxContext extends WxContext {
 			handler = new EnhandWxHandler();
 		} else {
 			try {
-				handler = (WxHandler) Mvcs.ctx.getDefaultIoc().get(Class.forName(mp.getHandlerClass()));
+				handler = (WxHandler) Mvcs.ctx().getDefaultIoc().get(Class.forName(mp.getHandlerClass()));
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}

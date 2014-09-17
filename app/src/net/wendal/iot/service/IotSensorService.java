@@ -13,11 +13,12 @@ import java.util.Map;
 import net.wendal.iot.Iots;
 import net.wendal.iot.bean.IotSensor;
 import net.wendal.iot.bean.IotSensorTrigger;
-import net.wendal.iot.bean.svalue.IotGpsHistory;
-import net.wendal.iot.bean.svalue.IotImageHistory;
-import net.wendal.iot.bean.svalue.IotNumberHistory;
-import net.wendal.iot.bean.svalue.IotOnoffHistory;
-import net.wendal.iot.bean.svalue.IotRawHistory;
+import net.wendal.iot.bean.SensorUploadResult;
+import net.wendal.iot.bean.history.IotImageHistory;
+import net.wendal.iot.bean.history.IotKvHistory;
+import net.wendal.iot.bean.history.IotLocationHistory;
+import net.wendal.iot.bean.history.IotNumberHistory;
+import net.wendal.iot.bean.history.IotOnoffHistory;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
@@ -29,7 +30,6 @@ import org.nutz.json.JsonFormat;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
-import org.nutz.lang.util.NutMap;
 
 @IocBean(create="init")
 public class IotSensorService {
@@ -37,24 +37,23 @@ public class IotSensorService {
 	@Inject Dao dao;
 
 	@SuppressWarnings("unchecked")
-	public NutMap upload(IotSensor sensor, InputStream in) throws IOException {
-		NutMap re = new NutMap();
-		re.put("status", 406);
+	public SensorUploadResult upload(IotSensor sensor, InputStream in) throws IOException {
+		SensorUploadResult re = new SensorUploadResult();
 		Object data;
 		try {
 			data = Json.fromJson(new InputStreamReader(in));
 		} catch (Throwable e) {
-			re.put("error", "Bad json");
+			re.err = "Bad json";
 			return re;
 		}
 		if (data == null) {
-			re.put("error", "null data");
+			re.err = "NULL json";
 			return re;
 		}
 		switch (sensor.getType()) {
 		case number:
-		case gps:
-		case raw:
+		case location:
+		case kv:
 		case onoff:
 			if (data instanceof List) {
 				List<Map<String, Object>> list = (List<Map<String, Object>>) data;
@@ -68,12 +67,12 @@ public class IotSensorService {
 					return re;
 				}
 			} else {
-				re.put("error", "bad data type");
+				re.err = "bad data type";
 				return re;
 			}
 			break;
 		default:
-			re.put("error", "not updateable");
+			re.err = "not updateable";
 			return re;
 		}
 		return null;
@@ -107,14 +106,14 @@ public class IotSensorService {
 			h.setTimestamp(time);
 			partDao(sensor).insert(h);
 			break;
-		case gps:
+		case location:
 			Map<String, Object> tmp = (Map)v;
 			if (!tmp.containsKey("lan") || !tmp.containsKey("lat") || !tmp.containsKey("speed")) {
 				return "miss some gps key";
 			}
-			IotGpsHistory gps = null;
+			IotLocationHistory gps = null;
 			try {
-				gps = Lang.map2Object(tmp, IotGpsHistory.class);
+				gps = Lang.map2Object(tmp, IotLocationHistory.class);
 			} catch (Throwable e) {
 				return "bad gps data";
 			}
@@ -122,13 +121,13 @@ public class IotSensorService {
 			gps.setTimestamp(time);
 			partDao(sensor).insert(gps);
 			break;
-		case raw:
+		case kv:
 			Map<String, Object> tmp2 = (Map)v;
 			String key = (String)tmp2.get("key");
 			if (Strings.isBlank(key)) {
 				return "key is blank or miss";
 			}
-			IotRawHistory raw = new IotRawHistory();
+			IotKvHistory raw = new IotKvHistory();
 			raw.setSensorId(sensor.getId());
 			raw.setTimestamp(time);
 			raw.setKey(key);

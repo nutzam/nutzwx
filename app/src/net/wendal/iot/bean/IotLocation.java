@@ -7,17 +7,42 @@ import org.nutz.json.Json;
 import org.nutz.json.JsonField;
 import org.nutz.json.JsonFormat;
 
+/**
+ * 描述一个位置
+ *
+ */
 public class IotLocation {
 
+	/**数据类型, 如gps,北斗,伽利略等等*/
+	@Column("tp")
+	private String loctionType;
+	/**
+	 * 经度
+	 */
 	@Column("lng")
 	@JsonField("lng")
 	private Float longitude;
+	/**
+	 * 纬度
+	 */
 	@Column("lat")
 	@JsonField("lat")
 	private Float latitude;
+	/**
+	 * 海拔
+	 */
+	@Column()
+	@JsonField("atd")
+	private Float altitude;
+	/**
+	 * 速度
+	 */
 	@Column("speed")
 	@JsonField("speed")
 	private Float speed;
+	/**
+	 * 是否进行便宜
+	 */
 	@Column("offset")
 	@JsonField("offset")
 	private Boolean offset;

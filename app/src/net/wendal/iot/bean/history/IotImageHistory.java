@@ -1,4 +1,4 @@
-package net.wendal.iot.bean.svalue;
+package net.wendal.iot.bean.history;
 
 import java.util.Date;
 

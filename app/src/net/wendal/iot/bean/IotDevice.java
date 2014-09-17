@@ -9,20 +9,46 @@ import org.nutz.dao.entity.annotation.Many;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
 
+/**
+ * 一个物联网设备
+ *
+ */
 @Table("iot_device")
-@TableIndexes(@Index(fields="userId", name="uid", unique=false))
+@TableIndexes({@Index(fields="userId", name="uid", unique=false),
+				@Index(fields="title", name="device_title", unique=true)
+})
 public class IotDevice {
 
+	/**
+	 * 设备id
+	 */
 	@Id
 	private long id;
+	/**
+	 * 归属的用户id
+	 */
 	@Column("uid")
 	private long userId;
+	/**
+	 * 设备名
+	 */
 	@Column
 	private String title;
+	/**
+	 * 备注
+	 */
 	@Column
 	private String detail;
+	/**
+	 * 位置
+	 */
 	@Column("loc")
 	private IotLocation loction;
+	/**
+	 * 可见性
+	 */
+	@Column("vle")
+	private IotVisible visible;
 	
 	@Many(target=IotSensor.class, field = "deviceId")
 	private List<IotSensor> sensors;

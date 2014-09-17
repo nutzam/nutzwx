@@ -1,4 +1,4 @@
-package net.wendal.iot.bean.svalue;
+package net.wendal.iot.bean.history;
 
 import java.util.Date;
 
@@ -10,18 +10,15 @@ import org.nutz.dao.entity.annotation.TableIndexes;
 
 @Table("iot_onoff_history_${part}")
 @TableIndexes({@Index(fields="sensorId", name="sensor_id", unique=false)})
-public class IotRawHistory {
+public class IotOnoffHistory {
 	@Id
 	private long id;
 
 	@Column("sid")
 	private long sensorId;
 	
-	@Column("k")
-	private String key;
-	
-	@Column("v")
-	private String value;
+	@Column("val")
+	private int value;
 	
 	@Column("ct")
 	private Date timestamp;
@@ -34,11 +31,11 @@ public class IotRawHistory {
 		this.sensorId = sensorId;
 	}
 
-	public String getValue() {
+	public int getValue() {
 		return value;
 	}
 
-	public void setValue(String value) {
+	public void setValue(int value) {
 		this.value = value;
 	}
 
@@ -48,14 +45,6 @@ public class IotRawHistory {
 
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
 	}
 
 	public long getId() {

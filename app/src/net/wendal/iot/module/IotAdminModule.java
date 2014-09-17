@@ -35,7 +35,6 @@ import net.wendal.Zs;
 @Fail("http:500")
 @Ok("smart")
 @IocBean
-@At("/v1.1")
 public class IotAdminModule {
 	
 	@Inject

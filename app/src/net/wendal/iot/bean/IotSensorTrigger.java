@@ -5,25 +5,59 @@ import java.util.Map;
 
 import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Id;
+import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Table;
+import org.nutz.dao.entity.annotation.TableIndexes;
 
+/**
+ * 传感器的触发器
+ *
+ */
 @Table("iot_sensor_trigger")
+@TableIndexes(@Index(fields="sensorId", name="sensorId", unique=false))
 public class IotSensorTrigger {
+	/**
+	 * 触发器id
+	 */
 	@Id
 	private long id;
 	
+	/**
+	 * 传感器id
+	 */
 	@Column("sid")
 	private long sensorId;
+	/**
+	 * 传感器名称
+	 */
 	@Column
 	private String title;
+	/**
+	 * 操作
+	 */
 	@Column
 	private String op;
+	/**
+	 * 命令
+	 */
 	@Column
 	private String cmd;
+	/**
+	 * 创建时间
+	 */
 	@Column("ct")
 	private Date createTime;
+	/**
+	 * 最后修改时间
+	 */
 	@Column("lt")
 	private Date lastUpdateTime;
+	
+	/**
+	 * 最后触发时间
+	 */
+	@Column("ltt")
+	private Date lastTriggerTime;
 
 	public void trigger(IotSensor sensor, Map<String, Object> all, Object v) {
 	

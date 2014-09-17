@@ -14,6 +14,7 @@ import org.nutz.mvc.view.HttpStatusView;
 @IocBean
 public class ApiKeyFilter implements ActionFilter {
 	
+	
 	@Inject
 	protected Dao dao;
 
