@@ -93,4 +93,20 @@ public class IotLocation {
 	public void setOffset(Boolean offset) {
 		this.offset = offset;
 	}
+
+	public String getLoctionType() {
+		return loctionType;
+	}
+
+	public void setLoctionType(String loctionType) {
+		this.loctionType = loctionType;
+	}
+
+	public Float getAltitude() {
+		return altitude;
+	}
+
+	public void setAltitude(Float altitude) {
+		this.altitude = altitude;
+	}
 }

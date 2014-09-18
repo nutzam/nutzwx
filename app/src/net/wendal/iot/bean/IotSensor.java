@@ -75,7 +75,7 @@ public class IotSensor {
 	 */
 	@Column("val")
 	@ColDefine(width=1024)
-	private String val;
+	private String value;
 	
 //----------------------------------------
 
@@ -141,5 +141,13 @@ public class IotSensor {
 
 	public void setLastUpdateTime(Date lastUpdateTime) {
 		this.lastUpdateTime = lastUpdateTime;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
 	}
 }

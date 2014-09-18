@@ -2,6 +2,7 @@ package net.wendal.iot.bean;
 
 import java.util.List;
 
+import org.nutz.dao.entity.annotation.ColDefine;
 import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Index;
@@ -43,6 +44,7 @@ public class IotDevice {
 	 * 位置
 	 */
 	@Column("loc")
+	@ColDefine(width=256)
 	private IotLocation loction;
 	/**
 	 * 可见性

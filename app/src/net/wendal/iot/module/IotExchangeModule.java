@@ -37,6 +37,7 @@ import org.nutz.mvc.annotation.Attr;
 import org.nutz.mvc.annotation.By;
 import org.nutz.mvc.annotation.Fail;
 import org.nutz.mvc.annotation.Filters;
+import org.nutz.mvc.annotation.GET;
 import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.POST;
 
@@ -52,6 +53,21 @@ public class IotExchangeModule {
 	
 	@Inject
 	IotSensorService iotSensorService;
+	
+	@At({"/ito/device/?/sensor/?/datapoints", "/v1.1/device/?/sensor/?/datapoints"})
+	@GET
+	@Ok("void")
+	public void getLastData(String device_id, String sensor_id, @Attr("userId")long userId, HttpServletResponse resp) throws IOException {
+		IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where("deviceId", "=", device_id).and("userId", "=", userId).and("id", "=", sensor_id));
+		if (sensor == null) {
+			resp.setStatus(406);
+			resp.getWriter().write(Iots.NOTFOUND);
+			return;
+		}
+		if (sensor.getValue() == null)
+			return;
+		resp.getWriter().write(sensor.getValue());
+	}
 
 	@At({"/ito/device/?/sensor/?/datapoints", "/v1.1/device/?/sensor/?/datapoints"})
 	@POST

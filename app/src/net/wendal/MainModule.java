@@ -23,7 +23,7 @@ import org.nutz.mvc.view.JspView;
 @Ok("json:full")
 @Fail("http:500")
 @Localization("msg")
-@SetupBy(MainSetup.class)
+@SetupBy(value=MainSetup.class, args="ioc:mainSetup")
 @Views(value=SmartViewMaker.class)
 public class MainModule {
 	

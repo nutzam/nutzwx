@@ -14,13 +14,16 @@ import org.nutz.dao.entity.annotation.Table;
 public class IotUser {
 
 	/**主用户id,关联主User表*/
-	@Id
+	@Id(auto=false)
 	@Column("uid")
 	private long userId;
 	
 	/**这是API接口的鉴权KEY*/
 	@Name
 	private String apikey;
+	
+	@Column("uv")
+	private IotUserLevel userLevel = IotUserLevel.FREE;
 	
 	/**允许存在的最大设备数*/
 	@Column("dlt")
@@ -33,6 +36,7 @@ public class IotUser {
 	/**每个传感器允许拥有的触发器数量*/
 	@Column("tlt")
 	private int triggerLimit;
+	
 	
 	public void setUserId(long userId) {
 		this.userId = userId;
@@ -72,6 +76,14 @@ public class IotUser {
 
 	public void setTriggerLimit(int triggerLimit) {
 		this.triggerLimit = triggerLimit;
+	}
+
+	public IotUserLevel getUserLevel() {
+		return userLevel;
+	}
+
+	public void setUserLevel(IotUserLevel userLevel) {
+		this.userLevel = userLevel;
 	}
 	
 	

@@ -75,7 +75,7 @@ public class IotSensorService {
 			re.err = "not updateable";
 			return re;
 		}
-		return null;
+		return re;
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -92,6 +92,7 @@ public class IotSensorService {
 				return "bad timestamp";
 			}
 		}
+		map.put("timestamp", time);
 		switch (sensor.getType()) {
 		case number:
 			double value = Double.NaN;
@@ -104,7 +105,7 @@ public class IotSensorService {
 			h.setSensorId(sensor.getId());
 			h.setValue(value);
 			h.setTimestamp(time);
-			partDao(sensor).insert(h);
+			partDao(sensor).fastInsert(h);
 			break;
 		case location:
 			Map<String, Object> tmp = (Map)v;
@@ -119,7 +120,7 @@ public class IotSensorService {
 			}
 			gps.setSensorId(sensor.getId());
 			gps.setTimestamp(time);
-			partDao(sensor).insert(gps);
+			partDao(sensor).fastInsert(gps);
 			break;
 		case kv:
 			Map<String, Object> tmp2 = (Map)v;
@@ -132,7 +133,7 @@ public class IotSensorService {
 			raw.setTimestamp(time);
 			raw.setKey(key);
 			raw.setValue(Json.toJson(v, JsonFormat.full().setIndent(0)));
-			partDao(sensor).insert(raw);
+			partDao(sensor).fastInsert(raw);
 			break;
 		case onoff:
 			IotOnoffHistory onoff = new IotOnoffHistory();
@@ -144,13 +145,14 @@ public class IotSensorService {
 				onoff.setValue(0);
 				v = 0;
 			}
-			partDao(sensor).insert(onoff);
+			partDao(sensor).fastInsert(onoff);
 			break;
 		default:
 			break;
 		}
 		sensor.setLastUpdateTime(new Date());
-		partDao(sensor).update(sensor, "^(lastUpdateTime)$");
+		sensor.setValue(Json.toJson(map, JsonFormat.compact()));
+		partDao(sensor).update(sensor, "^(lastUpdateTime|value)$");
 		List<IotSensorTrigger> tirggers = partDao(sensor).query(IotSensorTrigger.class, Cnd.where("sensorId", "=", sensor.getId()));
 		for (IotSensorTrigger trigger : tirggers) {
 			trigger.trigger(sensor, map, v);
