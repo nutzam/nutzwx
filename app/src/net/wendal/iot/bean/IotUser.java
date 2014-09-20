@@ -1,5 +1,6 @@
 package net.wendal.iot.bean;
 
+import org.nutz.dao.entity.annotation.ColDefine;
 import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Name;
@@ -21,6 +22,10 @@ public class IotUser {
 	/**这是API接口的鉴权KEY*/
 	@Name
 	private String apikey;
+	
+	@Column("pbk")
+	@ColDefine(width=256)
+	private String pbkdf2;
 	
 	@Column("uv")
 	private IotUserLevel userLevel = IotUserLevel.FREE;
@@ -84,6 +89,14 @@ public class IotUser {
 
 	public void setUserLevel(IotUserLevel userLevel) {
 		this.userLevel = userLevel;
+	}
+
+	public String getPbkdf2() {
+		return pbkdf2;
+	}
+
+	public void setPbkdf2(String pbkdf2) {
+		this.pbkdf2 = pbkdf2;
 	}
 	
 	

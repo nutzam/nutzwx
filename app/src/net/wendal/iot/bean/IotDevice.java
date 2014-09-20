@@ -40,6 +40,9 @@ public class IotDevice {
 	 */
 	@Column
 	private String detail;
+	
+	@Column
+	private List<String> tags;
 	/**
 	 * 位置
 	 */
@@ -101,5 +104,21 @@ public class IotDevice {
 
 	public void setSensors(List<IotSensor> sensors) {
 		this.sensors = sensors;
+	}
+
+	public List<String> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<String> tags) {
+		this.tags = tags;
+	}
+
+	public IotVisible getVisible() {
+		return visible;
+	}
+
+	public void setVisible(IotVisible visible) {
+		this.visible = visible;
 	}
 }
