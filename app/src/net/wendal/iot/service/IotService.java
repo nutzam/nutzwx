@@ -108,10 +108,10 @@ public class IotService {
 	public static String pbkdf2(String passwd) {
 		char[] password = passwd.toCharArray();
 		byte[] salt = R.sg(12).next().getBytes();
-		int iterations = 5;
+		int iterations = 101;
 		int bytes = 24;
 		byte[] re = _pbkdf2(password, salt, iterations, bytes);
-		return String.format("PBKDF2$sha1$5$%s$%s",Base64.encodeToString(salt, false), Base64.encodeToString(re, false));
+		return String.format("PBKDF2$sha256$101$%s$%s",Base64.encodeToString(salt, false), Base64.encodeToString(re, false));
 	}
 
 	public static byte[] _pbkdf2(char[] password, byte[] salt, int iterations, int bytes) {
