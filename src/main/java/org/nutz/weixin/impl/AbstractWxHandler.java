@@ -67,4 +67,28 @@ public abstract class AbstractWxHandler implements WxHandler {
 	public WxOutMsg handle(WxInMsg in) {
 		return Wxs.handle(in, this);
 	}
+
+    public WxOutMsg eventScancodePush(WxInMsg msg) {
+        return defaultMsg(msg);
+    }
+
+    public WxOutMsg eventScancodeWaitMsg(WxInMsg msg) {
+        return defaultMsg(msg);
+    }
+
+    public WxOutMsg eventScancodePicSysphoto(WxInMsg msg) {
+        return defaultMsg(msg);
+    }
+
+    public WxOutMsg eventScancodePicPhotoOrAlbum(WxInMsg msg) {
+        return defaultMsg(msg);
+    }
+
+    public WxOutMsg eventScancodePicWeixin(WxInMsg msg) {
+        return defaultMsg(msg);
+    }
+
+    public WxOutMsg eventLocationSelect(WxInMsg msg) {
+        return defaultMsg(msg);
+    }
 }

@@ -22,6 +22,12 @@ public interface WxHandler {
 	WxOutMsg eventClick(WxInMsg msg);
 	WxOutMsg eventView(WxInMsg msg);
 	WxOutMsg eventTemplateJobFinish(WxInMsg msg);
+    WxOutMsg eventScancodePush(WxInMsg msg);
+    WxOutMsg eventScancodeWaitMsg(WxInMsg msg);
+    WxOutMsg eventScancodePicSysphoto(WxInMsg msg);
+    WxOutMsg eventScancodePicPhotoOrAlbum(WxInMsg msg);
+    WxOutMsg eventScancodePicWeixin(WxInMsg msg);
+    WxOutMsg eventLocationSelect(WxInMsg msg);
 
 	WxOutMsg defaultMsg(WxInMsg msg);
 	

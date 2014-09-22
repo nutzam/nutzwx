@@ -32,6 +32,8 @@ public class WxInMsg {
 	
 	private String status;
 	
+	private WxScanCodeInfo scanCodeInfo;
+	
 	/**从页面传来的key值*/
 	private String extkey;
 	
@@ -204,6 +206,14 @@ public class WxInMsg {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public WxScanCodeInfo getScanCodeInfo() {
+        return scanCodeInfo;
+    }
+
+    public void setScanCodeInfo(WxScanCodeInfo scanCodeInfo) {
+        this.scanCodeInfo = scanCodeInfo;
     }
 	
 	
