@@ -5,7 +5,7 @@ import java.util.Date;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-import net.wendal.base.bean.User;
+import net.wendal.base.service.UserService;
 import net.wendal.iot.bean.IotDevice;
 import net.wendal.iot.bean.IotLocation;
 import net.wendal.iot.bean.IotSensor;
@@ -26,22 +26,28 @@ public class IotService {
 	@Inject
 	Dao dao;
 	
+	@Inject UserService userService;
+	
 	public IotUser rootUser() {
-		User root = dao.fetch(User.class, "root");
-		if (root == null) {
+		long rootUserId = userService.userId("root");
+		if (rootUserId < 0) {
 			return null;
 		}
-		IotUser admin = dao.fetch(IotUser.class, root.getId());
+		IotUser admin = dao.fetch(IotUser.class, rootUserId);
 		if (admin == null) {
-			admin = addUser(root.getId(), IotUserLevel.SSVIP);
+			admin = addUser(rootUserId, IotUserLevel.SSVIP);
 		}
 		return admin;
+	}
+	
+	public void makeApiKey(IotUser user) {
+		user.setApikey(R.sg(16).next());
+		user.setPbkdf2(pbkdf2(user.getApikey()));
 	}
 
 	public IotUser addUser(long userId, IotUserLevel uv) {
 		IotUser user = new IotUser();
-		user.setApikey(R.sg(24).next());
-		user.setPbkdf2(pbkdf2(user.getApikey()));
+		makeApiKey(user);
 		user.setUserId(userId);
 		user.setUserLevel(uv);
 		switch (uv) {

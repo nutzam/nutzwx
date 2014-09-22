@@ -14,6 +14,7 @@ import javax.imageio.ImageReader;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.wendal.Zs;
 import net.wendal.iot.Iots;
 import net.wendal.iot.bean.IotDevice;
 import net.wendal.iot.bean.IotSensor;
@@ -57,8 +58,8 @@ public class IotExchangeModule {
 	@At({"/iot/device/?/sensor/?/datapoints", "/v1.1/device/?/sensor/?/datapoints"})
 	@GET
 	@Ok("void")
-	public void getLastData(String device_id, String sensor_id, @Attr("userId")long userId, HttpServletResponse resp) throws IOException {
-		IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where("deviceId", "=", device_id).and("userId", "=", userId).and("id", "=", sensor_id));
+	public void getLastData(String device_id, String sensor_id, @Attr(Zs.UID)long userId, HttpServletResponse resp) throws IOException {
+		IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where("deviceId", "=", device_id).and(Zs.UID, "=", userId).and("id", "=", sensor_id));
 		if (sensor == null) {
 			resp.setStatus(406);
 			resp.getWriter().write(Iots.NOTFOUND);
@@ -73,8 +74,8 @@ public class IotExchangeModule {
 	@POST
 	@AdaptBy(type=VoidAdaptor.class)
 	@Ok("void")
-	public void upload(String device_id, String sensor_id, InputStream in, @Attr("userId")long userId, HttpServletResponse resp) throws IOException {
-		IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where("deviceId", "=", device_id).and("userId", "=", userId).and("id", "=", sensor_id));
+	public void upload(String device_id, String sensor_id, InputStream in, @Attr(Zs.UID)long userId, HttpServletResponse resp) throws IOException {
+		IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where("deviceId", "=", device_id).and(Zs.UID, "=", userId).and("id", "=", sensor_id));
 		if (sensor == null) {
 			resp.setStatus(406);
 			resp.getWriter().write(Iots.NOTFOUND);
@@ -97,8 +98,8 @@ public class IotExchangeModule {
 	@POST
 	@AdaptBy(type=VoidAdaptor.class)
 	@Ok("json:full")
-	public Object upload(String device_id, InputStream in, @Attr("userId")long userId, HttpServletResponse resp) throws IOException {
-		IotDevice dev = dao.fetch(IotDevice.class, Cnd.where("deviceId", "=", device_id).and("userId", "=", userId));
+	public Object upload(String device_id, InputStream in, @Attr(Zs.UID)long userId, HttpServletResponse resp) throws IOException {
+		IotDevice dev = dao.fetch(IotDevice.class, Cnd.where("deviceId", "=", device_id).and(Zs.UID, "=", userId));
 		if (dev == null) {
 			resp.setStatus(406);
 			resp.getWriter().write(Iots.NOTFOUND);
@@ -113,7 +114,7 @@ public class IotExchangeModule {
 		for (Object obj : list) {
 			Map<String, Object> map = (Map<String, Object>)obj;
 			long sensor_id = Long.parseLong(map.get("sensor_id").toString());
-			IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where("deviceId", "=", device_id).and("userId", "=", userId).and("id", "=", sensor_id));
+			IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where("deviceId", "=", device_id).and(Zs.UID, "=", userId).and("id", "=", sensor_id));
 			if (sensor == null) {
 				re.put(""+sensor_id, "no such sensor");
 				continue;
@@ -135,14 +136,14 @@ public class IotExchangeModule {
 	@POST
 	@AdaptBy(type=VoidAdaptor.class)
 	@Ok("void")
-	public void uploadPhoto(String device_id, String sensor_id, @Attr("userId")long userId, 
+	public void uploadPhoto(String device_id, String sensor_id, @Attr(Zs.UID)long userId, 
 			HttpServletResponse resp, HttpServletRequest req) throws IOException {
 		if (req.getContentLength() > 1024*1024) {
 			resp.setStatus(406);
 			resp.getWriter().write(Iots.TOOBIG);
 			return;
 		}
-		IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where("deviceId", "=", device_id).and("userId", "=", userId).and("id", "=", sensor_id));
+		IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where("deviceId", "=", device_id).and(Zs.UID, "=", userId).and("id", "=", sensor_id));
 		if (sensor == null) {
 			resp.setStatus(406);
 			resp.getWriter().write(Iots.NOTFOUND);

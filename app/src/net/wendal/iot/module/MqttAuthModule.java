@@ -3,7 +3,8 @@ package net.wendal.iot.module;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.wendal.base.bean.User;
+import net.wendal.Zs;
+import net.wendal.base.service.UserService;
 import net.wendal.iot.bean.IotSensor;
 import net.wendal.iot.bean.IotUser;
 
@@ -25,6 +26,8 @@ public class MqttAuthModule {
 
 	@Inject Dao dao;
 	
+	@Inject UserService userService; // 主体User,不是IotUser哦
+	
 	static View HTTP_403 = new View() {
 		
 		public void render(HttpServletRequest req, HttpServletResponse resp, Object obj) throws Throwable {
@@ -40,8 +43,7 @@ public class MqttAuthModule {
 		log.infof("u=%s p=%s", username, password);;
 		if (Strings.isBlank(username))
 			return HTTP_403;
-		User user = dao.fetch(User.class, username);
-		if (user != null && dao.count(IotUser.class, Cnd.where("userId", "=", user.getId()).and("apikey", "=", password)) == 1)
+		if (dao.count(IotUser.class, Cnd.where(Zs.UID, "=", userService.userId(username)).and("apikey", "=", password)) == 1)
 			return null;
 		return HTTP_403;
 	}
@@ -62,10 +64,7 @@ public class MqttAuthModule {
 		if (Strings.isBlank(topic) || !topic.matches("^iot/sensor/[0-9]+$"))
 			return HTTP_403;
 		long sensor_id = Long.parseLong(topic.substring("iot/sensor/".length()));
-		User user = dao.fetch(User.class, username);
-		if (user == null)
-			return HTTP_403;
-		IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where("userId", "=", user.getId()).and("id", "=", sensor_id));
+		IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where(Zs.UID, "=", userService.userId(username)).and("id", "=", sensor_id));
 		if (sensor == null)
 			return HTTP_403;
 		return null;

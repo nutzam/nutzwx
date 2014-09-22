@@ -3,17 +3,18 @@ package net.wendal.iot.module;
 import java.util.Collections;
 import java.util.List;
 
+import net.wendal.Zs;
 import net.wendal.iot.Iots;
 import net.wendal.iot.bean.IotDevice;
 import net.wendal.iot.bean.IotSensor;
 import net.wendal.iot.bean.IotUser;
 import net.wendal.iot.mvc.ApiKeyFilter;
+import net.wendal.iot.service.IotService;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
-import org.nutz.lang.random.R;
 import org.nutz.lang.util.NutMap;
 import org.nutz.mvc.adaptor.JsonAdaptor;
 import org.nutz.mvc.annotation.AdaptBy;
@@ -29,8 +30,6 @@ import org.nutz.mvc.annotation.POST;
 import org.nutz.mvc.annotation.PUT;
 import org.nutz.mvc.annotation.Param;
 
-import net.wendal.Zs;
-
 @Filters({@By(type=ApiKeyFilter.class, args="ioc:apiKeyFilter")})
 @Fail("http:500")
 @Ok("smart")
@@ -39,6 +38,8 @@ public class IotAdminModule {
 	
 	@Inject
 	Dao dao;
+	
+	@Inject IotService iotService;
 	
 	@At("/iot/apikey")
 	@GET
@@ -49,7 +50,7 @@ public class IotAdminModule {
 		IotUser usr = dao.fetch(IotUser.class, userId);
 		if (usr == null) {
 			usr = new IotUser();
-			usr.setApikey(R.sg(10).next());
+			iotService.makeApiKey(usr);
 			dao.insert(usr);
 		}
 		return new NutMap().addv("apikey", usr.getApikey());
@@ -64,10 +65,10 @@ public class IotAdminModule {
 		IotUser usr = dao.fetch(IotUser.class, userId);
 		if (usr == null) {
 			usr = new IotUser();
-			usr.setApikey(R.sg(10).next());
+			iotService.makeApiKey(usr);
 			dao.insert(usr);
 		} else {
-			usr.setApikey(R.sg(10).next());
+			iotService.makeApiKey(usr);
 			dao.update(usr);
 		}
 		return new NutMap().addv("apikey", usr.getApikey());

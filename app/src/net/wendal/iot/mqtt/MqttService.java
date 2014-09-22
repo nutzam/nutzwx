@@ -23,15 +23,21 @@ public class MqttService {
 	@Inject
 	IotService iotService;
 	
+	@Inject("java:$config.get('mqtt.ip')")
+	String mqttIp;
+	
+	@Inject("java:$config.get('mqtt.port')")
+	int mqttPort;
+	
 	int qos = 2;
-	String broker = "tcp://127.0.0.1:1883";
+	String broker ;
 	String clientId = "JavaSample" + System.currentTimeMillis();
 	MemoryPersistence persistence = new MemoryPersistence();
 	MqttClient sampleClient;
 
 	public void init() throws Exception {
+		broker = String.format("tcp://%s:%d", mqttIp, mqttPort);
 		sampleClient = new MqttClient(broker, clientId, persistence);
-//		_init();
 	}
 	
 	public boolean _init() {

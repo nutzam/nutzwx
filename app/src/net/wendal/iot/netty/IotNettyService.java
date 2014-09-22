@@ -26,7 +26,8 @@ public class IotNettyService {
 	@Inject
 	IotServerInitializer iotServerInitializer;
 	
-	public static final int PORT = 8999;
+	@Inject("java:$config.get('netty.iot.port')")
+	int port;
 	
 	ServerBootstrap b;
 	
@@ -44,7 +45,7 @@ public class IotNettyService {
 					.handler(new LoggingHandler(LogLevel.INFO))
 					.childHandler(iotServerInitializer);
 
-		cf = b.bind(PORT);
+		cf = b.bind(port);
 	}
 	
 	public void close() throws InterruptedException {
