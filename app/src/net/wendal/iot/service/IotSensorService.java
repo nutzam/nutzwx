@@ -19,6 +19,7 @@ import net.wendal.iot.bean.history.IotKvHistory;
 import net.wendal.iot.bean.history.IotLocationHistory;
 import net.wendal.iot.bean.history.IotNumberHistory;
 import net.wendal.iot.bean.history.IotOnoffHistory;
+import net.wendal.iot.mqtt.MqttService;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
@@ -35,6 +36,8 @@ import org.nutz.lang.Strings;
 public class IotSensorService {
 	
 	@Inject Dao dao;
+	
+	@Inject MqttService mqttService;
 
 	@SuppressWarnings("unchecked")
 	public SensorUploadResult upload(IotSensor sensor, InputStream in) throws IOException {
@@ -157,6 +160,8 @@ public class IotSensorService {
 		for (IotSensorTrigger trigger : tirggers) {
 			trigger.trigger(sensor, map, v);
 		}
+		// publish to mqtt
+		mqttService.publish("iot/sensor/"+sensor.getId(), sensor.getValue());
 		return null;
 	}
 	

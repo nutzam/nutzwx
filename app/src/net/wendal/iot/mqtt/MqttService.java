@@ -57,6 +57,7 @@ public class MqttService {
 	public void publish(String topic, String msg) {
 		if (!_init())
 			return;
+		log.debugf("mqtt topic=%s msg=%s", topic, msg);
 		try {
 			sampleClient.publish(topic, msg.getBytes(), 2, true);
 		} catch (Exception e) {
