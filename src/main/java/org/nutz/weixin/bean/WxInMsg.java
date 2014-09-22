@@ -33,6 +33,7 @@ public class WxInMsg {
 	private String status;
 	
 	private WxScanCodeInfo scanCodeInfo;
+	private WxSendLocationInfo sendLocationInfo;
 	
 	/**从页面传来的key值*/
 	private String extkey;
@@ -214,6 +215,14 @@ public class WxInMsg {
 
     public void setScanCodeInfo(WxScanCodeInfo scanCodeInfo) {
         this.scanCodeInfo = scanCodeInfo;
+    }
+
+    public WxSendLocationInfo getSendLocationInfo() {
+        return sendLocationInfo;
+    }
+
+    public void setSendLocationInfo(WxSendLocationInfo sendLocationInfo) {
+        this.sendLocationInfo = sendLocationInfo;
     }
 	
 	
