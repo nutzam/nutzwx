@@ -54,7 +54,7 @@ public class IotExchangeModule {
 	@Inject
 	IotSensorService iotSensorService;
 	
-	@At({"/ito/device/?/sensor/?/datapoints", "/v1.1/device/?/sensor/?/datapoints"})
+	@At({"/iot/device/?/sensor/?/datapoints", "/v1.1/device/?/sensor/?/datapoints"})
 	@GET
 	@Ok("void")
 	public void getLastData(String device_id, String sensor_id, @Attr("userId")long userId, HttpServletResponse resp) throws IOException {
@@ -69,7 +69,7 @@ public class IotExchangeModule {
 		resp.getWriter().write(sensor.getValue());
 	}
 
-	@At({"/ito/device/?/sensor/?/datapoints", "/v1.1/device/?/sensor/?/datapoints"})
+	@At({"/iot/device/?/sensor/?/datapoints", "/v1.1/device/?/sensor/?/datapoints"})
 	@POST
 	@AdaptBy(type=VoidAdaptor.class)
 	@Ok("void")
@@ -93,7 +93,7 @@ public class IotExchangeModule {
 	}
 	
 	@SuppressWarnings("unchecked")
-	@At({"/ito/device/?/datapoints", "/v1.1/device/?/datapoints"})
+	@At({"/iot/device/?/datapoints", "/v1.1/device/?/datapoints"})
 	@POST
 	@AdaptBy(type=VoidAdaptor.class)
 	@Ok("json:full")
@@ -131,7 +131,7 @@ public class IotExchangeModule {
 		return re;
 	}
 	
-	@At({"/ito/device/?/sensor/?/photos", "/v1.1/device/?/sensor/?/photos"})
+	@At({"/iot/device/?/sensor/?/photos", "/v1.1/device/?/sensor/?/photos"})
 	@POST
 	@AdaptBy(type=VoidAdaptor.class)
 	@Ok("void")

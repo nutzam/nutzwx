@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.wendal.base.bean.User;
+import net.wendal.iot.bean.IotSensor;
 import net.wendal.iot.bean.IotUser;
 
 import org.nutz.dao.Cnd;
@@ -56,6 +57,17 @@ public class MqttAuthModule {
 	@At("/acl")
 	@Ok("void")
 	public View acl(@Param("username")String username, @Param("topic")String topic, @Param("acc")String acc) {
-		return  null;
+		if (!"1".equals(acc))
+			return HTTP_403; // TODO 支持mqtt发布, 即通过mqtt更新传感器的值
+		if (Strings.isBlank(topic) || !topic.matches("^iot/sensor/[0-9]+$"))
+			return HTTP_403;
+		long sensor_id = Long.parseLong(topic.substring("iot/sensor/".length()));
+		User user = dao.fetch(User.class, username);
+		if (user == null)
+			return HTTP_403;
+		IotSensor sensor = dao.fetch(IotSensor.class, Cnd.where("userId", "=", user.getId()).and("id", "=", sensor_id));
+		if (sensor == null)
+			return HTTP_403;
+		return null;
 	}
 }
