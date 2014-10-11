@@ -18,6 +18,7 @@ import net.wendal.Zs;
 import net.wendal.iot.Iots;
 import net.wendal.iot.bean.IotDevice;
 import net.wendal.iot.bean.IotSensor;
+import net.wendal.iot.bean.IotSensorUpdateRule;
 import net.wendal.iot.bean.SensorUploadResult;
 import net.wendal.iot.mvc.ApiKeyFilter;
 import net.wendal.iot.service.IotSensorService;
@@ -81,7 +82,7 @@ public class IotExchangeModule {
 			resp.getWriter().write(Iots.NOTFOUND);
 			return;
 		}
-		if (sensor.getLastUpdateTime() != null && System.currentTimeMillis() - sensor.getLastUpdateTime().getTime() < Iots.Limit_Sensor_Update_Interval * 1000 ) {
+		if (sensor.getUpdateRule() != IotSensorUpdateRule.onlyvalue && sensor.getLastUpdateTime() != null && System.currentTimeMillis() - sensor.getLastUpdateTime().getTime() < Iots.Limit_Sensor_Update_Interval * 1000 ) {
 			resp.setStatus(406);
 			resp.getWriter().write(Iots.TOOFAST);
 			return ; // too fast

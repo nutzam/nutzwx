@@ -13,6 +13,7 @@ import java.util.Map;
 import net.wendal.iot.Iots;
 import net.wendal.iot.bean.IotSensor;
 import net.wendal.iot.bean.IotSensorTrigger;
+import net.wendal.iot.bean.IotSensorUpdateRule;
 import net.wendal.iot.bean.SensorUploadResult;
 import net.wendal.iot.bean.history.IotImageHistory;
 import net.wendal.iot.bean.history.IotKvHistory;
@@ -86,6 +87,7 @@ public class IotSensorService {
 		Object v = map.get("value");
 		Object t = map.get("timestamp");
 		Date time = null;
+		boolean insertHistory = sensor.getUpdateRule() != IotSensorUpdateRule.onlyvalue;
 		if (t == null) {
 			time = new Date();
 		} else {
@@ -104,6 +106,8 @@ public class IotSensorService {
 			} catch (Throwable e) {
 				return "bad value";
 			}
+			if (!insertHistory)
+				break;
 			IotNumberHistory h = new IotNumberHistory();
 			h.setSensorId(sensor.getId());
 			h.setValue(value);
@@ -115,6 +119,8 @@ public class IotSensorService {
 			if (!tmp.containsKey("lan") || !tmp.containsKey("lat") || !tmp.containsKey("speed")) {
 				return "miss some gps key";
 			}
+			if (!insertHistory)
+				break;
 			IotLocationHistory gps = null;
 			try {
 				gps = Lang.map2Object(tmp, IotLocationHistory.class);
@@ -131,6 +137,8 @@ public class IotSensorService {
 			if (Strings.isBlank(key)) {
 				return "key is blank or miss";
 			}
+			if (!insertHistory)
+				break;
 			IotKvHistory raw = new IotKvHistory();
 			raw.setSensorId(sensor.getId());
 			raw.setTimestamp(time);
@@ -139,15 +147,16 @@ public class IotSensorService {
 			partDao(sensor).fastInsert(raw);
 			break;
 		case onoff:
-			IotOnoffHistory onoff = new IotOnoffHistory();
-			onoff.setTimestamp(time);
 			if ("1".equals(String.valueOf(v))) {
-				onoff.setValue(1);
 				v = 1;
 			} else {
-				onoff.setValue(0);
 				v = 0;
 			}
+			if (!insertHistory)
+				break;
+			IotOnoffHistory onoff = new IotOnoffHistory();
+			onoff.setTimestamp(time);
+			onoff.setValue((Integer)v);
 			partDao(sensor).fastInsert(onoff);
 			break;
 		default:

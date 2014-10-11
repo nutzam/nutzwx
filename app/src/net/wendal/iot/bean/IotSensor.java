@@ -77,6 +77,12 @@ public class IotSensor {
 	@ColDefine(width=1024)
 	private String value;
 	
+	/**
+	 * 更新策略
+	 */
+	@Column("ur")
+	private IotSensorUpdateRule updateRule;
+	
 //----------------------------------------
 
 	public long getId() {
@@ -149,5 +155,13 @@ public class IotSensor {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public IotSensorUpdateRule getUpdateRule() {
+		return updateRule;
+	}
+
+	public void setUpdateRule(IotSensorUpdateRule updateRule) {
+		this.updateRule = updateRule;
 	}
 }
