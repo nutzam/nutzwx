@@ -27,7 +27,7 @@ public class MailServiceImpl implements MailService {
 	public boolean send(String to, String subject, String tpl, Context ctx) {
 		Email email = new SimpleEmail();
 		email.setHostName(config.get("mail.host"));
-		email.setAuthenticator(new DefaultAuthenticator(config.get("mail.user"), config.get("mail.passwd")));
+		// email.setAuthenticator(new DefaultAuthenticator(config.get("mail.user"), config.get("mail.passwd")));
 		if (config.getInt("mail.ssl", 0) == 1) {
 			email.setSSLOnConnect(true);
 			email.setSmtpPort(config.getInt("mail.port", 465));

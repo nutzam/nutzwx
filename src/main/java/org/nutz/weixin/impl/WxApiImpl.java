@@ -36,238 +36,266 @@ import org.nutz.weixin.util.Wxs;
 
 @SuppressWarnings("unchecked")
 public class WxApiImpl implements WxAPI {
-	
-	private static final Log log = Logs.get();
-	
-	protected String base = "https://api.weixin.qq.com/cgi-bin";
 
-	protected WxMaster master;
+    private static final Log log = Logs.get();
 
-	public WxApiImpl(WxMaster master) {
-		super();
-		this.master = master;
-	}
+    protected String base = "https://api.weixin.qq.com/cgi-bin";
 
-	public void send(WxOutMsg out) {
-		if (out.getFromUserName() == null)
-			out.setFromUserName(master.getOpenid());
-		String str = Wxs.asJson(out);
-		if (Wxs.DEV_MODE)
-			log.debug("api out msg>\n" + str);
-		call("/message/custom/send", METHOD.POST, str);
-	}
+    protected WxMaster master;
 
-	public WxGroup createGroup(WxGroup group) {
-		Map<String, Object> map = call("/groups/create", METHOD.POST, Json.toJson(new NutMap().setv("group", group)));
-		return Lang.map2Object((Map<String, Object>)map.get("group"), WxGroup.class);
-	}
+    public WxApiImpl(WxMaster master) {
+        super();
+        this.master = master;
+    }
 
-	public List<WxGroup> listGroup() {
-		Map<String, Object> map = call("/groups/get", METHOD.GET, null);
-		List<Map<String, Object>> list = (List<Map<String, Object>>) map.get("groups");
-		List<WxGroup> groups = new ArrayList<WxGroup>();
-		for (Map<String, Object> e : list) {
-			groups.add(Lang.map2Object(e, WxGroup.class));
-		}
-		return groups;
-	}
+    public void send(WxOutMsg out) {
+        if (out.getFromUserName() == null)
+            out.setFromUserName(master.getOpenid());
+        String str = Wxs.asJson(out);
+        if (Wxs.DEV_MODE)
+            log.debug("api out msg>\n" + str);
+        call("/message/custom/send", METHOD.POST, str);
+    }
 
-	public int userGroup(String openid) {
-		Map<String, Object> map = call("/groups/getid", METHOD.POST, Json.toJson(new NutMap().setv("openid", openid)));
-		return ((Number)map.get("groupid")).intValue();
-	}
+    public WxGroup createGroup(WxGroup group) {
+        Map<String, Object> map = call("/groups/create",
+                                       METHOD.POST,
+                                       Json.toJson(new NutMap().setv("group", group)));
+        return Lang.map2Object((Map<String, Object>) map.get("group"), WxGroup.class);
+    }
 
-	public void renameGroup(WxGroup group) {
-		call("/groups/update", METHOD.POST, Json.toJson(group));
-	}
+    public List<WxGroup> listGroup() {
+        Map<String, Object> map = call("/groups/get", METHOD.GET, null);
+        List<Map<String, Object>> list = (List<Map<String, Object>>) map.get("groups");
+        List<WxGroup> groups = new ArrayList<WxGroup>();
+        for (Map<String, Object> e : list) {
+            groups.add(Lang.map2Object(e, WxGroup.class));
+        }
+        return groups;
+    }
 
-	public void moveUser2Group(String openid, String groupid) {
-		call("/groups/members/update", METHOD.POST, Json.toJson(new NutMap().setv("openid", openid).setv("groupid", groupid)));
-	}
+    public int userGroup(String openid) {
+        Map<String, Object> map = call("/groups/getid",
+                                       METHOD.POST,
+                                       Json.toJson(new NutMap().setv("openid", openid)));
+        return ((Number) map.get("groupid")).intValue();
+    }
 
-	public WxUser fetchUser(String openid, String lang) {
-		if (lang == null)
-			lang = "zh_CN";
-		Map<String, Object> map = call("/user/info?openid="+openid+"&lang="+openid, METHOD.GET, null);
-		return Lang.map2Object(map, WxUser.class);
-	}
+    public void renameGroup(WxGroup group) {
+        call("/groups/update", METHOD.POST, Json.toJson(group));
+    }
 
-	public void listWatcher(Each<String> each) {
-		String next_openid = null;
-		Map<String, Object> map = null;
-		int count = 0;
-		int total = 0;
-		int index = 0;
-		while (true) {
-			if (next_openid == null)
-				map = call("/user/get", METHOD.GET, null);
-			else
-				map = call("/user/get?next_openid="+next_openid, METHOD.GET, null);
-			count = ((Number)map.get("count")).intValue();
-			if (count < 1)
-				return;
-			total = ((Number)map.get("total")).intValue();
-			next_openid = Strings.sNull(map.get("next_openid"));
-			if (next_openid.length() == 0)
-				next_openid = null;
-			List<String> openids = (List<String>)((Map<String, Object>)map.get("data")).get("openid");
-			for (String openid : openids) {
-				try {
-					each.invoke(index, openid, total);
-				} catch (ExitLoop e) {
-					return;
-				} catch (ContinueLoop e) {
-					continue;
-				} catch (LoopException e) {
-					throw e;
-				}
-				index++;
-			}
-		}
-	}
+    public void moveUser2Group(String openid, String groupid) {
+        call("/groups/members/update",
+             METHOD.POST,
+             Json.toJson(new NutMap().setv("openid", openid).setv("groupid", groupid)));
+    }
 
-	public void creatMenu(WxMenu menu) {
-		call("/menu/create", METHOD.POST, Json.toJson(menu));
-	}
+    public WxUser fetchUser(String openid, String lang) {
+        if (lang == null)
+            lang = "zh_CN";
+        Map<String, Object> map = call("/user/info?openid=" + openid + "&lang=" + openid,
+                                       METHOD.GET,
+                                       null);
+        return Lang.map2Object(map, WxUser.class);
+    }
 
-	public WxMenu fetchMenu() {
-		Map<String, Object> map = call("/menu/get", METHOD.GET, null);
-		return Lang.map2Object((Map<String, Object>)map.get("menu"), WxMenu.class);
-	}
+    public void listWatcher(Each<String> each) {
+        String next_openid = null;
+        Map<String, Object> map = null;
+        int count = 0;
+        int total = 0;
+        int index = 0;
+        while (true) {
+            if (next_openid == null)
+                map = call("/user/get", METHOD.GET, null);
+            else
+                map = call("/user/get?next_openid=" + next_openid, METHOD.GET, null);
+            count = ((Number) map.get("count")).intValue();
+            if (count < 1)
+                return;
+            total = ((Number) map.get("total")).intValue();
+            next_openid = Strings.sNull(map.get("next_openid"));
+            if (next_openid.length() == 0)
+                next_openid = null;
+            List<String> openids = (List<String>) ((Map<String, Object>) map.get("data")).get("openid");
+            for (String openid : openids) {
+                try {
+                    each.invoke(index, openid, total);
+                }
+                catch (ExitLoop e) {
+                    return;
+                }
+                catch (ContinueLoop e) {
+                    continue;
+                }
+                catch (LoopException e) {
+                    throw e;
+                }
+                index++;
+            }
+        }
+    }
 
-	public void clearMenu() {
-		call("/menu/clear", METHOD.GET, null);
-	}
+    public void creatMenu(WxMenu menu) {
+        call("/menu/create", METHOD.POST, Json.toJson(menu));
+    }
 
-	public String tmpQr(int expire_seconds, String scene_id) {
-		NutMap map = new NutMap().setv("expire_seconds", expire_seconds).setv("action_name", "QR_SCENE").setv("scene", new NutMap().setv("scene_id", scene_id));
-		return call("", METHOD.POST, Json.toJson(map)).get("ticket").toString();
-	}
+    public WxMenu fetchMenu() {
+        Map<String, Object> map = call("/menu/get", METHOD.GET, null);
+        return Lang.map2Object((Map<String, Object>) map.get("menu"), WxMenu.class);
+    }
 
-	public String godQr(int scene_id) {
-		NutMap map = new NutMap().setv("action_name", "QR_LIMIT_SCENE").setv("scene", new NutMap().setv("scene_id", scene_id));
-		return call("", METHOD.POST, Json.toJson(map)).get("ticket").toString();
-	}
+    public void clearMenu() {
+        call("/menu/clear", METHOD.GET, null);
+    }
 
-	public String qrUrl(String ticket) {
-		return base + "/showqrcode?ticket="+ticket;
-	}
+    public String tmpQr(int expire_seconds, String scene_id) {
+        NutMap map = new NutMap().setv("expire_seconds", expire_seconds)
+                                 .setv("action_name", "QR_SCENE")
+                                 .setv("scene", new NutMap().setv("scene_id", scene_id));
+        return call("", METHOD.POST, Json.toJson(map)).get("ticket").toString();
+    }
 
-	public void reflushAccessToken() {
-		String url = String.format("%s/token?grant_type=client_credential&appid=%s&secret=%s", base, master.getAppid(), master.getAppsecret());
-		Response resp = Http.get(url);
-		if (!resp.isOK())
-			throw new IllegalArgumentException("reflushAccessToken FAIL , openid="+ master.getOpenid());
-		String str = resp.getContent();
-		Map<String, Object> map = (Map<String, Object>) Json.fromJson(str);
-		master.setAccess_token(map.get("access_token").toString());
-		master.setAccess_token_expires(System.currentTimeMillis() + (((Number)map.get("expires_in")).intValue() - 60)  * 1000);
-	}
-	
-	protected Map<String, Object> call(String URL, METHOD method, String body) {
-		String token = getAccessToken();
-		if (URL.contains("?")) {
-			URL = base + URL + "&access_token=" + token;
-		} else {
-			URL = base + URL + "?access_token=" + token;
-		}
-		Request req = Request.create(URL, method);
-		if (body != null)
-			req.setData(body);
-		Response resp = Sender.create(req).send();
-		if (!resp.isOK())
-			throw new IllegalArgumentException("resp code=" + resp.getStatus());
-		Map<String, Object> map = (Map<String, Object>) Json.fromJson(resp.getReader());
-		if (map != null && map.containsKey("errcode") && ((Number)map.get("errcode")).intValue() != 0) {
-			throw new IllegalArgumentException(map.toString());
-		}
-		return map;
-	}
-	
-	public String getAccessToken() {
-		String token = master.getAccess_token();
-		if (token == null || master.getAccess_token_expires() < System.currentTimeMillis()) {
-			synchronized (master) {
-				if (token == null || master.getAccess_token_expires() < System.currentTimeMillis()) {
-					reflushAccessToken();
-					token = master.getAccess_token();
-				}
-			}
-		}
-		return token;
-	}
-	
-	@Override
-	public String mediaUpload(String type, File f) {
-		if (type == null)
-			throw new NullPointerException("media type is NULL");
-		if (f == null)
-			throw new NullPointerException("meida file is NULL");
-		String url = "http://file.api.weixin.qq.com/cgi-bin/media/upload";
-		Request req = Request.create(url, METHOD.POST);
-		req.getParams().put("type", type);
-		req.getParams().put("access_token", getAccessToken());
-		req.getParams().put("file", f);
-		Response resp = FilePostSender.create(url).send();
-		if (!resp.isOK())
-			throw new IllegalStateException("media upload file, resp code="+resp.getStatus());
-		Map<String, Object> map = (Map<String, Object>) Json.fromJson(resp.getReader());
-		if (map != null && map.containsKey("errcode") && ((Number)map.get("errcode")).intValue() != 0) {
-			throw new IllegalArgumentException(map.toString());
-		}
-		return map.get("media_id").toString();
-	}
-	
-	@Override
-	public NutResource mediaGet(String mediaId) {
-		String url = "http://file.api.weixin.qq.com/cgi-bin/media/get";
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("access_token", getAccessToken());
-		params.put("media_id", mediaId);
-		final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();
-		if (!resp.isOK())
-			throw new IllegalStateException("download media file, resp code="+resp.getStatus());
-		final String disposition = resp.getHeader().get("Content-disposition");
-		return new NutResource() {
+    public String godQr(int scene_id) {
+        NutMap map = new NutMap().setv("action_name", "QR_LIMIT_SCENE")
+                                 .setv("scene", new NutMap().setv("scene_id", scene_id));
+        return call("", METHOD.POST, Json.toJson(map)).get("ticket").toString();
+    }
 
-			public String getName() {
-				if (disposition == null)
-					return "file.data";
-				for(String str: disposition.split(";")) {
-					if (str.startsWith("filename="))  {
-						str = str.substring("filename=".length());
-						if (str.startsWith("\""))
-							str = str.substring(1);
-						if (str.endsWith("\""))
-							str = str.substring(0, str.length() -1);
-						return str.trim().intern();
-					}
-				}
-				return "file.data";
-			}
-			
-			public InputStream getInputStream() throws IOException {
-				return resp.getStream();
-			}
-		};
-	}
-	
-	public String sendTemplateMsg(String touser, String template_id, String topcolor, Map<String, WxTemplateData> data) {
-	    if (Strings.isBlank(topcolor))
-	        topcolor = WxTemplateData.DFT_COLOR;
-	    NutMap map = new NutMap();
-	    map.put("touser", touser);
-	    map.put("template_id", template_id);
-	    map.put("topcolor", topcolor);
-	    map.put("data", data);
-	    return call("/message/template/send", METHOD.POST, Json.toJson(map)).get("msgid").toString();
-	}
-	
-	public void userRemark(String openid, String remark) {
-	    NutMap map = new NutMap();
-	    map.put("openid", openid);
-	    map.put("remark", remark);
-	    call("/user/info/updateremark", METHOD.POST, Json.toJson(map));
-	}
-	
+    public String qrUrl(String ticket) {
+        return base + "/showqrcode?ticket=" + ticket;
+    }
+
+    public void reflushAccessToken() {
+        String url = String.format("%s/token?grant_type=client_credential&appid=%s&secret=%s",
+                                   base,
+                                   master.getAppid(),
+                                   master.getAppsecret());
+        Response resp = Http.get(url);
+        if (!resp.isOK())
+            throw new IllegalArgumentException("reflushAccessToken FAIL , openid="
+                                               + master.getOpenid());
+        String str = resp.getContent();
+        Map<String, Object> map = (Map<String, Object>) Json.fromJson(str);
+        master.setAccess_token(map.get("access_token").toString());
+        master.setAccess_token_expires(System.currentTimeMillis()
+                                       + (((Number) map.get("expires_in")).intValue() - 60)
+                                       * 1000);
+    }
+
+    protected Map<String, Object> call(String URL, METHOD method, String body) {
+        String token = getAccessToken();
+        if (URL.contains("?")) {
+            URL = base + URL + "&access_token=" + token;
+        } else {
+            URL = base + URL + "?access_token=" + token;
+        }
+        Request req = Request.create(URL, method);
+        if (body != null)
+            req.setData(body);
+        Response resp = Sender.create(req).send();
+        if (!resp.isOK())
+            throw new IllegalArgumentException("resp code=" + resp.getStatus());
+        Map<String, Object> map = (Map<String, Object>) Json.fromJson(resp.getReader());
+        if (map != null
+            && map.containsKey("errcode")
+            && ((Number) map.get("errcode")).intValue() != 0) {
+            throw new IllegalArgumentException(map.toString());
+        }
+        return map;
+    }
+
+    public String getAccessToken() {
+        String token = master.getAccess_token();
+        if (token == null || master.getAccess_token_expires() < System.currentTimeMillis()) {
+            synchronized (master) {
+                if (token == null || master.getAccess_token_expires() < System.currentTimeMillis()) {
+                    reflushAccessToken();
+                    token = master.getAccess_token();
+                }
+            }
+        }
+        return token;
+    }
+
+    @Override
+    public String mediaUpload(String type, File f) {
+        if (type == null)
+            throw new NullPointerException("media type is NULL");
+        if (f == null)
+            throw new NullPointerException("meida file is NULL");
+        String url = String.format("http://file.api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s",
+                                   getAccessToken(),
+                                   type);
+        Request req = Request.create(url, METHOD.POST);
+        req.getParams().put("media", f);
+        Response resp = new FilePostSender(req).send();
+        if (!resp.isOK())
+            throw new IllegalStateException("media upload file, resp code=" + resp.getStatus());
+        Map<String, Object> map = (Map<String, Object>) Json.fromJson(resp.getReader());
+        if (map != null
+            && map.containsKey("errcode")
+            && ((Number) map.get("errcode")).intValue() != 0) {
+            throw new IllegalArgumentException(map.toString());
+        }
+        return map.get("media_id").toString();
+    }
+
+    @Override
+    public NutResource mediaGet(String mediaId) {
+        String url = "http://file.api.weixin.qq.com/cgi-bin/media/get";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("access_token", getAccessToken());
+        params.put("media_id", mediaId);
+        final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();
+        if (!resp.isOK())
+            throw new IllegalStateException("download media file, resp code=" + resp.getStatus());
+        final String disposition = resp.getHeader().get("Content-disposition");
+        return new NutResource() {
+
+            public String getName() {
+                if (disposition == null)
+                    return "file.data";
+                for (String str : disposition.split(";")) {
+                    if (str.startsWith("filename=")) {
+                        str = str.substring("filename=".length());
+                        if (str.startsWith("\""))
+                            str = str.substring(1);
+                        if (str.endsWith("\""))
+                            str = str.substring(0, str.length() - 1);
+                        return str.trim().intern();
+                    }
+                }
+                return "file.data";
+            }
+
+            public InputStream getInputStream() throws IOException {
+                return resp.getStream();
+            }
+        };
+    }
+
+    public String sendTemplateMsg(String touser,
+                                  String template_id,
+                                  String topcolor,
+                                  Map<String, WxTemplateData> data) {
+        if (Strings.isBlank(topcolor))
+            topcolor = WxTemplateData.DFT_COLOR;
+        NutMap map = new NutMap();
+        map.put("touser", touser);
+        map.put("template_id", template_id);
+        map.put("topcolor", topcolor);
+        map.put("data", data);
+        return call("/message/template/send", METHOD.POST, Json.toJson(map)).get("msgid")
+                                                                            .toString();
+    }
+
+    public void userRemark(String openid, String remark) {
+        NutMap map = new NutMap();
+        map.put("openid", openid);
+        map.put("remark", remark);
+        call("/user/info/updateremark", METHOD.POST, Json.toJson(map));
+    }
+
 }
