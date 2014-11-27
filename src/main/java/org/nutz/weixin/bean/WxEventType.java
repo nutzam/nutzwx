@@ -38,7 +38,7 @@ public enum WxEventType {
 	 * <pre>
 	 * 用户点击view类型按钮后，微信客户端将会打开开发者在按钮中填写的网页URL
 	 * 可与网页授权获取用户基本信息接口结合，获得用户基本信息。
-	 * <pre>
+	 * </pre>
 	 */
 	VIEW, 
 	
