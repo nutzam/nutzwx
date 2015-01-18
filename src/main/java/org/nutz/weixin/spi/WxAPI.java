@@ -16,6 +16,7 @@ import org.nutz.weixin.bean.WxUser;
  * 封装weixin的API
  *
  */
+@Deprecated
 public interface WxAPI {
 
 	void send(WxOutMsg out);

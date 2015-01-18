@@ -2,11 +2,10 @@ package org.nutz.weixin.session.memory;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.nutz.weixin.bean.WxInMsg;
+import org.nutz.weixin.session.AbstractWxSessionManager;
 import org.nutz.weixin.spi.WxSession;
-import org.nutz.weixin.spi.WxSessionManager;
 
-public class MemorySessionManager implements WxSessionManager {
+public class MemorySessionManager extends AbstractWxSessionManager {
 
 	/**
 	 * 默认超时为2天
@@ -15,8 +14,8 @@ public class MemorySessionManager implements WxSessionManager {
 
 	protected ConcurrentHashMap<String, MemoryWxSession> sessions = new ConcurrentHashMap<String, MemoryWxSession>();
 
-	public WxSession getSession(WxInMsg in) {
-		String sessionId = in.getFromUserName() + "@" + in.getToUserName();
+	public WxSession getSession(String id, boolean create) {
+		String sessionId = id;
 		MemoryWxSession session = sessions.get(sessionId);
 		if (session != null) {
 			int maxInterval = session.getMaxInactiveInterval();
@@ -24,7 +23,7 @@ public class MemorySessionManager implements WxSessionManager {
 				return session;
 			long interval = (System.currentTimeMillis() - session.getLastAccessedTime()) / 1000 / 60;
 			if (maxInterval > interval) {
-				session.setLastAccessedTime(in.getCreateTime()*1000);
+				session.setLastAccessedTime(System.currentTimeMillis());
 				return session;
 			}
 			session = null;
@@ -33,8 +32,8 @@ public class MemorySessionManager implements WxSessionManager {
 			session = sessions.get(sessionId);
 			if (session == null) {
 				session = new MemoryWxSession(sessionId, this);
-				session.setCreateTime(in.getCreateTime()*1000);
-				session.setLastAccessedTime(in.getCreateTime()*1000);
+				session.setCreateTime(System.currentTimeMillis());
+				session.setLastAccessedTime(System.currentTimeMillis());
 				sessions.put(sessionId, session);
 				return session;
 			}

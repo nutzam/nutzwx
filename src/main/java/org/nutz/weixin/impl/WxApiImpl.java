@@ -35,6 +35,7 @@ import org.nutz.weixin.spi.WxAPI;
 import org.nutz.weixin.util.Wxs;
 
 @SuppressWarnings("unchecked")
+@Deprecated
 public class WxApiImpl implements WxAPI {
 
     private static final Log log = Logs.get();

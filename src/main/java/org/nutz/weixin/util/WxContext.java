@@ -14,6 +14,7 @@ import org.nutz.weixin.impl.WxApiImpl;
 import org.nutz.weixin.spi.WxAPI;
 import org.nutz.weixin.spi.WxHandler;
 
+@Deprecated
 public class WxContext {
 	
 	public static final String DEF = "default";

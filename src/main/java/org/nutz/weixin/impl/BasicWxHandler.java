@@ -6,6 +6,8 @@ public class BasicWxHandler extends AbstractWxHandler {
 	
 	protected String token;
 	
+	protected BasicWxHandler() {}
+	
 	public BasicWxHandler(String token) {
 		this.token = token;
 	}
