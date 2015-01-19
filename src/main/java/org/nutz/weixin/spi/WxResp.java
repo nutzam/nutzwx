@@ -9,8 +9,14 @@ import org.nutz.lang.Lang;
 import org.nutz.lang.util.NutMap;
 import org.nutz.weixin.WxException;
 import org.nutz.weixin.bean.WxGroup;
+import org.nutz.weixin.bean.WxMenu;
 import org.nutz.weixin.bean.WxUser;
 
+/**
+ * 
+ * @author wendal(wendal1985@gmail.com)
+ *
+ */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class WxResp extends NutMap {
 
@@ -75,4 +81,22 @@ public class WxResp extends NutMap {
     public WxUser user() {
         return Lang.map2Object(this, WxUser.class);
     }
+    
+    public List<WxMenu> menu() {
+    	List<WxMenu> list = new ArrayList<WxMenu>();
+    	return list;
+    }
+    
+    public String media_id() {
+		return getString("media_id");
+	}
+    
+    public String template_id() {
+		return getString("template_id");
+	}
+    
+    public String msgid() {
+    	return getString("msgid");
+    }
+    
 }

@@ -2,7 +2,11 @@ package org.nutz.weixin.spi;
 
 import org.nutz.weixin.bean.WxInMsg;
 import org.nutz.weixin.bean.WxOutMsg;
-
+/**
+ * 
+ *  @author wendal(wendal1985@gmail.com)
+ *
+ */
 public interface WxHandler {
 	
 	boolean check(String signature, String timestamp, String nonce, String key);

@@ -3,10 +3,10 @@ package org.nutz.weixin.spi;
 
 /**
  * v2版的API, 基本上不抛异常
- * @author wendal(wendal1985@gmail.com)
+ *  @author wendal(wendal1985@gmail.com)
  *
  */
-public interface WxApi2 extends WxBaseApi, WxMassApi, WxUserApi, WxQrApi, WxTemplateMsgApi, WxMediaApi {
+public interface WxApi2 extends WxBaseApi, WxMassApi, WxUserApi, WxQrApi, WxTemplateMsgApi, WxMediaApi, WxMenuApi {
     
     
 }

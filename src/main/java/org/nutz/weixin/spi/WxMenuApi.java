@@ -1,13 +1,19 @@
 package org.nutz.weixin.spi;
 
-import org.nutz.weixin.bean.WxMenu;
+import java.awt.Menu;
+import java.util.List;
 
+/**
+ * 
+ *  @author wendal(wendal1985@gmail.com)
+ *
+ */
 public interface WxMenuApi {
 
-    WxResp creatMenu(WxMenu menu);
+    WxResp menu_create(List<Menu> button);
     
-    WxResp fetchMenu();
+    WxResp menu_get();
     
-    WxResp clearMenu();
+    WxResp menu_delete();
 
 }

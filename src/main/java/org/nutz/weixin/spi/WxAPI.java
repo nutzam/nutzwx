@@ -14,7 +14,7 @@ import org.nutz.weixin.bean.WxUser;
 
 /**
  * 封装weixin的API
- *
+ *  @author wendal(wendal1985@gmail.com)
  */
 @Deprecated
 public interface WxAPI {

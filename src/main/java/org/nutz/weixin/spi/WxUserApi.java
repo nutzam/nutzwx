@@ -3,23 +3,28 @@ package org.nutz.weixin.spi;
 import org.nutz.lang.Each;
 import org.nutz.weixin.bean.WxGroup;
 
+/**
+ *  用户管理API
+ * @author wendal(wendal1985@gmail.com)
+ *
+ */
 public interface WxUserApi {
 
-    WxResp createGroup(WxGroup group);
+    WxResp groups_create(WxGroup group);
     
-    WxResp listGroup();
+    WxResp groups_get();
     
-    WxResp userGroup(String openid);
+    WxResp groups_getid(String openid);
     
-    WxResp renameGroup(WxGroup group);
+    WxResp groups_update(WxGroup group);
     
-    WxResp moveUser2Group(String openid, String groupid);
+    WxResp groups_member_update(String openid, String groupid);
     
     //-----------------------------------------------
     
-    WxResp fetchUser(String openid, String lang);
+    WxResp user_info(String openid, String lang);
     
-    void listWatcher(Each<String> each);
+    void user_get(Each<String> each);
     
-    WxResp userRemark(String openid, String remark);
+    WxResp user_info_updatemark(String openid, String remark);
 }

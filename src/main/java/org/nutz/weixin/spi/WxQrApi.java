@@ -1,12 +1,14 @@
 package org.nutz.weixin.spi;
 
+/**
+ * 
+ *  @author wendal(wendal1985@gmail.com)
+ *
+ */
 public interface WxQrApi {
     
-    WxResp tmpQr(int expire_seconds, String scene_id);
+    WxResp qrcode_create(Object scene_id, int expire_seconds);
     
-    WxResp godQr(int scene_id);
+    String qrcode_show(String ticket);
     
-    WxResp qrUrl(String ticket);
-    
-
 }

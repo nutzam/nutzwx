@@ -2,10 +2,17 @@ package org.nutz.weixin.spi;
 
 import java.io.File;
 
+import org.nutz.resource.NutResource;
+
+/**
+ * 
+ *  @author wendal(wendal1985@gmail.com)
+ *
+ */
 public interface WxMediaApi {
 
-    WxResp mediaUpload(String type, File f);
+    WxResp media_upload(String type, File f);
     
-    WxResp mediaGet(String mediaId);
+    NutResource media_get(String mediaId);
 
 }

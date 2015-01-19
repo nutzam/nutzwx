@@ -13,6 +13,7 @@ public class WxOutMsg {
 	private WxVideo video;
 	private WxMusic music;
 	private List<WxArticle> articles;
+	private String media_id;
 	
 	public WxOutMsg() {
 		createTime = System.currentTimeMillis();
@@ -96,6 +97,14 @@ public class WxOutMsg {
 
 	public void setArticles(List<WxArticle> articles) {
 		this.articles = articles;
+	}
+
+	public String getMedia_id() {
+		return media_id;
+	}
+
+	public void setMedia_id(String media_id) {
+		this.media_id = media_id;
 	}
 	
 }
