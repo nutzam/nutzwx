@@ -1,5 +1,9 @@
 package org.nutz.weixin.spi;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.nutz.weixin.bean.WxInMsg;
 import org.nutz.weixin.bean.WxOutMsg;
 
 /**
@@ -7,9 +11,9 @@ import org.nutz.weixin.bean.WxOutMsg;
  */
 public interface WxBaseApi {
 
-    WxResp send(WxOutMsg out);  
-
-    String getAccessToken();
-
-    void saveAccessToken(String token, long timeout);
+    WxResp send(WxOutMsg out);
+    
+    WxInMsg parse(HttpServletRequest req);
+    
+    void handle(HttpServletRequest req, HttpServletResponse resp, WxHandler handler);
 }

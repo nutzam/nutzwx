@@ -6,7 +6,6 @@ package org.nutz.weixin.spi;
  *  @author wendal(wendal1985@gmail.com)
  *
  */
-public interface WxApi2 extends WxBaseApi, WxMassApi, WxUserApi, WxQrApi, WxTemplateMsgApi, WxMediaApi, WxMenuApi {
-    
+public interface WxApi2 extends WxBaseApi, WxMassApi, WxUserApi, WxQrApi, WxTemplateMsgApi, WxMediaApi, WxMenuApi, WxAccessTokenApi {
     
 }

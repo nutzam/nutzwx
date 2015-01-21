@@ -1,5 +1,6 @@
 package org.nutz.weixin.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -68,6 +69,10 @@ public class Wxs {
             log.debug("Income >> \n" + Json.toJson(map));
         }
         return Lang.map2Object(tmp, WxInMsg.class);
+    }
+    
+    public static WxInMsg convert(String data) {
+        return convert(new ByteArrayInputStream(data.getBytes()));
     }
 
     /**

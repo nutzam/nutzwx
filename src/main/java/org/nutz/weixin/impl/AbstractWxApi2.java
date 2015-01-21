@@ -1,14 +1,33 @@
 package org.nutz.weixin.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.nutz.http.Http;
 import org.nutz.http.Request;
 import org.nutz.http.Request.METHOD;
 import org.nutz.http.Response;
 import org.nutz.http.Sender;
 import org.nutz.json.Json;
+import org.nutz.lang.Streams;
 import org.nutz.lang.util.NutMap;
+import org.nutz.weixin.WxException;
+import org.nutz.weixin.at.WxAccessToken;
+import org.nutz.weixin.at.impl.MemoryAccessTokenStore;
+import org.nutz.weixin.bean.WxInMsg;
+import org.nutz.weixin.bean.WxOutMsg;
+import org.nutz.weixin.repo.com.qq.weixin.mp.aes.AesException;
+import org.nutz.weixin.repo.com.qq.weixin.mp.aes.WXBizMsgCrypt;
+import org.nutz.weixin.spi.WxAccessTokenStore;
 import org.nutz.weixin.spi.WxApi2;
+import org.nutz.weixin.spi.WxHandler;
 import org.nutz.weixin.spi.WxResp;
+import org.nutz.weixin.util.BeanConfigures;
+import org.nutz.weixin.util.Wxs;
 
 public abstract class AbstractWxApi2 implements WxApi2 {
     
@@ -17,12 +36,77 @@ public abstract class AbstractWxApi2 implements WxApi2 {
     protected String appsecret;
     protected String base = "https://api.weixin.qq.com/cgi-bin";
     protected String openid;
+    protected String encodingAesKey;
 
-    protected String access_token;
-    protected int access_token_expires;
+    //protected String access_token;
+    //protected int access_token_expires;
     protected Object lock = new Object();
+    protected WXBizMsgCrypt pc;
+    
+    protected WxAccessTokenStore accessTokenStore;
 
-    public AbstractWxApi2() {}
+    public AbstractWxApi2() {
+    	this.accessTokenStore = new MemoryAccessTokenStore();
+    }
+    
+    public WxAccessTokenStore getAccessTokenStore() {
+    	return accessTokenStore;
+    }
+    
+    public void setAccessTokenStore(WxAccessTokenStore ats) {
+    	this.accessTokenStore = ats;
+    }
+    
+    protected synchronized void checkWXBizMsgCrypt() {
+		if (pc != null || encodingAesKey == null || token == null || appid == null)
+			return;
+		try {
+			pc = new WXBizMsgCrypt(token, encodingAesKey, appid);
+		} catch (AesException e) {
+			throw new WxException(e);
+		}
+	}
+    
+    public WxInMsg parse(HttpServletRequest req) {
+    	InputStream in;
+		try {
+			in = req.getInputStream();
+		} catch (IOException e) {
+			throw new WxException(e);
+		}
+    	String encrypt_type = req.getParameter("encrypt_type");
+    	if (encrypt_type == null || "raw".equals(encrypt_type))
+    		return Wxs.convert(in);
+    	checkWXBizMsgCrypt();
+    	if (pc == null)
+    		throw new WxException("encrypt message, but not configure token/encodingAesKey/appid");
+    	try {
+    		String msg_signature = req.getParameter("msg_signature");
+    		String timestamp = req.getParameter("timestamp");
+    		String nonce = req.getParameter("nonce");
+    		String str = pc.decryptMsg(msg_signature, timestamp, nonce, new String(Streams.readBytesAndClose(in)));
+    		return Wxs.convert(str);
+		} catch (AesException e) {
+			throw new WxException("bad message or bad encodingAesKey", e);
+		}
+    }
+    
+    public void handle(HttpServletRequest req, HttpServletResponse resp, WxHandler handler) {
+    	try {
+        	WxInMsg in = parse(req);
+        	WxOutMsg out = handler.handle(in);
+        	StringWriter sw = new StringWriter();
+			Wxs.asXml(sw, out);
+			String re = sw.getBuffer().toString();
+			if (pc != null)
+				re = pc.encryptMsg(re, req.getParameter("timestamp"), req.getParameter("nonce"));
+	    	resp.getWriter().write(re);
+		} catch (AesException e) {
+			throw new WxException(e);
+		} catch (IOException e) {
+			throw new WxException(e);
+		}
+    }
     
     protected WxResp get(String uri, String ... args) {
         String params = "";
@@ -62,15 +146,15 @@ public abstract class AbstractWxApi2 implements WxApi2 {
     }
     
     public String getAccessToken() {
-        if (token == null || access_token_expires < System.currentTimeMillis() / 1000) {
-            synchronized (lock) {
-                if (token == null || access_token_expires < System.currentTimeMillis() / 1000) {
-                    reflushAccessToken();
-                    saveAccessToken(access_token, access_token_expires);
-                }
-            }
-        }
-        return token;
+    	WxAccessToken at = accessTokenStore.getAccessToken();
+    	if (at == null || at.getAccess_token_expires() < System.currentTimeMillis() / 1000) {
+    		synchronized (lock) {
+    			if (at == null || at.getAccess_token_expires() < System.currentTimeMillis() / 1000) {
+    				reflushAccessToken();
+    			}
+			}
+    	}
+		return accessTokenStore.getAccessToken().getAccess_token();
     }
     
     protected void reflushAccessToken() {
@@ -83,9 +167,13 @@ public abstract class AbstractWxApi2 implements WxApi2 {
             throw new IllegalArgumentException("reflushAccessToken FAIL , openid=" + openid);
         String str = resp.getContent();
         NutMap re = Json.fromJson(NutMap.class, str);
-        access_token = re.getString("access_token");
-        access_token_expires = re.getInt("expires_in") - 60;// 提前一分钟
+        String access_token = re.getString("access_token");
+        int access_token_expires = re.getInt("expires_in") - 60;// 提前一分钟
+        getAccessTokenStore().saveAccessToken(access_token, access_token_expires);
     }
 
-    public void saveAccessToken(String token, long timeout) {}
+    public void configure(Object obj) {
+    	BeanConfigures.configure(this, obj);
+    }
+
 }

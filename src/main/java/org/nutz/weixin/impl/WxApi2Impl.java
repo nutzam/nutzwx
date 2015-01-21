@@ -33,7 +33,7 @@ import org.nutz.weixin.bean.WxTemplateData;
 import org.nutz.weixin.spi.WxResp;
 import org.nutz.weixin.util.Wxs;
 
-public abstract class WxApi2Impl extends AbstractWxApi2 {
+public class WxApi2Impl extends AbstractWxApi2 {
 
     private static final Log log = Logs.get().setTag("weixin");
     
