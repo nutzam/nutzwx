@@ -14,3 +14,7 @@ nutzwx
 
 * https://ngrok.com/dashboard
 
+LICENSE
+=============================
+
+Apache License
