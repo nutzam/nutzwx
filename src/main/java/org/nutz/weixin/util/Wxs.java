@@ -70,7 +70,7 @@ public class Wxs {
         }
         return Lang.map2Object(tmp, WxInMsg.class);
     }
-    
+
     public static WxInMsg convert(String data) {
         return convert(new ByteArrayInputStream(data.getBytes()));
     }
@@ -78,7 +78,10 @@ public class Wxs {
     /**
      * 检查signature是否合法
      */
-    public static boolean check(String token, String signature, String timestamp, String nonce) {
+    public static boolean check(String token,
+                                String signature,
+                                String timestamp,
+                                String nonce) {
         // 防范长密文攻击
         if (signature == null
             || signature.length() > 128
@@ -86,7 +89,10 @@ public class Wxs {
             || timestamp.length() > 128
             || nonce == null
             || nonce.length() > 128) {
-            log.warnf("bad check : signature=%s,timestamp=%s,nonce=%s", signature, timestamp, nonce);
+            log.warnf("bad check : signature=%s,timestamp=%s,nonce=%s",
+                      signature,
+                      timestamp,
+                      nonce);
             return false;
         }
         ArrayList<String> tmp = new ArrayList<String>();
@@ -214,7 +220,10 @@ public class Wxs {
     /**
      * 创建一个视频响应
      */
-    public static WxOutMsg respVideo(String to, String mediaId, String title, String description) {
+    public static WxOutMsg respVideo(String to,
+                                     String mediaId,
+                                     String title,
+                                     String description) {
         WxOutMsg out = new WxOutMsg("video");
         out.setVideo(new WxVideo(mediaId, title, description));
         if (to != null)
@@ -309,81 +318,101 @@ public class Wxs {
     }
 
     /**
-     * 将一个WxOutMsg转为被动响应所需要的XML文本
+     * @see #asXml(Writer, WxOutMsg)
      */
-    public static void asXml(Writer writer, WxOutMsg msg) throws IOException {
-        Writer _out = writer;
-        if (DEV_MODE) {
-            writer = new StringWriter();
-        }
-        writer.write("<xml>\n");
-        writer.write(tag("ToUserName", cdata(msg.getToUserName())));
-        writer.write(tag("FromUserName", cdata(msg.getFromUserName())));
-        writer.write(tag("CreateTime", "" + msg.getCreateTime()));
-        writer.write(tag("MsgType", cdata(msg.getMsgType())));
-        switch (WxMsgType.valueOf(msg.getMsgType())) {
-        case text:
-            writer.write(tag("Content", cdata(msg.getContent())));
-            break;
-        case image:
-            writer.write(tag("Image", tag("MediaId", msg.getImage().getMediaId())));
-            break;
-        case voice:
-            writer.write(tag("Voice", tag("MediaId", msg.getVoice().getMediaId())));
-            break;
-        case video:
-            writer.write("<Video>\n");
-            writer.write(tag("MediaId", cdata(msg.getVideo().getMediaId())));
-            if (msg.getVideo().getTitle() != null)
-                writer.write(tag("Title", cdata(msg.getVideo().getTitle())));
-            if (msg.getVideo().getDescription() != null)
-                writer.write(tag("Description", cdata(msg.getVideo().getDescription())));
-            writer.write("</Video>\n");
-            break;
-        case music:
-            writer.write("<Music>\n");
-            WxMusic music = msg.getMusic();
-            if (music.getTitle() != null)
-                writer.write(tag("Title", cdata(music.getTitle())));
-            if (music.getDescription() != null)
-                writer.write(tag("Description", cdata(music.getDescription())));
-            if (music.getMusicUrl() != null)
-                writer.write(tag("MusicUrl", cdata(music.getMusicUrl())));
-            if (music.getHQMusicUrl() != null)
-                writer.write(tag("HQMusicUrl", cdata(music.getHQMusicUrl())));
-            writer.write(tag("ThumbMediaId", cdata(music.getThumbMediaId())));
-            writer.write("</Music>\n");
-            break;
-        case news:
-            writer.write(tag("ArticleCount", "" + msg.getArticles().size()));
-            writer.write("<Articles>\n");
-            for (WxArticle article : msg.getArticles()) {
-                writer.write("<item>\n");
-                if (article.getTitle() != null)
-                    writer.write(tag("Title", cdata(article.getTitle())));
-                if (article.getDescription() != null)
-                    writer.write(tag("Description", cdata(article.getDescription())));
-                if (article.getPicUrl() != null)
-                    writer.write(tag("PicUrl", cdata(article.getPicUrl())));
-                if (article.getUrl() != null)
-                    writer.write(tag("Url", cdata(article.getUrl())));
-                writer.write("</item>\n");
+    public static String asXml(WxOutMsg msg) {
+        StringWriter sw = new StringWriter();
+        asXml(sw, msg);
+        return sw.toString();
+    }
+
+    /**
+     * 将一个WxOutMsg转为被动响应所需要的XML文本
+     * 
+     * @param msg
+     *            微信消息输出对象
+     * 
+     * @return 输出的 XML 文本
+     */
+    public static void asXml(Writer writer, WxOutMsg msg) {
+        try {
+            Writer _out = writer;
+            if (DEV_MODE) {
+                writer = new StringWriter();
             }
-            writer.write("</Articles>\n");
-            break;
-        default:
-            break;
+            writer.write("<xml>\n");
+            writer.write(tag("ToUserName", cdata(msg.getToUserName())));
+            writer.write(tag("FromUserName", cdata(msg.getFromUserName())));
+            writer.write(tag("CreateTime", "" + msg.getCreateTime()));
+            writer.write(tag("MsgType", cdata(msg.getMsgType())));
+            switch (WxMsgType.valueOf(msg.getMsgType())) {
+            case text:
+                writer.write(tag("Content", cdata(msg.getContent())));
+                break;
+            case image:
+                writer.write(tag("Image", tag("MediaId", msg.getImage().getMediaId())));
+                break;
+            case voice:
+                writer.write(tag("Voice", tag("MediaId", msg.getVoice().getMediaId())));
+                break;
+            case video:
+                writer.write("<Video>\n");
+                writer.write(tag("MediaId", cdata(msg.getVideo().getMediaId())));
+                if (msg.getVideo().getTitle() != null)
+                    writer.write(tag("Title", cdata(msg.getVideo().getTitle())));
+                if (msg.getVideo().getDescription() != null)
+                    writer.write(tag("Description",
+                                     cdata(msg.getVideo().getDescription())));
+                writer.write("</Video>\n");
+                break;
+            case music:
+                writer.write("<Music>\n");
+                WxMusic music = msg.getMusic();
+                if (music.getTitle() != null)
+                    writer.write(tag("Title", cdata(music.getTitle())));
+                if (music.getDescription() != null)
+                    writer.write(tag("Description", cdata(music.getDescription())));
+                if (music.getMusicUrl() != null)
+                    writer.write(tag("MusicUrl", cdata(music.getMusicUrl())));
+                if (music.getHQMusicUrl() != null)
+                    writer.write(tag("HQMusicUrl", cdata(music.getHQMusicUrl())));
+                writer.write(tag("ThumbMediaId", cdata(music.getThumbMediaId())));
+                writer.write("</Music>\n");
+                break;
+            case news:
+                writer.write(tag("ArticleCount", "" + msg.getArticles().size()));
+                writer.write("<Articles>\n");
+                for (WxArticle article : msg.getArticles()) {
+                    writer.write("<item>\n");
+                    if (article.getTitle() != null)
+                        writer.write(tag("Title", cdata(article.getTitle())));
+                    if (article.getDescription() != null)
+                        writer.write(tag("Description", cdata(article.getDescription())));
+                    if (article.getPicUrl() != null)
+                        writer.write(tag("PicUrl", cdata(article.getPicUrl())));
+                    if (article.getUrl() != null)
+                        writer.write(tag("Url", cdata(article.getUrl())));
+                    writer.write("</item>\n");
+                }
+                writer.write("</Articles>\n");
+                break;
+            default:
+                break;
+            }
+            writer.write("</xml>");
+            if (DEV_MODE) {
+                String str = writer.toString();
+                log.debug("Outcome >>\n" + str);
+                _out.write(str);
+            }
         }
-        writer.write("</xml>");
-        if (DEV_MODE) {
-            String str = writer.toString();
-            log.debug("Outcome >>\n" + str);
-            _out.write(str);
+        catch (IOException e) {
+            throw Lang.wrapThrow(e);
         }
     }
 
     /**
-     * 将一个WxOutMsg转为主动信息所需要的Json文本
+     * @see #asJson(Writer, WxOutMsg)
      */
     public static String asJson(WxOutMsg msg) {
         StringWriter sw = new StringWriter();
@@ -393,6 +422,11 @@ public class Wxs {
 
     /**
      * 将一个WxOutMsg转为主动信息所需要的Json文本
+     * 
+     * @param msg
+     *            微信消息输出对象
+     * 
+     * @return 输出的 JSON 文本
      */
     public static void asJson(Writer writer, WxOutMsg msg) {
         NutMap map = new NutMap();
