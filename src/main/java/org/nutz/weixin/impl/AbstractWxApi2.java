@@ -158,10 +158,17 @@ public abstract class AbstractWxApi2 implements WxApi2 {
     protected WxResp call(String URL, METHOD method, String body) {
         String token = getAccessToken();
         if (URL.contains("?")) {
-            URL = base + URL + "&token=" + token;
+            URL = base + URL + "&access_token=" + token;
         } else {
-            URL = base + URL + "?token=" + token;
+            URL = base + URL + "?access_token=" + token;
         }
+        if (log.isInfoEnabled()) {
+            log.info("wxapi call: " + URL);
+            if (log.isDebugEnabled()) {
+                log.debug(body);
+            }
+        }
+
         Request req = Request.create(URL, method);
         if (body != null)
             req.setData(body);
@@ -232,7 +239,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
             log.debugf("ATS: reflush done: %s", str);
 
         NutMap re = Json.fromJson(NutMap.class, str);
-        String token = re.getString("token");
+        String token = re.getString("access_token");
         int expires = re.getInt("expires_in") - 60;// 提前一分钟
         accessTokenStore.save(token, expires);
     }

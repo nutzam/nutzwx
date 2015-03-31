@@ -188,9 +188,9 @@ public class WxApiImpl implements WxAPI {
     protected Map<String, Object> call(String URL, METHOD method, String body) {
         String token = getAccessToken();
         if (URL.contains("?")) {
-            URL = base + URL + "&token=" + token;
+            URL = base + URL + "&access_token=" + token;
         } else {
-            URL = base + URL + "?token=" + token;
+            URL = base + URL + "?access_token=" + token;
         }
         Request req = Request.create(URL, method);
         if (body != null)

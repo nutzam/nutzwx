@@ -190,7 +190,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
             throw new NullPointerException("media type is NULL");
         if (f == null)
             throw new NullPointerException("meida file is NULL");
-        String url = String.format("http://file.api.weixin.qq.com/cgi-bin/media/upload?token=%s&type=%s",
+        String url = String.format("http://file.api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s",
                                    getAccessToken(),
                                    type);
         Request req = Request.create(url, METHOD.POST);

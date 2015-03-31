@@ -13,8 +13,8 @@ public class DaoAccessTokenStore extends CacheableAccessTokenStore {
 	protected Dao dao;
 	protected Map<String, Object> params;
 	
-	protected String fetch = "select token from t_wx_at";
-	protected String update = "update t_wx_at set token=@token, access_token_expires=@access_token_expires";
+	protected String fetch = "select access_token from t_wx_at";
+	protected String update = "update t_wx_at set access_token=@token, access_token_expires=@access_token_expires";
 	
 	public DaoAccessTokenStore() {
 	}
