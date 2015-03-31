@@ -4,15 +4,17 @@ import org.nutz.weixin.at.WxAccessToken;
 import org.nutz.weixin.spi.WxAccessTokenStore;
 
 public class MemoryAccessTokenStore implements WxAccessTokenStore {
-	
-	WxAccessToken at;
 
-	public WxAccessToken getAccessToken() {
-		return at;
-	}
+    WxAccessToken at;
 
-	public void saveAccessToken(String token, int time) {
-		this.at = new WxAccessToken(token, time);
-	}
+    public WxAccessToken get() {
+        return at;
+    }
+
+    public void save(String token, int time) {
+        at = new WxAccessToken();
+        at.setToken(token);
+        at.setExpires(time);
+    }
 
 }

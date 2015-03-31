@@ -524,7 +524,7 @@ public class Wxs {
      * @param mediaId
      */
     public static File downloadMedia(String accessToken, String mediaId) {
-        String url = "http://file.api.weixin.qq.com/cgi-bin/media/get?access_token="
+        String url = "http://file.api.weixin.qq.com/cgi-bin/media/get?token="
                      + accessToken
                      + "&media_id="
                      + mediaId;

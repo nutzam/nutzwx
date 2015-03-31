@@ -9,10 +9,10 @@ public abstract class CacheableAccessTokenStore implements WxAccessTokenStore {
 	protected WxAccessToken at;
 	protected Object lock = new Object();
 
-	public WxAccessToken getAccessToken() {
+	public WxAccessToken get() {
 		if (timeout > 0) {
 			synchronized (lock) {
-				if (timeout > 0 && at != null && (System.currentTimeMillis()/1000 - at.getAccess_token_expires()) < timeout)
+				if (timeout > 0 && at != null && (System.currentTimeMillis()/1000 - at.getExpires()) < timeout)
 					return at;
 			}
 		}
@@ -28,12 +28,12 @@ public abstract class CacheableAccessTokenStore implements WxAccessTokenStore {
 	protected abstract WxAccessToken _getAccessToken();
 	protected abstract void _saveAccessToken(String token, int time);
 
-	public void saveAccessToken(String token, int time) {
+	public void save(String token, int time) {
 		_saveAccessToken(token, time);
 		if (time > 0) {
 			synchronized (lock) {
 				at = null;
-				getAccessToken();
+				get();
 			}
 		}
 	}

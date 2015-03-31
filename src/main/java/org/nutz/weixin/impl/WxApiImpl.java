@@ -179,7 +179,7 @@ public class WxApiImpl implements WxAPI {
                                                + master.getOpenid());
         String str = resp.getContent();
         Map<String, Object> map = (Map<String, Object>) Json.fromJson(str);
-        master.setAccess_token(map.get("access_token").toString());
+        master.setAccess_token(map.get("token").toString());
         master.setAccess_token_expires(System.currentTimeMillis()
                                        + (((Number) map.get("expires_in")).intValue() - 60)
                                        * 1000);
@@ -188,9 +188,9 @@ public class WxApiImpl implements WxAPI {
     protected Map<String, Object> call(String URL, METHOD method, String body) {
         String token = getAccessToken();
         if (URL.contains("?")) {
-            URL = base + URL + "&access_token=" + token;
+            URL = base + URL + "&token=" + token;
         } else {
-            URL = base + URL + "?access_token=" + token;
+            URL = base + URL + "?token=" + token;
         }
         Request req = Request.create(URL, method);
         if (body != null)
@@ -226,7 +226,7 @@ public class WxApiImpl implements WxAPI {
             throw new NullPointerException("media type is NULL");
         if (f == null)
             throw new NullPointerException("meida file is NULL");
-        String url = String.format("http://file.api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s",
+        String url = String.format("http://file.api.weixin.qq.com/cgi-bin/media/upload?token=%s&type=%s",
                                    getAccessToken(),
                                    type);
         Request req = Request.create(url, METHOD.POST);
@@ -247,7 +247,7 @@ public class WxApiImpl implements WxAPI {
     public NutResource mediaGet(String mediaId) {
         String url = "http://file.api.weixin.qq.com/cgi-bin/media/get";
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("access_token", getAccessToken());
+        params.put("token", getAccessToken());
         params.put("media_id", mediaId);
         final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();
         if (!resp.isOK())

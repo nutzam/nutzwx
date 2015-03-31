@@ -1,17 +1,17 @@
 package org.nutz.weixin.at;
 
-public class WxAccessToken {
+public class WxJsapiTicket {
 
-    protected String token;
+    protected String ticket;
 
     protected int expires;
 
-    public String getToken() {
-        return token;
+    public String getTicket() {
+        return ticket;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setTicket(String ticket) {
+        this.ticket = ticket;
     }
 
     public int getExpires() {
