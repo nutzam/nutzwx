@@ -78,10 +78,7 @@ public class Wxs {
     /**
      * 检查signature是否合法
      */
-    public static boolean check(String token,
-                                String signature,
-                                String timestamp,
-                                String nonce) {
+    public static boolean check(String token, String signature, String timestamp, String nonce) {
         // 防范长密文攻击
         if (signature == null
             || signature.length() > 128
@@ -89,10 +86,7 @@ public class Wxs {
             || timestamp.length() > 128
             || nonce == null
             || nonce.length() > 128) {
-            log.warnf("bad check : signature=%s,timestamp=%s,nonce=%s",
-                      signature,
-                      timestamp,
-                      nonce);
+            log.warnf("bad check : signature=%s,timestamp=%s,nonce=%s", signature, timestamp, nonce);
             return false;
         }
         ArrayList<String> tmp = new ArrayList<String>();
@@ -220,10 +214,7 @@ public class Wxs {
     /**
      * 创建一个视频响应
      */
-    public static WxOutMsg respVideo(String to,
-                                     String mediaId,
-                                     String title,
-                                     String description) {
+    public static WxOutMsg respVideo(String to, String mediaId, String title, String description) {
         WxOutMsg out = new WxOutMsg("video");
         out.setVideo(new WxVideo(mediaId, title, description));
         if (to != null)
@@ -361,8 +352,7 @@ public class Wxs {
                 if (msg.getVideo().getTitle() != null)
                     writer.write(tag("Title", cdata(msg.getVideo().getTitle())));
                 if (msg.getVideo().getDescription() != null)
-                    writer.write(tag("Description",
-                                     cdata(msg.getVideo().getDescription())));
+                    writer.write(tag("Description", cdata(msg.getVideo().getDescription())));
                 writer.write("</Video>\n");
                 break;
             case music:
