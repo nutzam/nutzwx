@@ -306,4 +306,80 @@ public class WxApi2Impl extends AbstractWxApi2 {
     public WxResp mass_preview(String touser, WxOutMsg msg) {
         return _mass_send(null, null, touser, msg);
     }
+    
+    // 摇一摇API
+    
+    public static final String ShakeUrlBase = "https://api.weixin.qq.com/shakearound";
+
+    public WxResp applyId(int quantity, String apply_reason, String comment, int poi_id) {
+        return postJson(ShakeUrlBase + "/device/applyid", "quantity", quantity, "apply_reason", apply_reason, "comment", comment);
+    }
+
+    @Override
+    public WxResp applyStatus(String apply_id) {
+        return postJson(ShakeUrlBase + "/device/applystatus", "apply_id", apply_id);
+    }
+
+    @Override
+    public WxResp update(int device_id, String comment) {
+        NutMap params = new NutMap();
+        params.put("device_identifier", new NutMap().setv("device_id", device_id));
+        params.put("comment", comment);
+        return postJson(ShakeUrlBase + "/device/update", params);
+    }
+
+    @Override
+    public WxResp update(String uuid, int major, int minor, String comment) {
+        NutMap params = new NutMap();
+        params.put("device_identifier", new NutMap().setv("uuid", uuid).setv("major", major).setv("minor", minor));
+        params.put("comment", comment);
+        return postJson(ShakeUrlBase + "/device/update", params);
+    }
+
+    @Override
+    public WxResp bindLocation(int device_id, int poi_id) {
+        NutMap params = new NutMap();
+        params.put("device_identifier", new NutMap().setv("device_id", device_id));
+        params.put("poi_id", poi_id);
+        return postJson(ShakeUrlBase + "/device/bindlocation", params);
+    }
+
+    @Override
+    public WxResp bindLocation(String uuid, int major, int minor, int poi_id) {
+        NutMap params = new NutMap();
+        params.put("device_identifier", new NutMap().setv("uuid", uuid).setv("major", major).setv("minor", minor));
+        params.put("poi_id", poi_id);
+        return postJson(ShakeUrlBase + "/device/bindlocation", params);
+    }
+
+    @Override
+    public WxResp search(int device_id) {
+        NutMap params = new NutMap();
+        params.put("device_identifier", new NutMap().setv("device_id", device_id));
+        return postJson(ShakeUrlBase + "/device/search", params);
+    }
+
+    @Override
+    public WxResp search(String uuid, int major, int minor) {
+        NutMap params = new NutMap();
+        params.put("device_identifier", new NutMap().setv("uuid", uuid).setv("major", major).setv("minor", minor));
+        return postJson(ShakeUrlBase + "/device/search", params);
+    }
+
+    @Override
+    public WxResp search(int begin, int count) {
+        return postJson(ShakeUrlBase + "/device/search", "begin", begin, "count", count);
+    }
+
+    @Override
+    public WxResp search(int apply_id, int begin, int count) {
+        return postJson(ShakeUrlBase + "/device/search", "apply_id", apply_id, "begin", begin, "count", count);
+    }
+
+    @Override
+    public WxResp getShakeInfo(String ticket, int need_poi) {
+        return postJson(ShakeUrlBase + "/user/getshakeinfo", "ticket", ticket, "need_poi", need_poi);
+    }
+    
+    
 }
