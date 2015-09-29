@@ -255,7 +255,8 @@ public abstract class AbstractWxApi2 implements WxApi2 {
         String str = String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%d&url=%s",
                                    jt,
                                    nonceStr,
-                                   timestamp);
+                                   timestamp,
+                                   url);
         String signature = Lang.sha1(str);
 
         NutMap map = new NutMap();
