@@ -26,6 +26,7 @@ import org.nutz.lang.Lang;
 import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 import org.nutz.lang.Xmls;
+import org.nutz.lang.random.R;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
@@ -54,6 +55,99 @@ public class Wxs {
     public static void enableDevMode() {
         DEV_MODE = true;
         log.warn("nutzwx DevMode=true now");
+    }
+
+    /**
+     * 根据提交参数，生成签名
+     * 
+     * @param map
+     *            要签名的集合
+     * @param key
+     *            商户秘钥
+     * @return 签名
+     * 
+     * @see <a href=
+     *      "https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=4_3">
+     *      微信商户平台签名算法</a>
+     * 
+     */
+    public static String genPaySign(Map<String, Object> map, String key, String signType) {
+        String[] nms = map.keySet().toArray(new String[map.size()]);
+        Arrays.sort(nms);
+        StringBuilder sb = new StringBuilder();
+        signType = signType == null ? "MD5" : signType.toUpperCase();
+        boolean isMD5 = "MD5".equals(signType);
+        for (String nm : nms) {
+            Object v = map.get(nm);
+            if (null == v)
+                continue;
+            // JSSDK 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。
+            // 但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+            if (isMD5 && "timestamp".equals(nm)) {
+                nm = "timeStamp";
+            }
+            String s = v.toString();
+            if (Strings.isBlank(s))
+                continue;
+            sb.append(nm).append('=').append(s).append('&');
+        }
+        sb.append("key=").append(key);
+        return Lang.digest(signType, sb).toUpperCase();
+    }
+
+    /**
+     * 默认采用 MD5 方式的签名
+     * 
+     * @see #genPaySign(Map, String, String)
+     */
+    public static String genPaySignMD5(Map<String, Object> map, String key) {
+        return genPaySign(map, key, "MD5");
+    }
+
+    /**
+     * 为参数集合填充随机数，以及生成签名
+     * 
+     * @param map
+     *            参数集合
+     * @param key
+     *            商户秘钥
+     * 
+     * @see #genPaySignMD5(Map, String)
+     */
+    public static void fillPayMap(Map<String, Object> map, String key) {
+        // 首先确保有随机数
+        map.put("nonce_str", "" + R.random(10000000, 100000000));
+
+        // 填充签名
+        String sign = genPaySignMD5(map, key);
+        map.put("sign", sign);
+    }
+
+    /**
+     * 检查一下支付平台返回的 xml，是否签名合法，如果合法，转换成一个 map
+     * 
+     * @param xml
+     *            支付平台返回的 xml
+     * @param key
+     *            商户秘钥
+     * @return 合法的 Map
+     * 
+     * @throws "e.wx.sign.invalid"
+     * 
+     * @see <a href=
+     *      "https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1">
+     *      支付平台文档</a>
+     */
+    public static NutMap checkPayReturn(String xml, String key) {
+        NutMap map = Xmls.xmlToMap(xml);
+        if (!map.containsKey("sign")) {
+            throw Lang.makeThrow("e.wx.pay.re.error : %s", xml);
+        }
+        String sign = map.remove("sign").toString();
+        String sign2 = Wxs.genPaySignMD5(map, key);
+        if (!sign.equals(sign2))
+            throw Lang.makeThrow("e.wx.pay.re.sign.invalid : expect '%s' but '%s'", sign2, sign);
+        return map;
     }
 
     /**
@@ -86,7 +180,10 @@ public class Wxs {
             || timestamp.length() > 128
             || nonce == null
             || nonce.length() > 128) {
-            log.warnf("bad check : signature=%s,timestamp=%s,nonce=%s", signature, timestamp, nonce);
+            log.warnf("bad check : signature=%s,timestamp=%s,nonce=%s",
+                      signature,
+                      timestamp,
+                      nonce);
             return false;
         }
         ArrayList<String> tmp = new ArrayList<String>();
