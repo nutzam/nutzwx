@@ -11,11 +11,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.nutz.http.Http;
@@ -23,6 +20,7 @@ import org.nutz.http.Response;
 import org.nutz.json.Json;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
+import org.nutz.lang.MapKeyConvertor;
 import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 import org.nutz.lang.Xmls;
@@ -155,14 +153,17 @@ public class Wxs {
      */
     public static WxInMsg convert(InputStream in) {
         Map<String, Object> map = Xmls.asMap(Xmls.xml(in).getDocumentElement());
-        Map<String, Object> tmp = new HashMap<String, Object>();
-        for (Entry<String, Object> en : map.entrySet()) {
-            tmp.put(Strings.lowerFirst(en.getKey()), en.getValue());
-        }
+
+        Lang.convertMapKey(map, new MapKeyConvertor() {
+            public String convertKey(String key) {
+                return Strings.lowerFirst(key);
+            }
+        }, true);
+
         if (DEV_MODE) {
             log.debug("Income >> \n" + Json.toJson(map));
         }
-        return Lang.map2Object(tmp, WxInMsg.class);
+        return Lang.map2Object(map, WxInMsg.class);
     }
 
     public static WxInMsg convert(String data) {
