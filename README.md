@@ -12,9 +12,7 @@ nutzwx
 没公网ip?80端口被封? 有ngrok
 ------------------------------
 
-* https://ngrok.com/dashboard
-
-速度较慢,但能用
+* https://nutz.cn/yvr/links/ngrok.html
 
 异常java.security.InvalidKeyException:illegal Key Size的解决方案
 -------------------------------------------------------------------
