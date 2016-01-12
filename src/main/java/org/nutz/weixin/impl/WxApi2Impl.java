@@ -223,7 +223,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
     public NutResource media_get(String mediaId) {
         String url = "http://file.api.weixin.qq.com/cgi-bin/media/get";
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("token", getAccessToken());
+        params.put("access_token", getAccessToken());
         params.put("media_id", mediaId);
         final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();
         if (!resp.isOK())
@@ -235,6 +235,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
                 if (disposition == null)
                     return "file.data";
                 for (String str : disposition.split(";")) {
+                    str = str.trim();
                     if (str.startsWith("filename=")) {
                         str = str.substring("filename=".length());
                         if (str.startsWith("\""))
