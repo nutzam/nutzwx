@@ -163,11 +163,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
 	@Override
 	public WxResp template_api_set_industry(String industry_id1, String industry_id2) {
-		return postJson("/template/api_set_industry",
-				"industry_id1",
-				industry_id1,
-				"industry_id2",
-				industry_id2);
+		return postJson("/template/api_set_industry", "industry_id1", industry_id1, "industry_id2", industry_id2);
 	}
 
 	@Override
@@ -176,19 +172,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
 	}
 
 	@Override
-	public WxResp template_send(String touser,
-			String template_id,
-			String topcolor,
-			Map<String, WxTemplateData> data) {
-		return postJson("/template/send",
-				"touser",
-				touser,
-				"template_id",
-				template_id,
-				"topcolor",
-				topcolor,
-				"data",
-				data);
+	public WxResp template_send(String touser, String template_id, String url, Map<String, WxTemplateData> data) {
+		return postJson("/message/template/send", "touser", touser, "template_id", template_id, "url", url, "data", data);
 	}
 
 	// ------------------------------------------------------------
@@ -222,9 +207,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
 			throw new NullPointerException("media type is NULL");
 		if (f == null)
 			throw new NullPointerException("meida file is NULL");
-		String url = String.format("http://file.api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s",
-				getAccessToken(),
-				type);
+		String url = String.format("http://file.api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s", getAccessToken(), type);
 		Request req = Request.create(url, METHOD.POST);
 		req.getParams().put("media", f);
 		Response resp = new FilePostSender(req).send();
@@ -407,17 +390,53 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
 	@Override
 	public WxResp createQRTicket(long expire, Type type, int id) {
-		return postJson("/qrcode/create", "expire_seconds", expire, "action_name", type.getValue(), "action_info", NutMap.NEW().put("scene", NutMap.NEW().put("scene_id", id)));
+		NutMap json = NutMap.NEW();
+		json.put("expire_seconds", expire);
+		json.put("action_name", type.getValue());
+		NutMap action = NutMap.NEW();
+		NutMap scene = NutMap.NEW();
+		scene.put("scene_id", id);
+		action.put("scene", scene);
+		json.put("action_info", action);
+		return postJson("/qrcode/create", json);
 	}
 
 	@Override
 	public WxResp createQRTicket(long expire, Type type, String str) {
-		return postJson("/qrcode/create", "expire_seconds", expire, "action_name", type.getValue(), "action_info", NutMap.NEW().put("scene", NutMap.NEW().put("scene_str", str)));
+		NutMap json = NutMap.NEW();
+		json.put("expire_seconds", expire);
+		json.put("action_name", type.getValue());
+		NutMap action = NutMap.NEW();
+		NutMap scene = NutMap.NEW();
+		scene.put("scene_str", str);
+		action.put("scene", scene);
+		json.put("action_info", action);
+		return postJson("/qrcode/create", json);
 	}
 
 	@Override
 	public String qrURL(String ticket) {
 		return String.format("https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s", ticket);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.kerbores.wx.api.WxTemplateMsgApi#get_all_private_template()
+	 */
+	@Override
+	public WxResp get_all_private_template() {
+		return postJson("/template/get_all_private_template", NutMap.NEW());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.kerbores.wx.api.WxTemplateMsgApi#get_industry()
+	 */
+	@Override
+	public WxResp get_industry() {
+		return postJson("/template/get_industry", NutMap.NEW());
 	}
 
 }
