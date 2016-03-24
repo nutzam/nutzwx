@@ -13,8 +13,8 @@ public class MemoryJsapiTicketStore implements WxJsapiTicketStore {
 	}
 
 	@Override
-	public void save(String ticket, int expires) {
-		jt = new WxJsapiTicket(ticket, expires);
+	public void save(String ticket, int expires, long lastCacheTimeMillis) {
+		jt = new WxJsapiTicket(ticket, expires, lastCacheTimeMillis);
 	}
 
 }

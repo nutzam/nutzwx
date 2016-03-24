@@ -4,8 +4,8 @@ import org.nutz.weixin.at.WxJsapiTicket;
 
 public interface WxJsapiTicketStore {
 
-    WxJsapiTicket get();
+	WxJsapiTicket get();
 
-    void save(String ticket, int expires);
+	void save(String ticket, int expires, long lastCacheTimeMillis);
 
 }

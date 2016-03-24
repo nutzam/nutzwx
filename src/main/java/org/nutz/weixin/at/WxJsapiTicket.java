@@ -2,26 +2,18 @@ package org.nutz.weixin.at;
 
 public class WxJsapiTicket {
 
-	/**
-	 * @param ticket
-	 * @param expires
-	 */
-	public WxJsapiTicket(String ticket, int expires) {
-		super();
-		this.ticket = ticket;
-		this.expires = expires;
-	}
-
-	/**
-	 * 
-	 */
-	public WxJsapiTicket() {
-		super();
-	}
-
 	protected String ticket;
 
 	protected int expires;
+	
+	protected long lastCacheTimeMillis;
+
+	public WxJsapiTicket(String ticket, int expires, long lastCacheTimeMillis) {
+		super();
+		this.ticket = ticket;
+		this.expires = expires;
+		this.lastCacheTimeMillis = lastCacheTimeMillis;
+	}
 
 	public String getTicket() {
 		return ticket;
@@ -37,6 +29,14 @@ public class WxJsapiTicket {
 
 	public void setExpires(int expires) {
 		this.expires = expires;
+	}
+
+	public long getLastCacheTimeMillis() {
+		return lastCacheTimeMillis;
+	}
+
+	public void setLastCacheTimeMillis(long lastCacheTimeMillis) {
+		this.lastCacheTimeMillis = lastCacheTimeMillis;
 	}
 
 }
