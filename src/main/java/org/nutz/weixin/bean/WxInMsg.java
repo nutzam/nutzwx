@@ -2,9 +2,8 @@ package org.nutz.weixin.bean;
 
 import org.nutz.json.JsonIgnore;
 
-
 public class WxInMsg {
-	
+
 	private String fromUserName;
 	private String toUserName;
 	private String event;
@@ -17,27 +16,37 @@ public class WxInMsg {
 	private String mediaId;
 	private String format;
 	private String thumbMediaId;
-	
-	@JsonIgnore(null_double=0)
+	/* 语音识别结果 需要开通语音识别 */
+	private String recognition;
+
+	@JsonIgnore(null_double = 0)
 	private double location_X;
-	@JsonIgnore(null_double=0)
+	@JsonIgnore(null_double = 0)
 	private double location_Y;
-	@JsonIgnore(null_double=0)
+	@JsonIgnore(null_double = 0)
 	private double scale;
 	private String label;
 
 	private String title;
 	private String description;
 	private String url;
-	
+
 	private String status;
-	
+
 	private WxScanCodeInfo scanCodeInfo;
 	private WxSendLocationInfo sendLocationInfo;
-	
-	/**从页面传来的key值*/
+
+	/** 从页面传来的key值 */
 	private String extkey;
-	
+
+	public String getRecognition() {
+		return recognition;
+	}
+
+	public void setRecognition(String recognition) {
+		this.recognition = recognition;
+	}
+
 	public WxInMsg() {
 	}
 
@@ -201,29 +210,28 @@ public class WxInMsg {
 		this.extkey = extkey;
 	}
 
-    public String getStatus() {
-        return status;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public WxScanCodeInfo getScanCodeInfo() {
-        return scanCodeInfo;
-    }
+	public WxScanCodeInfo getScanCodeInfo() {
+		return scanCodeInfo;
+	}
 
-    public void setScanCodeInfo(WxScanCodeInfo scanCodeInfo) {
-        this.scanCodeInfo = scanCodeInfo;
-    }
+	public void setScanCodeInfo(WxScanCodeInfo scanCodeInfo) {
+		this.scanCodeInfo = scanCodeInfo;
+	}
 
-    public WxSendLocationInfo getSendLocationInfo() {
-        return sendLocationInfo;
-    }
+	public WxSendLocationInfo getSendLocationInfo() {
+		return sendLocationInfo;
+	}
 
-    public void setSendLocationInfo(WxSendLocationInfo sendLocationInfo) {
-        this.sendLocationInfo = sendLocationInfo;
-    }
-	
-	
+	public void setSendLocationInfo(WxSendLocationInfo sendLocationInfo) {
+		this.sendLocationInfo = sendLocationInfo;
+	}
+
 }
