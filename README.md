@@ -3,8 +3,8 @@ nutzwx
 
 微信(weixin) IN Nutz
 
-[![Build Status](https://travis-ci.org/nutzam/nutzwx.png?branch=master)](https://travis-ci.org/nutzam/nutz)
-[![Circle CI](https://circleci.com/gh/nutzam/nutzwx/tree/master.svg?style=svg)](https://circleci.com/gh/nutzam/nutz/tree/master)
+[![Build Status](https://travis-ci.org/nutzam/nutzwx.png?branch=master)](https://travis-ci.org/nutzam/nutzwx)
+[![Circle CI](https://circleci.com/gh/nutzam/nutzwx/tree/master.svg?style=svg)](https://circleci.com/gh/nutzam/nutzwx/tree/master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.nutz/nutzwx/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.nutz/nutzwx/)
 [![codecov.io](http://codecov.io/github/nutzam/nutz/coverage.svg?branch=master)](http://codecov.io/github/nutzam/nutzwx?branch=master)
 [![GitHub release](https://img.shields.io/github/release/nutzam/nutz.svg)](https://github.com/nutzam/nutzwx/releases)
