@@ -3,9 +3,6 @@ language: java
 script: mvn -Dmaven.test.skip=true package source:jar
 jdk:
   - openjdk6
-  - openjdk7
-  - oraclejdk7
-  - oraclejdk8
 # whitelist
 branches:
   only:
