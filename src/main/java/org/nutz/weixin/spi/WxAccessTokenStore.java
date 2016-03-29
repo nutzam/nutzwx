@@ -4,7 +4,7 @@ import org.nutz.weixin.at.WxAccessToken;
 
 public interface WxAccessTokenStore {
 
-    WxAccessToken get();
+	WxAccessToken get();
 
-    void save(String token, int expires);
+	void save(String token, int expires, long lastCacheTimeMillis);
 }

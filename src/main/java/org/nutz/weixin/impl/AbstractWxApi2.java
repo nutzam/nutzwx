@@ -244,7 +244,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 		NutMap re = Json.fromJson(NutMap.class, str);
 		String token = re.getString("access_token");
 		int expires = re.getInt("expires_in") - 60;// 提前一分钟
-		accessTokenStore.save(token, expires);
+		accessTokenStore.save(token, expires, System.currentTimeMillis());
 	}
 
 	@Override
