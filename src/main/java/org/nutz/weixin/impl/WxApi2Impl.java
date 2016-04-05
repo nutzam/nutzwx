@@ -264,7 +264,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
 		if (filter != null)
 			params.setv("filter", filter);
 		else if (to_user != null) {
-			params.setv("to_user", to_user);
+			params.setv("touser", to_user);
 		} else {
 			params.put("touser", touser);
 		}
