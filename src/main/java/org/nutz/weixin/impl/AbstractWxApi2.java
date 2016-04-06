@@ -45,6 +45,78 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	protected String base = "https://api.weixin.qq.com/cgi-bin";
 	protected String openid;
 	protected String encodingAesKey;
+	
+	
+
+	/**
+	 * @return the token
+	 */
+	public String getToken() {
+		return token;
+	}
+
+	/**
+	 * @param token the token to set
+	 */
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	/**
+	 * @return the appid
+	 */
+	public String getAppid() {
+		return appid;
+	}
+
+	/**
+	 * @param appid the appid to set
+	 */
+	public void setAppid(String appid) {
+		this.appid = appid;
+	}
+
+	/**
+	 * @return the appsecret
+	 */
+	public String getAppsecret() {
+		return appsecret;
+	}
+
+	/**
+	 * @param appsecret the appsecret to set
+	 */
+	public void setAppsecret(String appsecret) {
+		this.appsecret = appsecret;
+	}
+
+	/**
+	 * @return the openid
+	 */
+	public String getOpenid() {
+		return openid;
+	}
+
+	/**
+	 * @param openid the openid to set
+	 */
+	public void setOpenid(String openid) {
+		this.openid = openid;
+	}
+
+	/**
+	 * @return the encodingAesKey
+	 */
+	public String getEncodingAesKey() {
+		return encodingAesKey;
+	}
+
+	/**
+	 * @param encodingAesKey the encodingAesKey to set
+	 */
+	public void setEncodingAesKey(String encodingAesKey) {
+		this.encodingAesKey = encodingAesKey;
+	}
 
 	// protected String token;
 	// protected int access_token_expires;
