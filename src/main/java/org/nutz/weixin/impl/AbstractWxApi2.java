@@ -215,7 +215,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	@Override
 	public String getAccessToken() {
 		WxAccessToken at = accessTokenStore.get();
-		if (at == null || at.getExpires() < System.currentTimeMillis() / 1000) {
+		if (at == null || at.getExpires() < (System.currentTimeMillis() - at.getLastCacheTimeMillis()) / 1000) {
 			synchronized (lock) {
 				if (at == null || at.getExpires() < System.currentTimeMillis() / 1000) {
 					reflushAccessToken();
