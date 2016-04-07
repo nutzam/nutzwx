@@ -11,7 +11,7 @@ public class WxInMsg {
 	private String msgType;
 	private String content;
 	private long createTime;
-	private long msgId;
+	private long msgID;
 	private String picUrl;
 	private String mediaId;
 	private String format;
@@ -107,11 +107,11 @@ public class WxInMsg {
 	}
 
 	public long getMsgId() {
-		return msgId;
+		return msgID;
 	}
 
 	public void setMsgId(long msgId) {
-		this.msgId = msgId;
+		this.msgID = msgId;
 	}
 
 	public String getPicUrl() {
