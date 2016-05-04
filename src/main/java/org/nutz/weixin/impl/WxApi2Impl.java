@@ -170,6 +170,11 @@ public class WxApi2Impl extends AbstractWxApi2 {
 	public WxResp template_api_add_template(String template_id_short) {
 		return postJson("/template/api_add_template", "template_id_short", template_id_short);
 	}
+	
+	@Override
+    public WxResp template_api_del_template(String template_id) {
+        return postJson("/template/del_private_template", "template_id", template_id);
+    }
 
 	@Override
 	public WxResp template_send(String touser, String template_id, String url, Map<String, WxTemplateData> data) {
