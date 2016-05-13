@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nutz</groupId>
 	<artifactId>nutzwx</artifactId>
-	<version>1.r.55-SNAPSHOT</version>
+	<version>1.r.56</version>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>org.nutz</groupId>
 			<artifactId>nutz</artifactId>
-			<version>1.r.55</version>
+			<version>1.r.56</version>
 		</dependency>
 	</dependencies>
 
@@ -65,6 +65,15 @@
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<configuration>
+					<additionalparam>-Xdoclint:none</additionalparam>
 				</configuration>
 			</plugin>
 		</plugins>
