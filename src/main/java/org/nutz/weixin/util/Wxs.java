@@ -657,8 +657,4 @@ public class Wxs {
     public static WxOutMsg respText(String content) {
         return respText(null, content);
     }
-
-    public static WxOutMsg respNews(WxArticle ... news) {
-        return respNews(null, news);
-    }
 }

@@ -81,7 +81,7 @@ public abstract class AbstractWxHandler implements WxHandler {
         if ("测试新闻".equals(msg.getContent())) {
             WxArticle nutzam = new WxArticle("官网", "nutz官网", "https://nutz.cn/rs/logo/logo.png", "http://nutzam.com");
             WxArticle nutzcn = new WxArticle("Nutz社区", "nutz官方社区", "https://nutz.cn/rs/logo/logo.png", "https://nutz.cn");
-            return Wxs.respNews(nutzam, nutzcn);
+            return Wxs.respNews(null, nutzam, nutzcn);
         }
         if (WxMsgType.shortvideo.name().equals(msg.getMsgType())) {
             return Wxs.respText(null, "小视频?讨厌...");
