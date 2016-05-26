@@ -4,34 +4,34 @@ import org.nutz.json.JsonIgnore;
 
 public class WxInMsg {
 
-	private String fromUserName;
-	private String toUserName;
-	private String event;
-	private String eventKey;
-	private String msgType;
-	private String content;
-	private long createTime;
-	private long msgID;
-	private String picUrl;
-	private String mediaId;
-	private String format;
-	private String thumbMediaId;
+	protected String fromUserName;
+	protected String toUserName;
+	protected String event;
+	protected String eventKey;
+	protected String msgType;
+	protected String content;
+	protected long createTime;
+	protected long msgID;
+	protected String picUrl;
+	protected String mediaId;
+	protected String format;
+	protected String thumbMediaId;
 	/* 语音识别结果 需要开通语音识别 */
-	private String recognition;
+	protected String recognition;
 
 	@JsonIgnore(null_double = 0)
-	private double location_X;
+	protected double location_X;
 	@JsonIgnore(null_double = 0)
-	private double location_Y;
+	protected double location_Y;
 	@JsonIgnore(null_double = 0)
-	private double scale;
-	private String label;
+	protected double scale;
+	protected String label;
 
-	private String title;
-	private String description;
-	private String url;
+	protected String title;
+	protected String description;
+	protected String url;
 
-	private String status;
+	protected String status;
 
 	private WxScanCodeInfo scanCodeInfo;
 	private WxSendLocationInfo sendLocationInfo;
@@ -233,5 +233,4 @@ public class WxInMsg {
 	public void setSendLocationInfo(WxSendLocationInfo sendLocationInfo) {
 		this.sendLocationInfo = sendLocationInfo;
 	}
-
 }

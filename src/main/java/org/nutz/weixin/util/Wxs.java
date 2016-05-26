@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.nutz.http.Http;
 import org.nutz.http.Response;
 import org.nutz.json.Json;
+import org.nutz.lang.Encoding;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.MapKeyConvertor;
@@ -43,6 +45,8 @@ import org.nutz.weixin.bean.WxOutMsg;
 import org.nutz.weixin.bean.WxVideo;
 import org.nutz.weixin.bean.WxVoice;
 import org.nutz.weixin.mvc.WxView;
+import org.nutz.weixin.repo.com.qq.weixin.mp.aes.AesException;
+import org.nutz.weixin.repo.com.qq.weixin.mp.aes.WXBizMsgCrypt;
 import org.nutz.weixin.spi.WxHandler;
 
 public class Wxs {
@@ -216,6 +220,9 @@ public class Wxs {
 		case event:
 			out = handleEvent(msg, handler);
 			break;
+		case shortvideo:
+		    out =handler.shortvideo(msg);
+		    break;
 		default:
 			log.infof("New MsyType=%s ? fallback to defaultMsg", msg.getMsgType());
 			out = handler.defaultMsg(msg);
@@ -571,15 +578,33 @@ public class Wxs {
 			log.info("WxHandler is NULL");
 			return HttpStatusView.HTTP_502;
 		}
-		if (!wxHandler.check(req.getParameter("signature"), req.getParameter("timestamp"), req.getParameter("nonce"), key)) {
+		String signature = req.getParameter("signature");
+		String timestamp = req.getParameter("timestamp");
+		String nonce = req.getParameter("nonce");
+		String msg_signature = req.getParameter("msg_signature");
+		String encrypt_type = req.getParameter("encrypt_type");
+		if (!wxHandler.check(signature, timestamp, nonce, key)) {
 			log.info("token is invalid");
 			return HttpStatusView.HTTP_502;
 		}
 		if ("GET".equalsIgnoreCase(req.getMethod())) {
-			log.info("GET? return echostr=" + req.getParameter("echostr"));
-			return new ViewWrapper(new RawView(null), req.getParameter("echostr"));
+		    String echostr = req.getParameter("echostr");
+			log.info("GET? return echostr=" + echostr);
+			return new ViewWrapper(new RawView(null), echostr);
 		}
-		WxInMsg in = Wxs.convert(req.getInputStream());
+		String postData = Streams.readAndClose(new InputStreamReader(req.getInputStream(), Encoding.CHARSET_UTF8));
+		
+		if ("aes".equals(encrypt_type)) {
+            WXBizMsgCrypt msgCrypt = wxHandler.getMsgCrypt();
+		    try {
+		        // 若抛出Illegal key size,请更新JDK的加密库为不限制长度
+                postData = msgCrypt.decryptMsg(msg_signature, timestamp, nonce, postData);
+            }
+            catch (AesException e) {
+                return new HttpStatusView(403);
+            }
+		}
+		WxInMsg in = Wxs.convert(postData);
 		in.setExtkey(key);
 		WxOutMsg out = wxHandler.handle(in);
 		if (out != null) {
@@ -618,7 +643,6 @@ public class Wxs {
 					log.debugf("media download success mediaId=" + mediaId);
 					break;
 				} else {
-					log.debugf("download %s fail, code=%s, content=%s", mediaId, resp.getStatus(), resp.getContent());
 				}
 			} catch (Throwable e) {
 				log.infof("download %s fail", mediaId, e);
@@ -630,16 +654,7 @@ public class Wxs {
 		return mf;
 	}
 
-	// public static void main(String[] args) throws IOException {
-	// for (Object obj : WxMsgType.values()) {
-	// System.out.printf("WxOutMsg %s(WxInMsg msg);\n", obj);
-	// }
-	// for (Object obj : WxEventType.values()) {
-	// System.out.printf("WxOutMsg event%s(WxInMsg msg);\n",
-	// Strings.upperFirst(obj.toString().toLowerCase()));
-	// }
-	// StringWriter sw = new StringWriter();
-	// asXml(sw, respText(null, "Hi"));
-	// System.out.println(sw.toString());
-	// }
+    public static WxOutMsg respText(String content) {
+        return respText(null, content);
+    }
 }
