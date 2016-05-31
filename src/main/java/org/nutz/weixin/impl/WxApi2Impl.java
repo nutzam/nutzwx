@@ -54,6 +54,11 @@ public class WxApi2Impl extends AbstractWxApi2 {
 			log.debug("api out msg>\n" + str);
 		return call("/message/custom/send", METHOD.POST, str);
 	}
+	
+	@Override
+	public List<String> getcallbackip() {
+	    return get("/getcallbackip").getList("ip_list", String.class);
+	}
 
 	// -------------------------------
 	// 用户API
