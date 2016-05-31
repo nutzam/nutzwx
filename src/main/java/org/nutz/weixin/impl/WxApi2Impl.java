@@ -166,6 +166,11 @@ public class WxApi2Impl extends AbstractWxApi2 {
 	public String qrcode_show(String ticket) {
 		return "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=" + ticket;
 	}
+	
+	@Override
+	public String shorturl(String long_url) {
+	    return postJson("/shorturl", new NutMap().setv("long_url", long_url).setv("action", "long2short")).getString("short_url");
+	}
 
 	// --------------------------------------------------------
 	// 模板消息
