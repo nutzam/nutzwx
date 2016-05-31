@@ -10,11 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.nutz.http.Http;
 import org.nutz.http.Request;
 import org.nutz.http.Request.METHOD;
+import org.nutz.ioc.impl.PropertiesProxy;
 import org.nutz.http.Response;
 import org.nutz.http.Sender;
 import org.nutz.json.Json;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Streams;
+import org.nutz.lang.Strings;
 import org.nutz.lang.random.R;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
@@ -45,10 +47,31 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	protected String base = "https://api.weixin.qq.com/cgi-bin";
 	protected String openid;
 	protected String encodingAesKey;
-	
-	
 
-	/**
+	public AbstractWxApi2(String token,
+                          String appid,
+                          String appsecret,
+                          String openid,
+                          String encodingAesKey) {
+        super();
+        this.token = token;
+        this.appid = appid;
+        this.appsecret = appsecret;
+        this.openid = openid;
+        this.encodingAesKey = encodingAesKey;
+    }
+	
+	public WxApi2 configure(PropertiesProxy conf, String prefix){
+        prefix = Strings.sBlank(prefix);
+        token = conf.check(prefix+"token");
+        appid = conf.get(prefix+"appid");
+        appsecret = conf.get(prefix+"appsecret");
+        openid = conf.get(prefix + "openid");
+        encodingAesKey = conf.get(prefix+"aes");
+        return this;
+    }
+
+    /**
 	 * @return the token
 	 */
 	public String getToken() {
