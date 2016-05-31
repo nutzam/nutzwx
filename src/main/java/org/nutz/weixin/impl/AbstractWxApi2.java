@@ -14,6 +14,7 @@ import org.nutz.ioc.impl.PropertiesProxy;
 import org.nutz.http.Response;
 import org.nutz.http.Sender;
 import org.nutz.json.Json;
+import org.nutz.lang.Encoding;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
@@ -205,7 +206,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 			String str = pc.decryptMsg(msg_signature,
 					timestamp,
 					nonce,
-					new String(Streams.readBytesAndClose(in)));
+					new String(Streams.readBytesAndClose(in), Encoding.CHARSET_UTF8));
 			return Wxs.convert(str);
 		} catch (AesException e) {
 			throw new WxException("bad message or bad encodingAesKey", e);
