@@ -3,6 +3,7 @@ package org.nutz.weixin.spi;
 import java.io.File;
 import java.util.List;
 
+import org.nutz.resource.NutResource;
 import org.nutz.weixin.bean.WxArticle;
 
 /**
@@ -20,7 +21,11 @@ public interface WxMaterialApi {
     
     WxResp add_video(File f, String title, String introduction);
     
-    List<WxArticle> get_material(String media_id);
+    NutResource get_material(String media_id);
+    
+    List<WxArticle> get_material_news(String media_id);
+    
+    WxResp get_material_video(String media_id);
     
     WxResp del_material(String media_id);
     
