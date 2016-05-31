@@ -54,7 +54,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
                           String appsecret,
                           String openid,
                           String encodingAesKey) {
-        super();
+        this();
         this.token = token;
         this.appid = appid;
         this.appsecret = appsecret;
