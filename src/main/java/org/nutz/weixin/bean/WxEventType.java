@@ -109,5 +109,12 @@ public enum WxEventType {
 	 */
 	location_select,
 	
-	MASSSENDJOBFINISH
+	MASSSENDJOBFINISH,
+	
+	// 卡卷
+	card_pass_check, card_pass_not_check,
+	user_get_card,user_del_card,user_consume_card,
+	user_pay_from_pay_cell,user_view_card,
+	user_enter_session_from_card,update_member_card,
+	card_sku_remind,card_pay_order,
 }
