@@ -564,6 +564,8 @@ public class Wxs {
 			_news.put("articles", list);
 			map.put("news", _news);
 			break;
+		case mpnews:
+		    // TODO ?
 		default:
 			break;
 		}
