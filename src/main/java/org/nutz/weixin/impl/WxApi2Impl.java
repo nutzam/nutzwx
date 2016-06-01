@@ -264,13 +264,40 @@ public class WxApi2Impl extends AbstractWxApi2 {
 		} else {
 			params.put("touser", touser);
 		}
-		if ("text".equals(msg.getMsgType())) {
+		String tp = msg.getMsgType();
+		if ("text".equals(tp)) {
 			params.put("text", new NutMap().setv("content", msg.getContent()));
-		} else {
+		}
+		else if ("image".equals(tp) || "voice".equals(tp) || "mpnews".equals(tp)) {
+		    params.put("media_id", msg.getMedia_id());
+		}
+		else if ("video".equals(tp)) {
+            params.put("media_id", msg.getMedia_id());
+            params.put("thumb_media_id", msg.getVideo().getThumb_media_id());
+            params.put("title", msg.getVideo().getTitle());
+            params.put("description", msg.getVideo().getDescription());
+		}
+		else if ("music".equals(tp)) {
+		    params.put("musicurl", msg.getMusic().getMusicUrl());
+		    params.put("hqmusicurl", msg.getMusic().getHQMusicUrl());
+            params.put("thumb_media_id", msg.getMusic().getThumbMediaId());
+            params.put("title", msg.getMusic().getTitle());
+            params.put("description", msg.getMusic().getDescription());
+		}
+		else if ("news".equals(tp)) {
+		    params.put("news", msg.getArticles());
+		}
+		else if ("wxcard".equals(tp)) {
+		    params.put("wxcard", new NutMap().setv("card_id", msg.getCard().getId()).setv("card_ext", msg.getCard().getExt()));
+		}
+		else {
 			params.put(msg.getMsgType(), new NutMap().setv("media_id", msg.getMedia_id()));
-			// TODO title 和 description, thumb_media_id
 		}
 		params.setv("msgtype", msg.getMsgType());
+		
+		if (msg.getKfAccount() != null) {
+		    params.setv("customservice", new NutMap().setv("kf_account", msg.getKfAccount().getAccount()));
+		}
 
 		if (filter != null)
 			return postJson("/message/mass/sendall", params);

@@ -15,6 +15,7 @@ public class WxOutMsg {
 	private List<WxArticle> articles;
 	private String media_id;
 	protected WxKfAccount kfAccount;
+	protected WxCard card;
 	
 	public WxOutMsg() {
 		createTime = System.currentTimeMillis();
@@ -115,5 +116,12 @@ public class WxOutMsg {
     public void setKfAccount(WxKfAccount kfAccount) {
         this.kfAccount = kfAccount;
     }
-	
+
+    public WxCard getCard() {
+        return card;
+    }
+
+    public void setCard(WxCard card) {
+        this.card = card;
+    }
 }

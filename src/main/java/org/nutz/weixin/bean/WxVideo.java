@@ -5,6 +5,7 @@ public class WxVideo {
 	private String mediaId;
 	private String title;
 	private String description;
+    private String thumb_media_id;
 	public WxVideo() {
 	}
 	
@@ -33,4 +34,12 @@ public class WxVideo {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+    public String getThumb_media_id() {
+        return thumb_media_id;
+    }
+
+    public void setThumb_media_id(String thumb_media_id) {
+        this.thumb_media_id = thumb_media_id;
+    }
 }
