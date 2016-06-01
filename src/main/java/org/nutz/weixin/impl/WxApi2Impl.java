@@ -29,6 +29,7 @@ import org.nutz.log.Logs;
 import org.nutz.resource.NutResource;
 import org.nutz.weixin.bean.WxArticle;
 import org.nutz.weixin.bean.WxGroup;
+import org.nutz.weixin.bean.WxKfAccount;
 import org.nutz.weixin.bean.WxMenu;
 import org.nutz.weixin.bean.WxOutMsg;
 import org.nutz.weixin.bean.WxTemplateData;
@@ -480,6 +481,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
         return new WxResource(disposition, resp.getStream());
     }
     
+    @SuppressWarnings("rawtypes")
     public List<WxArticle> get_material_news(String media_id) {
         try {
             NutMap re = Json.fromJson(NutMap.class, get_material(media_id).getReader());
@@ -515,6 +517,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
     public WxResp batchget_material(String type, int offset, int count) {
         return postJson("/material/batchget_material", new NutMap().setv("type", type).setv("offset", offset).setv("count", count));
     }
+    
+    
 
     static class WxResource extends NutResource {
         String disposition;
@@ -546,4 +550,46 @@ public class WxApi2Impl extends AbstractWxApi2 {
             return ins;
         }
     }
+
+
+
+    @Override
+    public List<WxKfAccount> getkflist() {
+        return get("/customservice/getkflist").check().getTo("kf_list", WxKfAccount.class);
+    }
+
+    @Override
+    public List<WxKfAccount> getonlinekflist() {
+        return get("/customservice/getonlinekflist").check().getTo("kf_online_list", WxKfAccount.class);
+    }
+
+    @Override
+    public WxResp kfaccount_add(String kf_account, String nickname, String password) {
+        return postJson("/customservice/kfaccount/add", "kf_account", kf_account, "nickname", nickname, "password", password);
+    }
+
+    @Override
+    public WxResp kfaccount_update(String kf_account, String nickname, String password) {
+        return postJson("/customservice/kfaccount/update", "kf_account", kf_account, "nickname", nickname, "password", password);
+    }
+
+    @Override
+    public WxResp kfaccount_uploadheadimg(String kf_account, File f) {
+        if (f == null)
+            throw new NullPointerException("meida file is NULL");
+        String url = String.format("https://api.weixin.qq.com/customservice/kfaccount/uploadheadimg?access_token=%s", getAccessToken());
+        Request req = Request.create(url, METHOD.POST);
+        req.getParams().put("media", f);
+        Response resp = new FilePostSender(req).send();
+        if (!resp.isOK())
+            throw new IllegalStateException("uploadimg, resp code=" + resp.getStatus());
+        return Json.fromJson(WxResp.class, resp.getReader("UTF-8"));
+    }
+
+    @Override
+    public WxResp kfaccount_del(String kf_account) {
+        return postJson("/customservice/kfaccount/del", "kf_account", kf_account);
+    }
+    
+    
 }

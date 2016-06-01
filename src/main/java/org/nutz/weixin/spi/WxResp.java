@@ -26,9 +26,10 @@ public class WxResp extends NutMap {
         return errcode() == 0;
     }
     
-    public void check() {
+    public WxResp check() {
         if (!ok())
             throw new WxException("errcode=" + errcode() + ", " + this);
+        return this;
     }
     
     public int errcode() {
@@ -99,4 +100,16 @@ public class WxResp extends NutMap {
     	return getString("msgid");
     }
     
+    public <T> List<T> getTo(String key, Class<T> klass) {
+        List<Object> tmp = getList(key, Object.class);
+        if (tmp == null)
+            return null;
+        List<T> list = new ArrayList<T>();
+        for (Object obj : tmp) {
+            if (obj instanceof Map) {
+                list.add(Lang.map2Object((Map)obj, klass));
+            }
+        }
+        return list;
+    }
 }

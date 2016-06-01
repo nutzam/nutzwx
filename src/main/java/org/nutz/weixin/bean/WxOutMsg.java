@@ -14,6 +14,7 @@ public class WxOutMsg {
 	private WxMusic music;
 	private List<WxArticle> articles;
 	private String media_id;
+	protected WxKfAccount kfAccount;
 	
 	public WxOutMsg() {
 		createTime = System.currentTimeMillis();
@@ -106,5 +107,13 @@ public class WxOutMsg {
 	public void setMedia_id(String media_id) {
 		this.media_id = media_id;
 	}
+
+    public WxKfAccount getKfAccount() {
+        return kfAccount;
+    }
+
+    public void setKfAccount(WxKfAccount kfAccount) {
+        this.kfAccount = kfAccount;
+    }
 	
 }

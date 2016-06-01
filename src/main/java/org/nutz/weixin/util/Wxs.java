@@ -479,6 +479,13 @@ public class Wxs {
 				}
 				writer.write("</Articles>\n");
 				break;
+			case transfer_customer_service:
+			    if (msg.getKfAccount()!=null) {
+			        writer.write("<TransInfo>\n");
+			        writer.write(tag("KfAccount", cdata(msg.getKfAccount().getAccount())));
+			        writer.write("</TransInfo>\n");
+			    }
+			    break;
 			default:
 				break;
 			}
