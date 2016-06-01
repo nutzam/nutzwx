@@ -269,20 +269,24 @@ public class WxApi2Impl extends AbstractWxApi2 {
 			params.put("text", new NutMap().setv("content", msg.getContent()));
 		}
 		else if ("image".equals(tp) || "voice".equals(tp) || "mpnews".equals(tp)) {
-		    params.put("media_id", msg.getMedia_id());
+		    params.put(tp, new NutMap().setv("media_id", msg.getMedia_id()));
 		}
 		else if ("video".equals(tp)) {
-            params.put("media_id", msg.getMedia_id());
-            params.put("thumb_media_id", msg.getVideo().getThumb_media_id());
-            params.put("title", msg.getVideo().getTitle());
-            params.put("description", msg.getVideo().getDescription());
+		    NutMap tm = new NutMap();
+		    tm.put("media_id", msg.getMedia_id());
+		    tm.put("thumb_media_id", msg.getVideo().getThumb_media_id());
+		    tm.put("title", msg.getVideo().getTitle());
+		    tm.put("description", msg.getVideo().getDescription());
+		    params.put(tp, tm);
 		}
 		else if ("music".equals(tp)) {
-		    params.put("musicurl", msg.getMusic().getMusicUrl());
-		    params.put("hqmusicurl", msg.getMusic().getHQMusicUrl());
-            params.put("thumb_media_id", msg.getMusic().getThumbMediaId());
-            params.put("title", msg.getMusic().getTitle());
-            params.put("description", msg.getMusic().getDescription());
+            NutMap tm = new NutMap();
+            tm.put("musicurl", msg.getMusic().getMusicUrl());
+            tm.put("hqmusicurl", msg.getMusic().getHQMusicUrl());
+            tm.put("thumb_media_id", msg.getMusic().getThumbMediaId());
+            tm.put("title", msg.getMusic().getTitle());
+            tm.put("description", msg.getMusic().getDescription());
+            params.put(tp, tm);
 		}
 		else if ("news".equals(tp)) {
 		    params.put("news", msg.getArticles());

@@ -572,7 +572,9 @@ public class Wxs {
 			map.put("news", _news);
 			break;
 		case mpnews:
-		    // TODO ?
+		    map.put("mpnews", new NutMap().setv("media_id", msg.getImage().getMediaId()));
+		case wxcard:
+		    map.put("wxcard", new NutMap().setv("card_id", msg.getCard().getId()).setv("card_ext", msg.getCard().getExt()));
 		default:
 			break;
 		}
