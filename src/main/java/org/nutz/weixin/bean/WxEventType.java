@@ -107,5 +107,14 @@ public enum WxEventType {
 	 * 完成选择操作后，将选择的地理位置发送给开发者的服务器，同时收起位置选择工具，随后可能会收到开发者下发的消息。
 	 * </pre>
 	 */
-	location_select
+	location_select,
+	
+	MASSSENDJOBFINISH,
+	
+	// 卡卷
+	card_pass_check, card_pass_not_check,
+	user_get_card,user_del_card,user_consume_card,
+	user_pay_from_pay_cell,user_view_card,
+	user_enter_session_from_card,update_member_card,
+	card_sku_remind,card_pay_order,
 }

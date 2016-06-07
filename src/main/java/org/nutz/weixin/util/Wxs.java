@@ -479,6 +479,13 @@ public class Wxs {
 				}
 				writer.write("</Articles>\n");
 				break;
+			case transfer_customer_service:
+			    if (msg.getKfAccount()!=null) {
+			        writer.write("<TransInfo>\n");
+			        writer.write(tag("KfAccount", cdata(msg.getKfAccount().getAccount())));
+			        writer.write("</TransInfo>\n");
+			    }
+			    break;
 			default:
 				break;
 			}
@@ -564,6 +571,12 @@ public class Wxs {
 			_news.put("articles", list);
 			map.put("news", _news);
 			break;
+		case mpnews:
+		    map.put("mpnews", new NutMap().setv("media_id", msg.getMedia_id()));
+		    break;
+		case wxcard:
+		    map.put("wxcard", new NutMap().setv("card_id", msg.getCard().getId()).setv("card_ext", msg.getCard().getExt()));
+            break;
 		default:
 			break;
 		}

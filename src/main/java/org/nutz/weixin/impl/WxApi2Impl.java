@@ -3,6 +3,8 @@ package org.nutz.weixin.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,8 @@ import org.nutz.http.Request.METHOD;
 import org.nutz.http.Response;
 import org.nutz.http.Sender;
 import org.nutz.http.sender.FilePostSender;
+import org.nutz.json.Json;
+import org.nutz.json.JsonFormat;
 import org.nutz.lang.ContinueLoop;
 import org.nutz.lang.Each;
 import org.nutz.lang.ExitLoop;
@@ -25,6 +29,7 @@ import org.nutz.log.Logs;
 import org.nutz.resource.NutResource;
 import org.nutz.weixin.bean.WxArticle;
 import org.nutz.weixin.bean.WxGroup;
+import org.nutz.weixin.bean.WxKfAccount;
 import org.nutz.weixin.bean.WxMenu;
 import org.nutz.weixin.bean.WxOutMsg;
 import org.nutz.weixin.bean.WxTemplateData;
@@ -49,6 +54,11 @@ public class WxApi2Impl extends AbstractWxApi2 {
 		if (Wxs.DEV_MODE)
 			log.debug("api out msg>\n" + str);
 		return call("/message/custom/send", METHOD.POST, str);
+	}
+	
+	@Override
+	public List<String> getcallbackip() {
+	    return get("/getcallbackip").getList("ip_list", String.class);
 	}
 
 	// -------------------------------
@@ -157,6 +167,11 @@ public class WxApi2Impl extends AbstractWxApi2 {
 	public String qrcode_show(String ticket) {
 		return "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=" + ticket;
 	}
+	
+	@Override
+	public String shorturl(String long_url) {
+	    return postJson("/shorturl", new NutMap().setv("long_url", long_url).setv("action", "long2short")).getString("short_url");
+	}
 
 	// --------------------------------------------------------
 	// 模板消息
@@ -218,7 +233,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
 		Response resp = new FilePostSender(req).send();
 		if (!resp.isOK())
 			throw new IllegalStateException("media upload file, resp code=" + resp.getStatus());
-		return null;
+		return Json.fromJson(WxResp.class, resp.getReader("UTF-8"));
 	}
 
 	@Override
@@ -230,32 +245,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
 		final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();
 		if (!resp.isOK())
 			throw new IllegalStateException("download media file, resp code=" + resp.getStatus());
-		final String disposition = resp.getHeader().get("Content-disposition");
-		return new NutResource() {
-
-			@Override
-			public String getName() {
-				if (disposition == null)
-					return "file.data";
-				for (String str : disposition.split(";")) {
-					str = str.trim();
-					if (str.startsWith("filename=")) {
-						str = str.substring("filename=".length());
-						if (str.startsWith("\""))
-							str = str.substring(1);
-						if (str.endsWith("\""))
-							str = str.substring(0, str.length() - 1);
-						return str.trim().intern();
-					}
-				}
-				return "file.data";
-			}
-
-			@Override
-			public InputStream getInputStream() throws IOException {
-				return resp.getStream();
-			}
-		};
+		String disposition = resp.getHeader().get("Content-disposition");
+		return new WxResource(disposition, resp.getStream());
 	}
 
 	// 高级群发
@@ -273,13 +264,44 @@ public class WxApi2Impl extends AbstractWxApi2 {
 		} else {
 			params.put("touser", touser);
 		}
-		if ("text".equals(msg.getMsgType())) {
+		String tp = msg.getMsgType();
+		if ("text".equals(tp)) {
 			params.put("text", new NutMap().setv("content", msg.getContent()));
-		} else {
+		}
+		else if ("image".equals(tp) || "voice".equals(tp) || "mpnews".equals(tp)) {
+		    params.put(tp, new NutMap().setv("media_id", msg.getMedia_id()));
+		}
+		else if ("video".equals(tp)) {
+		    NutMap tm = new NutMap();
+		    tm.put("media_id", msg.getMedia_id());
+		    tm.put("thumb_media_id", msg.getVideo().getThumb_media_id());
+		    tm.put("title", msg.getVideo().getTitle());
+		    tm.put("description", msg.getVideo().getDescription());
+		    params.put(tp, tm);
+		}
+		else if ("music".equals(tp)) {
+            NutMap tm = new NutMap();
+            tm.put("musicurl", msg.getMusic().getMusicUrl());
+            tm.put("hqmusicurl", msg.getMusic().getHQMusicUrl());
+            tm.put("thumb_media_id", msg.getMusic().getThumbMediaId());
+            tm.put("title", msg.getMusic().getTitle());
+            tm.put("description", msg.getMusic().getDescription());
+            params.put(tp, tm);
+		}
+		else if ("news".equals(tp)) {
+		    params.put("news", msg.getArticles());
+		}
+		else if ("wxcard".equals(tp)) {
+		    params.put("wxcard", new NutMap().setv("card_id", msg.getCard().getId()).setv("card_ext", msg.getCard().getExt()));
+		}
+		else {
 			params.put(msg.getMsgType(), new NutMap().setv("media_id", msg.getMedia_id()));
-			// TODO title 和 description, thumb_media_id
 		}
 		params.setv("msgtype", msg.getMsgType());
+		
+		if (msg.getKfAccount() != null) {
+		    params.setv("customservice", new NutMap().setv("kf_account", msg.getKfAccount().getAccount()));
+		}
 
 		if (filter != null)
 			return postJson("/message/mass/sendall", params);
@@ -424,24 +446,181 @@ public class WxApi2Impl extends AbstractWxApi2 {
 		return String.format("https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s", ticket);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.kerbores.wx.api.WxTemplateMsgApi#get_all_private_template()
-	 */
-	@Override
 	public WxResp get_all_private_template() {
 		return postJson("/template/get_all_private_template", NutMap.NEW());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.kerbores.wx.api.WxTemplateMsgApi#get_industry()
-	 */
-	@Override
 	public WxResp get_industry() {
 		return postJson("/template/get_industry", NutMap.NEW());
 	}
 
+    public WxResp add_news(WxArticle... news) {
+        return postJson("/material/add_news", new NutMap().put("articles", Arrays.asList(news)));
+    }
+
+    @Override
+    public WxResp uploadimg(File f) {
+        if (f == null)
+            throw new NullPointerException("meida file is NULL");
+        String url = String.format("https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=%s", getAccessToken());
+        Request req = Request.create(url, METHOD.POST);
+        req.getParams().put("media", f);
+        Response resp = new FilePostSender(req).send();
+        if (!resp.isOK())
+            throw new IllegalStateException("uploadimg, resp code=" + resp.getStatus());
+        return Json.fromJson(WxResp.class, resp.getReader("UTF-8"));
+    }
+
+    @Override
+    public WxResp add_material(String type, File f) {
+        if (f == null)
+            throw new NullPointerException("meida file is NULL");
+        String url = String.format("https://api.weixin.qq.com/cgi-bin/media/add_material?access_token=%s&type=%s", getAccessToken(), type);
+        Request req = Request.create(url, METHOD.POST);
+        req.getParams().put("media", f);
+        Response resp = new FilePostSender(req).send();
+        if (!resp.isOK())
+            throw new IllegalStateException("add_material, resp code=" + resp.getStatus());
+        return Json.fromJson(WxResp.class, resp.getReader("UTF-8"));
+    }
+
+    @Override
+    public WxResp add_video(File f, String title, String introduction) {
+        if (f == null)
+            throw new NullPointerException("meida file is NULL");
+        String url = String.format("https://api.weixin.qq.com/cgi-bin/media/add_material?access_token=%s", getAccessToken());
+        Request req = Request.create(url, METHOD.POST);
+        req.getParams().put("media", f);
+        req.getParams().put("description", 
+                            Json.toJson(new NutMap().setv("title", title).setv("introduction", introduction), 
+                            JsonFormat.compact().setQuoteName(true)));
+        Response resp = new FilePostSender(req).send();
+        if (!resp.isOK())
+            throw new IllegalStateException("add_material, resp code=" + resp.getStatus());
+        return Json.fromJson(WxResp.class, resp.getReader("UTF-8"));
+    }
+
+    public NutResource get_material(String media_id) {
+        String url = "https://api.weixin.qq.com/cgi-bin/material/get_material";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("access_token", getAccessToken());
+        params.put("media_id", media_id);
+        final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();
+        if (!resp.isOK())
+            throw new IllegalStateException("download media file, resp code=" + resp.getStatus());
+        String disposition = resp.getHeader().get("Content-disposition");
+        return new WxResource(disposition, resp.getStream());
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public List<WxArticle> get_material_news(String media_id) {
+        try {
+            NutMap re = Json.fromJson(NutMap.class, get_material(media_id).getReader());
+            List<WxArticle> list = new ArrayList<WxArticle>();
+            for (Object obj : re.getAs("news_item", List.class)) {
+                list.add(Lang.map2Object((Map)obj, WxArticle.class));
+            }
+            return list;
+        }
+        catch (Exception e) {
+            throw Lang.wrapThrow(e);
+        }
+    }
+    
+    public WxResp get_material_video(String media_id) {
+        return postJson("/material/get_material", new NutMap().setv("media_id", media_id));
+    }
+
+    public WxResp del_material(String media_id) {
+        return postJson("/material/del_material", new NutMap().setv("media_id", media_id));
+    }
+
+    public WxResp update_material(String media_id, int index, WxArticle article) {
+        return postJson("/material/update_news", new NutMap().setv("media_id", media_id).setv("index", index).setv("articles", article));
+    }
+
+    @Override
+    public WxResp get_materialcount() {
+        return get("/material/get_materialcount");
+    }
+
+    @Override
+    public WxResp batchget_material(String type, int offset, int count) {
+        return postJson("/material/batchget_material", new NutMap().setv("type", type).setv("offset", offset).setv("count", count));
+    }
+    
+    
+
+    static class WxResource extends NutResource {
+        String disposition;
+        InputStream ins;
+        public WxResource(String disposition, InputStream ins) {
+            super();
+            this.disposition = disposition;
+            this.ins = ins;
+        }
+        
+        public String getName() {
+            if (disposition == null)
+                return "file.data";
+            for (String str : disposition.split(";")) {
+                str = str.trim();
+                if (str.startsWith("filename=")) {
+                    str = str.substring("filename=".length());
+                    if (str.startsWith("\""))
+                        str = str.substring(1);
+                    if (str.endsWith("\""))
+                        str = str.substring(0, str.length() - 1);
+                    return str.trim().intern();
+                }
+            }
+            return "file.data";
+        }
+
+        public InputStream getInputStream() throws IOException {
+            return ins;
+        }
+    }
+
+
+
+    @Override
+    public List<WxKfAccount> getkflist() {
+        return get("/customservice/getkflist").check().getTo("kf_list", WxKfAccount.class);
+    }
+
+    @Override
+    public List<WxKfAccount> getonlinekflist() {
+        return get("/customservice/getonlinekflist").check().getTo("kf_online_list", WxKfAccount.class);
+    }
+
+    @Override
+    public WxResp kfaccount_add(String kf_account, String nickname, String password) {
+        return postJson("/customservice/kfaccount/add", "kf_account", kf_account, "nickname", nickname, "password", password);
+    }
+
+    @Override
+    public WxResp kfaccount_update(String kf_account, String nickname, String password) {
+        return postJson("/customservice/kfaccount/update", "kf_account", kf_account, "nickname", nickname, "password", password);
+    }
+
+    @Override
+    public WxResp kfaccount_uploadheadimg(String kf_account, File f) {
+        if (f == null)
+            throw new NullPointerException("meida file is NULL");
+        String url = String.format("https://api.weixin.qq.com/customservice/kfaccount/uploadheadimg?access_token=%s", getAccessToken());
+        Request req = Request.create(url, METHOD.POST);
+        req.getParams().put("media", f);
+        Response resp = new FilePostSender(req).send();
+        if (!resp.isOK())
+            throw new IllegalStateException("uploadimg, resp code=" + resp.getStatus());
+        return Json.fromJson(WxResp.class, resp.getReader("UTF-8"));
+    }
+
+    @Override
+    public WxResp kfaccount_del(String kf_account) {
+        return postJson("/customservice/kfaccount/del", "kf_account", kf_account);
+    }
+    
+    
 }

@@ -33,11 +33,16 @@ public class WxInMsg {
 
 	protected String status;
 
-	private WxScanCodeInfo scanCodeInfo;
-	private WxSendLocationInfo sendLocationInfo;
+	protected WxScanCodeInfo scanCodeInfo;
+	protected WxSendLocationInfo sendLocationInfo;
 
 	/** 从页面传来的key值 */
-	private String extkey;
+	protected String extkey;
+	
+	protected int totalCount;
+	protected int filterCount;
+	protected int sentCount;
+	protected int errorCount;
 
 	public String getRecognition() {
 		return recognition;
@@ -233,4 +238,44 @@ public class WxInMsg {
 	public void setSendLocationInfo(WxSendLocationInfo sendLocationInfo) {
 		this.sendLocationInfo = sendLocationInfo;
 	}
+
+    public long getMsgID() {
+        return msgID;
+    }
+
+    public void setMsgID(long msgID) {
+        this.msgID = msgID;
+    }
+
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
+    }
+
+    public int getFilterCount() {
+        return filterCount;
+    }
+
+    public void setFilterCount(int filterCount) {
+        this.filterCount = filterCount;
+    }
+
+    public int getSentCount() {
+        return sentCount;
+    }
+
+    public void setSentCount(int sentCount) {
+        this.sentCount = sentCount;
+    }
+
+    public int getErrorCount() {
+        return errorCount;
+    }
+
+    public void setErrorCount(int errorCount) {
+        this.errorCount = errorCount;
+    }
 }
