@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,10 +25,12 @@ import org.nutz.lang.Encoding;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.MapKeyConvertor;
+import org.nutz.lang.Mirror;
 import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 import org.nutz.lang.Xmls;
 import org.nutz.lang.random.R;
+import org.nutz.lang.tmpl.Tmpl;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
@@ -670,4 +673,51 @@ public class Wxs {
     public static WxOutMsg respText(String content) {
         return respText(null, content);
     }
+    
+    public static String pojoClass2MapClass(Class<?> klass) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("package " + klass.getPackage().getName()+";\r\n\r\n");
+        sb.append("import org.nutz.lang.util.NutMap;\r\n\r\n");
+        sb.append("@SuppressWarnings(\"serial\")\r\n");
+        sb.append("public class " + klass.getSimpleName() + " extends NutMap {\r\n");
+        for (Field field : klass.getDeclaredFields()) {
+            mapField(sb, klass, field);
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static void mapField(StringBuilder sb, Class<?> klass, Field field) {
+        sb.append("\r\n");
+        String fieldName = field.getName();
+        String className = klass.getSimpleName();
+        Mirror mirror = Mirror.me(field.getType());
+        String getterTmpl = "return (${fieldType})get(\"${fieldName}\")";
+        if (mirror.isPrimitiveNumber()) {
+            if (mirror.isBoolean()) {
+                getterTmpl = "return getBoolean(\"${fieldName}\", false)";
+            } else {
+                getterTmpl = "return get"+Strings.upperFirst(mirror.getType().getSimpleName())+"(\"${fieldName}\", 0)";
+            }
+        }
+        
+        Tmpl tmpl = Tmpl.parse(
+                  "    public ${className} set${upperFieldName}(${fieldType} ${fieldName}){\r\n"
+                + "        put(\"${fieldName}\", ${fieldName});\r\n"
+                + "        return this;\r\n"
+                + "    }\r\n"
+                + "\r\n"
+                + "    public ${fieldType} get${upperFieldName}(){\r\n"
+                + "        "+getterTmpl+";\r\n"
+                + "    }\r\n");
+        NutMap ctx = new NutMap().setv("className", className).setv("fieldName", fieldName);
+        ctx.setv("upperFieldName", Strings.upperFirst(fieldName));
+        ctx.setv("fieldType", field.getType().getSimpleName());
+        sb.append(tmpl.render(ctx));
+    }
+    
+//    public static void main(String[] args) {
+//        System.out.println(pojoClass2MapClass(WxOutMsg.class));
+//    }
 }
