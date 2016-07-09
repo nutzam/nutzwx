@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.nutz.resource.NutResource;
 import org.nutz.weixin.bean.WxArticle;
+import org.nutz.weixin.bean.WxMassArticle;
 
 /**
  * http://mp.weixin.qq.com/wiki/10/10ea5a44870f53d79449290dfd43d006.html
@@ -14,8 +15,10 @@ import org.nutz.weixin.bean.WxArticle;
 public interface WxMaterialApi {
 
     WxResp add_news(WxArticle...news);
-    
+
     WxResp uploadimg(File f);
+
+    WxResp uploadnews(List<WxMassArticle> articles) ;
     
     WxResp add_material(String type, File f);
     
