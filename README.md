@@ -11,7 +11,7 @@ nutzwx
 
 
 
-没帐号测试个鸟?
+需要全功能的测试号吗?
 ---------------
 
 * 测试帐号申请地址 http://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login
@@ -34,6 +34,15 @@ nutzwx
 Maven配置
 =============================
 
+```xml
+
+		<dependency>
+			<groupId>org.nutz</groupId>
+			<artifactId>nutzwx</artifactId>
+			<version>1.r.57</version>
+		</dependency>
+```
+
 快照版本在每次提交后会自动deploy到sonatype快照库,享受各种bug fix和新功能
 
 ```xml
@@ -50,7 +59,7 @@ Maven配置
 		<dependency>
 			<groupId>org.nutz</groupId>
 			<artifactId>nutzwx</artifactId>
-			<version>1.r.57-SNAPSHOT</version>
+			<version>1.r.58-SNAPSHOT</version>
 		</dependency>
 		<!-- 其他依赖 -->
 	</dependencies>
@@ -58,7 +67,7 @@ Maven配置
 
 也可以将repositories配置放入$HOME/.m2/settings.xml中
 
-或者直接去[快照库下载](https://oss.sonatype.org/content/repositories/snapshots/org/nutz/nutz/1.r.57-SNAPSHOT/)
+或者直接去[快照库下载](https://oss.sonatype.org/content/repositories/snapshots/org/nutz/nutz/1.r.58-SNAPSHOT/)
 
 
 
