@@ -233,10 +233,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     @Override
     public NutResource media_get(String mediaId) {
-        String url = "http://file.api.weixin.qq.com/cgi-bin/media/get";
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("access_token", getAccessToken());
-        params.put("media_id", mediaId);
+        String url = String.format("http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s", getAccessToken(), mediaId);
         final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();
         if (!resp.isOK())
             throw new IllegalStateException("download media file, resp code=" + resp.getStatus());
