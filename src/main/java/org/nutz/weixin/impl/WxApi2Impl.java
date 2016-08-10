@@ -493,11 +493,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
     }
 
     public NutResource get_material(String media_id) {
-        String url = "https://api.weixin.qq.com/cgi-bin/material/get_material";
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("access_token", getAccessToken());
-        params.put("media_id", media_id);
-        final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();
+        String url = String.format("https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=%s", getAccessToken());
+        Request req = Request.create(url, METHOD.POST);
+        req.getParams().put("media_id", media_id);
+        final Response resp = Sender.create(req).send();
         if (!resp.isOK())
             throw new IllegalStateException("download media file, resp code=" + resp.getStatus());
         String disposition = resp.getHeader().get("Content-disposition");
