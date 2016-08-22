@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.nutz.http.Http;
 import org.nutz.http.Response;
@@ -51,6 +52,8 @@ import org.nutz.weixin.mvc.WxView;
 import org.nutz.weixin.repo.com.qq.weixin.mp.aes.AesException;
 import org.nutz.weixin.repo.com.qq.weixin.mp.aes.WXBizMsgCrypt;
 import org.nutz.weixin.spi.WxHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class Wxs {
 
@@ -160,7 +163,14 @@ public class Wxs {
 	 * 将一个输入流转为WxInMsg
 	 */
 	public static WxInMsg convert(InputStream in) {
-		Map<String, Object> map = Xmls.asMap(Xmls.xml(in).getDocumentElement());
+		Map<String, Object> map;
+        try {
+            // fix: DocumentBuilder不支持直接传入Reader,如果直接传InputStream的话又按系统默认编码,所以,用InputSource中转一下
+            map = Xmls.asMap(Xmls.xmls().parse(new InputSource(Streams.utf8r(in))).getDocumentElement());
+        }
+        catch (Exception e) {
+            throw Lang.wrapThrow(e);
+        }
 		Lang.convertMapKey(map, new MapKeyConvertor() {
 			@Override
 			public String convertKey(String key) {
