@@ -467,7 +467,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
     public WxResp add_material(String type, File f) {
         if (f == null)
             throw new NullPointerException("meida file is NULL");
-        String url = String.format("https://api.weixin.qq.com/cgi-bin/media/add_material?access_token=%s&type=%s", getAccessToken(), type);
+        String url = String.format("https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=%s&type=%s", getAccessToken(), type);
         Request req = Request.create(url, METHOD.POST);
         req.getParams().put("media", f);
         Response resp = new FilePostSender(req).send();
