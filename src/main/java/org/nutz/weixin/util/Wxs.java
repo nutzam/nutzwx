@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.nutz.http.Http;
 import org.nutz.http.Response;
@@ -53,7 +52,6 @@ import org.nutz.weixin.repo.com.qq.weixin.mp.aes.AesException;
 import org.nutz.weixin.repo.com.qq.weixin.mp.aes.WXBizMsgCrypt;
 import org.nutz.weixin.spi.WxHandler;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class Wxs {
 
@@ -68,17 +66,17 @@ public class Wxs {
 
 	/**
 	 * 根据提交参数，生成签名
-	 * 
+	 *
 	 * @param map
 	 *            要签名的集合
 	 * @param key
 	 *            商户秘钥
 	 * @return 签名
-	 * 
+	 *
 	 * @see <a href=
 	 *      "https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=4_3">
 	 *      微信商户平台签名算法</a>
-	 * 
+	 *
 	 */
 	public static String genPaySign(Map<String, Object> map, String key, String signType) {
 		String[] nms = map.keySet().toArray(new String[map.size()]);
@@ -106,7 +104,7 @@ public class Wxs {
 
 	/**
 	 * 默认采用 MD5 方式的签名
-	 * 
+	 *
 	 * @see #genPaySign(Map, String, String)
 	 */
 	public static String genPaySignMD5(Map<String, Object> map, String key) {
@@ -115,12 +113,12 @@ public class Wxs {
 
 	/**
 	 * 为参数集合填充随机数，以及生成签名
-	 * 
+	 *
 	 * @param map
 	 *            参数集合
 	 * @param key
 	 *            商户秘钥
-	 * 
+	 *
 	 * @see #genPaySignMD5(Map, String)
 	 */
 	public static void fillPayMap(Map<String, Object> map, String key) {
@@ -134,15 +132,15 @@ public class Wxs {
 
 	/**
 	 * 检查一下支付平台返回的 xml，是否签名合法，如果合法，转换成一个 map
-	 * 
+	 *
 	 * @param xml
 	 *            支付平台返回的 xml
 	 * @param key
 	 *            商户秘钥
 	 * @return 合法的 Map
-	 * 
+	 *
 	 * @throws "e.wx.sign.invalid"
-	 * 
+	 *
 	 * @see <a href=
 	 *      "https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1">
 	 *      支付平台文档</a>
@@ -425,10 +423,10 @@ public class Wxs {
 
 	/**
 	 * 将一个WxOutMsg转为被动响应所需要的XML文本
-	 * 
+	 *
 	 * @param msg
 	 *            微信消息输出对象
-	 * 
+	 *
 	 * @return 输出的 XML 文本
 	 */
 	public static void asXml(Writer writer, WxOutMsg msg) {
@@ -524,10 +522,10 @@ public class Wxs {
 
 	/**
 	 * 将一个WxOutMsg转为主动信息所需要的Json文本
-	 * 
+	 *
 	 * @param msg
 	 *            微信消息输出对象
-	 * 
+	 *
 	 * @return 输出的 JSON 文本
 	 */
 	public static void asJson(Writer writer, WxOutMsg msg) {
@@ -619,7 +617,7 @@ public class Wxs {
 			return new ViewWrapper(new RawView(null), echostr);
 		}
 		String postData = Streams.readAndClose(new InputStreamReader(req.getInputStream(), Encoding.CHARSET_UTF8));
-		
+
 		if ("aes".equals(encrypt_type)) {
             WXBizMsgCrypt msgCrypt = wxHandler.getMsgCrypt();
 		    try {
@@ -641,7 +639,7 @@ public class Wxs {
 
 	/**
 	 * 下载媒体文件(放到临时目录中), 返回对应文件
-	 * 
+	 *
 	 * @param accessToken
 	 * @param mediaId
 	 */
@@ -683,7 +681,7 @@ public class Wxs {
     public static WxOutMsg respText(String content) {
         return respText(null, content);
     }
-    
+
     public static String pojoClass2MapClass(Class<?> klass) {
         StringBuilder sb = new StringBuilder();
         sb.append("package " + klass.getPackage().getName()+";\r\n\r\n");
@@ -696,7 +694,7 @@ public class Wxs {
         sb.append("}");
         return sb.toString();
     }
-    
+
     @SuppressWarnings("rawtypes")
     public static void mapField(StringBuilder sb, Class<?> klass, Field field) {
         sb.append("\r\n");
@@ -711,7 +709,7 @@ public class Wxs {
                 getterTmpl = "return get"+Strings.upperFirst(mirror.getType().getSimpleName())+"(\"${fieldName}\", 0)";
             }
         }
-        
+
         Tmpl tmpl = Tmpl.parse(
                   "    public ${className} set${upperFieldName}(${fieldType} ${fieldName}){\r\n"
                 + "        put(\"${fieldName}\", ${fieldName});\r\n"
@@ -726,7 +724,7 @@ public class Wxs {
         ctx.setv("fieldType", field.getType().getSimpleName());
         sb.append(tmpl.render(ctx));
     }
-    
+
 //    public static void main(String[] args) {
 //        System.out.println(pojoClass2MapClass(WxOutMsg.class));
 //    }
