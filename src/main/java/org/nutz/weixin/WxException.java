@@ -2,9 +2,9 @@ package org.nutz.weixin;
 
 public class WxException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2372915232825280617L;
 
-	public WxException() {
+    public WxException() {
 	}
 
 	public WxException(String message) {
