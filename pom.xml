@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nutz</groupId>
 	<artifactId>nutzwx</artifactId>
-	<version>1.r.59-SNAPSHOT</version>
+	<version>1.r.59</version>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>org.nutz</groupId>
 			<artifactId>nutz</artifactId>
-			<version>1.r.58</version>
+			<version>1.r.59</version>
 		</dependency>
 	</dependencies>
 
@@ -61,10 +61,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
+				<version>3.5.1</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			
@@ -79,17 +79,4 @@
 		</plugins>
 	</build>
 	
-	<distributionManagement>
-		<snapshotRepository>
-			<id>nutzcn-snapshots</id>
-			<name>NutzCN snapshot repository</name>
-			<url>http://maven.nutz.cn/nexus/content/repositories/snapshots</url>
-		</snapshotRepository>
-
-		<repository>
-			<id>sonatype-release-staging</id>
-			<name>Sonatype Nexus release repository</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-		</repository>
-	</distributionManagement>
 </project>
