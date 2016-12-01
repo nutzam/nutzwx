@@ -316,8 +316,8 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 		NutMap re = Json.fromJson(NutMap.class, str);
 		String ticket = re.getString("ticket");
 		//add by SK.Loda 微信token过期时间和返回的expires_in不匹配故此处采用外部配置过期时间
-		int expires = tokenExpires;
-		jsapiTicketStore.save(ticket, expires, System.currentTimeMillis());
+		//int expires = re.getInt("expires_in") 
+		jsapiTicketStore.save(ticket, tokenExpires, System.currentTimeMillis());
 	}
 
 	@Override
@@ -352,8 +352,8 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 		NutMap re = Json.fromJson(NutMap.class, str);
 		String token = re.getString("access_token");
 		//add by SK.Loda 微信token过期时间和返回的expires_in不匹配故此处采用外部配置过期时间
-		int expires = tokenExpires; //re.getInt("expires_in") 
-		accessTokenStore.save(token, expires, System.currentTimeMillis());
+		//int expires = re.getInt("expires_in");
+		accessTokenStore.save(token, tokenExpires, System.currentTimeMillis());
 	}
 
 	@Override
