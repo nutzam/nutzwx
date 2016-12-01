@@ -11,4 +11,5 @@ public interface WxQrApi {
 
     String qrcode_show(String ticket);
 
+    String shorturl(String url);
 }

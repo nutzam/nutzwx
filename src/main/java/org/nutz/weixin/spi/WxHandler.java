@@ -2,6 +2,7 @@ package org.nutz.weixin.spi;
 
 import org.nutz.weixin.bean.WxInMsg;
 import org.nutz.weixin.bean.WxOutMsg;
+import org.nutz.weixin.repo.com.qq.weixin.mp.aes.WXBizMsgCrypt;
 /**
  * 
  *  @author wendal(wendal1985@gmail.com)
@@ -10,6 +11,8 @@ import org.nutz.weixin.bean.WxOutMsg;
 public interface WxHandler {
 	
 	boolean check(String signature, String timestamp, String nonce, String key);
+	
+	WXBizMsgCrypt getMsgCrypt();
 
 	WxOutMsg text(WxInMsg msg);
 	WxOutMsg image(WxInMsg msg);
@@ -18,6 +21,7 @@ public interface WxHandler {
 	WxOutMsg location(WxInMsg msg);
 	WxOutMsg link(WxInMsg msg);
 	//WxOutMsg event(WxInMsg msg);
+	WxOutMsg shortvideo(WxInMsg msg);
 	
 	WxOutMsg eventSubscribe(WxInMsg msg);
 	WxOutMsg eventUnsubscribe(WxInMsg msg);

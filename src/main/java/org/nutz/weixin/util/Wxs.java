@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,13 +21,16 @@ import javax.servlet.http.HttpServletRequest;
 import org.nutz.http.Http;
 import org.nutz.http.Response;
 import org.nutz.json.Json;
+import org.nutz.lang.Encoding;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.MapKeyConvertor;
+import org.nutz.lang.Mirror;
 import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 import org.nutz.lang.Xmls;
 import org.nutz.lang.random.R;
+import org.nutz.lang.tmpl.Tmpl;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
@@ -43,7 +48,10 @@ import org.nutz.weixin.bean.WxOutMsg;
 import org.nutz.weixin.bean.WxVideo;
 import org.nutz.weixin.bean.WxVoice;
 import org.nutz.weixin.mvc.WxView;
+import org.nutz.weixin.repo.com.qq.weixin.mp.aes.AesException;
+import org.nutz.weixin.repo.com.qq.weixin.mp.aes.WXBizMsgCrypt;
 import org.nutz.weixin.spi.WxHandler;
+import org.xml.sax.InputSource;
 
 public class Wxs {
 
@@ -58,17 +66,17 @@ public class Wxs {
 
 	/**
 	 * 根据提交参数，生成签名
-	 * 
+	 *
 	 * @param map
 	 *            要签名的集合
 	 * @param key
 	 *            商户秘钥
 	 * @return 签名
-	 * 
+	 *
 	 * @see <a href=
 	 *      "https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=4_3">
 	 *      微信商户平台签名算法</a>
-	 * 
+	 *
 	 */
 	public static String genPaySign(Map<String, Object> map, String key, String signType) {
 		String[] nms = map.keySet().toArray(new String[map.size()]);
@@ -96,7 +104,7 @@ public class Wxs {
 
 	/**
 	 * 默认采用 MD5 方式的签名
-	 * 
+	 *
 	 * @see #genPaySign(Map, String, String)
 	 */
 	public static String genPaySignMD5(Map<String, Object> map, String key) {
@@ -105,12 +113,12 @@ public class Wxs {
 
 	/**
 	 * 为参数集合填充随机数，以及生成签名
-	 * 
+	 *
 	 * @param map
 	 *            参数集合
 	 * @param key
 	 *            商户秘钥
-	 * 
+	 *
 	 * @see #genPaySignMD5(Map, String)
 	 */
 	public static void fillPayMap(Map<String, Object> map, String key) {
@@ -124,15 +132,15 @@ public class Wxs {
 
 	/**
 	 * 检查一下支付平台返回的 xml，是否签名合法，如果合法，转换成一个 map
-	 * 
+	 *
 	 * @param xml
 	 *            支付平台返回的 xml
 	 * @param key
 	 *            商户秘钥
 	 * @return 合法的 Map
-	 * 
+	 *
 	 * @throws "e.wx.sign.invalid"
-	 * 
+	 *
 	 * @see <a href=
 	 *      "https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1">
 	 *      支付平台文档</a>
@@ -153,7 +161,14 @@ public class Wxs {
 	 * 将一个输入流转为WxInMsg
 	 */
 	public static WxInMsg convert(InputStream in) {
-		Map<String, Object> map = Xmls.asMap(Xmls.xml(in).getDocumentElement());
+		Map<String, Object> map;
+        try {
+            // fix: DocumentBuilder不支持直接传入Reader,如果直接传InputStream的话又按系统默认编码,所以,用InputSource中转一下
+            map = Xmls.asMap(Xmls.xmls().parse(new InputSource(Streams.utf8r(in))).getDocumentElement());
+        }
+        catch (Exception e) {
+            throw Lang.wrapThrow(e);
+        }
 		Lang.convertMapKey(map, new MapKeyConvertor() {
 			@Override
 			public String convertKey(String key) {
@@ -216,6 +231,9 @@ public class Wxs {
 		case event:
 			out = handleEvent(msg, handler);
 			break;
+		case shortvideo:
+		    out =handler.shortvideo(msg);
+		    break;
 		default:
 			log.infof("New MsyType=%s ? fallback to defaultMsg", msg.getMsgType());
 			out = handler.defaultMsg(msg);
@@ -405,10 +423,10 @@ public class Wxs {
 
 	/**
 	 * 将一个WxOutMsg转为被动响应所需要的XML文本
-	 * 
+	 *
 	 * @param msg
 	 *            微信消息输出对象
-	 * 
+	 *
 	 * @return 输出的 XML 文本
 	 */
 	public static void asXml(Writer writer, WxOutMsg msg) {
@@ -472,6 +490,13 @@ public class Wxs {
 				}
 				writer.write("</Articles>\n");
 				break;
+			case transfer_customer_service:
+			    if (msg.getKfAccount()!=null) {
+			        writer.write("<TransInfo>\n");
+			        writer.write(tag("KfAccount", cdata(msg.getKfAccount().getAccount())));
+			        writer.write("</TransInfo>\n");
+			    }
+			    break;
 			default:
 				break;
 			}
@@ -497,10 +522,10 @@ public class Wxs {
 
 	/**
 	 * 将一个WxOutMsg转为主动信息所需要的Json文本
-	 * 
+	 *
 	 * @param msg
 	 *            微信消息输出对象
-	 * 
+	 *
 	 * @return 输出的 JSON 文本
 	 */
 	public static void asJson(Writer writer, WxOutMsg msg) {
@@ -557,6 +582,12 @@ public class Wxs {
 			_news.put("articles", list);
 			map.put("news", _news);
 			break;
+		case mpnews:
+		    map.put("mpnews", new NutMap().setv("media_id", msg.getMedia_id()));
+		    break;
+		case wxcard:
+		    map.put("wxcard", new NutMap().setv("card_id", msg.getCard().getId()).setv("card_ext", msg.getCard().getExt()));
+            break;
 		default:
 			break;
 		}
@@ -571,15 +602,33 @@ public class Wxs {
 			log.info("WxHandler is NULL");
 			return HttpStatusView.HTTP_502;
 		}
-		if (!wxHandler.check(req.getParameter("signature"), req.getParameter("timestamp"), req.getParameter("nonce"), key)) {
+		String signature = req.getParameter("signature");
+		String timestamp = req.getParameter("timestamp");
+		String nonce = req.getParameter("nonce");
+		String msg_signature = req.getParameter("msg_signature");
+		String encrypt_type = req.getParameter("encrypt_type");
+		if (!wxHandler.check(signature, timestamp, nonce, key)) {
 			log.info("token is invalid");
 			return HttpStatusView.HTTP_502;
 		}
 		if ("GET".equalsIgnoreCase(req.getMethod())) {
-			log.info("GET? return echostr=" + req.getParameter("echostr"));
-			return new ViewWrapper(new RawView(null), req.getParameter("echostr"));
+		    String echostr = req.getParameter("echostr");
+			log.info("GET? return echostr=" + echostr);
+			return new ViewWrapper(new RawView(null), echostr);
 		}
-		WxInMsg in = Wxs.convert(req.getInputStream());
+		String postData = Streams.readAndClose(new InputStreamReader(req.getInputStream(), Encoding.CHARSET_UTF8));
+
+		if ("aes".equals(encrypt_type)) {
+            WXBizMsgCrypt msgCrypt = wxHandler.getMsgCrypt();
+		    try {
+		        // 若抛出Illegal key size,请更新JDK的加密库为不限制长度
+                postData = msgCrypt.decryptMsg(msg_signature, timestamp, nonce, postData);
+            }
+            catch (AesException e) {
+                return new HttpStatusView(403);
+            }
+		}
+		WxInMsg in = Wxs.convert(postData);
 		in.setExtkey(key);
 		WxOutMsg out = wxHandler.handle(in);
 		if (out != null) {
@@ -590,7 +639,7 @@ public class Wxs {
 
 	/**
 	 * 下载媒体文件(放到临时目录中), 返回对应文件
-	 * 
+	 *
 	 * @param accessToken
 	 * @param mediaId
 	 */
@@ -618,7 +667,6 @@ public class Wxs {
 					log.debugf("media download success mediaId=" + mediaId);
 					break;
 				} else {
-					log.debugf("download %s fail, code=%s, content=%s", mediaId, resp.getStatus(), resp.getContent());
 				}
 			} catch (Throwable e) {
 				log.infof("download %s fail", mediaId, e);
@@ -630,16 +678,54 @@ public class Wxs {
 		return mf;
 	}
 
-	// public static void main(String[] args) throws IOException {
-	// for (Object obj : WxMsgType.values()) {
-	// System.out.printf("WxOutMsg %s(WxInMsg msg);\n", obj);
-	// }
-	// for (Object obj : WxEventType.values()) {
-	// System.out.printf("WxOutMsg event%s(WxInMsg msg);\n",
-	// Strings.upperFirst(obj.toString().toLowerCase()));
-	// }
-	// StringWriter sw = new StringWriter();
-	// asXml(sw, respText(null, "Hi"));
-	// System.out.println(sw.toString());
-	// }
+    public static WxOutMsg respText(String content) {
+        return respText(null, content);
+    }
+
+    public static String pojoClass2MapClass(Class<?> klass) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("package " + klass.getPackage().getName()+";\r\n\r\n");
+        sb.append("import org.nutz.lang.util.NutMap;\r\n\r\n");
+        sb.append("@SuppressWarnings(\"serial\")\r\n");
+        sb.append("public class " + klass.getSimpleName() + " extends NutMap {\r\n");
+        for (Field field : klass.getDeclaredFields()) {
+            mapField(sb, klass, field);
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static void mapField(StringBuilder sb, Class<?> klass, Field field) {
+        sb.append("\r\n");
+        String fieldName = field.getName();
+        String className = klass.getSimpleName();
+        Mirror mirror = Mirror.me(field.getType());
+        String getterTmpl = "return (${fieldType})get(\"${fieldName}\")";
+        if (mirror.isPrimitiveNumber()) {
+            if (mirror.isBoolean()) {
+                getterTmpl = "return getBoolean(\"${fieldName}\", false)";
+            } else {
+                getterTmpl = "return get"+Strings.upperFirst(mirror.getType().getSimpleName())+"(\"${fieldName}\", 0)";
+            }
+        }
+
+        Tmpl tmpl = Tmpl.parse(
+                  "    public ${className} set${upperFieldName}(${fieldType} ${fieldName}){\r\n"
+                + "        put(\"${fieldName}\", ${fieldName});\r\n"
+                + "        return this;\r\n"
+                + "    }\r\n"
+                + "\r\n"
+                + "    public ${fieldType} get${upperFieldName}(){\r\n"
+                + "        "+getterTmpl+";\r\n"
+                + "    }\r\n");
+        NutMap ctx = new NutMap().setv("className", className).setv("fieldName", fieldName);
+        ctx.setv("upperFieldName", Strings.upperFirst(fieldName));
+        ctx.setv("fieldType", field.getType().getSimpleName());
+        sb.append(tmpl.render(ctx));
+    }
+
+//    public static void main(String[] args) {
+//        System.out.println(pojoClass2MapClass(WxOutMsg.class));
+//    }
 }

@@ -1,5 +1,7 @@
 package org.nutz.weixin.spi;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,4 +18,6 @@ public interface WxBaseApi {
     WxInMsg parse(HttpServletRequest req);
     
     void handle(HttpServletRequest req, HttpServletResponse resp, WxHandler handler);
+    
+    List<String> getcallbackip();
 }
