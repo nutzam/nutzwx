@@ -49,7 +49,7 @@ Maven配置
 	<repositories>
 		<repository>
 			<id>nutzcn-snapshots</id>
-			<url>http://maven.nutz.cn/nexus/content/repositories/snapshots</url>
+			<url>https://jfrog.nutz.cn/artifactory/snapshots</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
@@ -67,7 +67,7 @@ Maven配置
 
 也可以将repositories配置放入$HOME/.m2/settings.xml中
 
-或者直接去[快照库下载](http://maven.nutz.cn/nexus/content/repositories/snapshots/org/nutz/nutzwk/1.r.59-SNAPSHOT/)
+或者直接去[快照库下载](https://jfrog.nutz.cn/artifactory/snapshots/org/nutz/nutzwk/1.r.59-SNAPSHOT/)
 
 
 
