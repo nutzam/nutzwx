@@ -48,35 +48,32 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	protected String base = "https://api.weixin.qq.com/cgi-bin";
 	protected String openid;
 	protected String encodingAesKey;
-	protected int tokenExpires = 1800;//默认值
+	protected int tokenExpires = 1800;//默认access_token过期时间
+	protected int retryTimes = 3;//默认access_token时效时重试次数
 
-	public AbstractWxApi2(String token,
-                          String appid,
-                          String appsecret,
-                          String openid,
-                          String encodingAesKey,
-                          int tokenExpires) {
-        this();
-        this.token = token;
-        this.appid = appid;
-        this.appsecret = appsecret;
-        this.openid = openid;
-        this.encodingAesKey = encodingAesKey;
-        this.tokenExpires = tokenExpires;
-    }
-	
-	public WxApi2 configure(PropertiesProxy conf, String prefix){
-        prefix = Strings.sBlank(prefix);
-        token = conf.check(prefix+"token");
-        appid = conf.get(prefix+"appid");
-        appsecret = conf.get(prefix+"appsecret");
-        openid = conf.get(prefix + "openid");
-        encodingAesKey = conf.get(prefix+"aes");
-        tokenExpires = conf.getInt(prefix+"tokenExpires");
-        return this;
-    }
+	public AbstractWxApi2(String token, String appid, String appsecret, String openid, String encodingAesKey,
+			int tokenExpires) {
+		this();
+		this.token = token;
+		this.appid = appid;
+		this.appsecret = appsecret;
+		this.openid = openid;
+		this.encodingAesKey = encodingAesKey;
+		this.tokenExpires = tokenExpires;
+	}
 
-    /**
+	public WxApi2 configure(PropertiesProxy conf, String prefix) {
+		prefix = Strings.sBlank(prefix);
+		token = conf.check(prefix + "token");
+		appid = conf.get(prefix + "appid");
+		appsecret = conf.get(prefix + "appsecret");
+		openid = conf.get(prefix + "openid");
+		encodingAesKey = conf.get(prefix + "aes");
+		tokenExpires = conf.getInt(prefix + "tokenExpires");
+		return this;
+	}
+
+	/**
 	 * @return the token
 	 */
 	public String getToken() {
@@ -84,7 +81,8 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	}
 
 	/**
-	 * @param token the token to set
+	 * @param token
+	 *            the token to set
 	 */
 	public void setToken(String token) {
 		this.token = token;
@@ -98,7 +96,8 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	}
 
 	/**
-	 * @param appid the appid to set
+	 * @param appid
+	 *            the appid to set
 	 */
 	public void setAppid(String appid) {
 		this.appid = appid;
@@ -112,7 +111,8 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	}
 
 	/**
-	 * @param appsecret the appsecret to set
+	 * @param appsecret
+	 *            the appsecret to set
 	 */
 	public void setAppsecret(String appsecret) {
 		this.appsecret = appsecret;
@@ -126,7 +126,8 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	}
 
 	/**
-	 * @param openid the openid to set
+	 * @param openid
+	 *            the openid to set
 	 */
 	public void setOpenid(String openid) {
 		this.openid = openid;
@@ -140,12 +141,12 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	}
 
 	/**
-	 * @param encodingAesKey the encodingAesKey to set
+	 * @param encodingAesKey
+	 *            the encodingAesKey to set
 	 */
 	public void setEncodingAesKey(String encodingAesKey) {
 		this.encodingAesKey = encodingAesKey;
 	}
-	
 
 	public int getTokenExpires() {
 		return tokenExpires;
@@ -214,9 +215,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 			String msg_signature = req.getParameter("msg_signature");
 			String timestamp = req.getParameter("timestamp");
 			String nonce = req.getParameter("nonce");
-			String str = pc.decryptMsg(msg_signature,
-					timestamp,
-					nonce,
+			String str = pc.decryptMsg(msg_signature, timestamp, nonce,
 					new String(Streams.readBytesAndClose(in), Encoding.CHARSET_UTF8));
 			return Wxs.convert(str);
 		} catch (AesException e) {
@@ -262,16 +261,10 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	protected WxResp postJson(String uri, NutMap body) {
 		return call(uri, METHOD.POST, Json.toJson(body));
 	}
+	
 
 	protected WxResp call(String URL, METHOD method, String body) {
 		String token = getAccessToken();
-		if (!URL.startsWith("http"))
-			URL = base + URL;
-		if (URL.contains("?")) {
-			URL += "&access_token=" + token;
-		} else {
-			URL += "?access_token=" + token;
-		}
 		if (log.isInfoEnabled()) {
 			log.info("wxapi call: " + URL);
 			if (log.isDebugEnabled()) {
@@ -279,13 +272,43 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 			}
 		}
 
-		Request req = Request.create(URL, method);
-		if (body != null)
-			req.setData(body);
-		Response resp = Sender.create(req).send();
-		if (!resp.isOK())
-			throw new IllegalArgumentException("resp code=" + resp.getStatus());
-		return Json.fromJson(WxResp.class, resp.getReader("UTF-8"));
+		WxResp wxResp = null;
+		while (retryTimes >= 0) {
+			try {
+				String sendUrl = null;
+				if (!URL.startsWith("http"))
+					sendUrl = base + URL;
+				if (URL.contains("?")) {
+					sendUrl += "&access_token=" + token;
+				} else {
+					sendUrl += "?access_token=" + token;
+				}
+				Request req = Request.create(sendUrl, method);
+				if (body != null)
+					req.setData(body);
+				Response resp = Sender.create(req).send();
+				if (!resp.isOK())
+					throw new IllegalArgumentException("resp code=" + resp.getStatus());
+				wxResp = Json.fromJson(WxResp.class, resp.getReader("UTF-8"));
+				// 处理微信返回  40001 invalid credential
+				if (wxResp.errcode() != 40001) {
+					break;//正常直接跳出循环
+				} else {
+					log.warn("wxapi (" + URL + ") call finished, but the return code is 40001, try to reflush access_token right now...times -> " + retryTimes);
+					// 强制刷新一次acess_token
+					reflushAccessToken();
+				}
+			} catch (Exception e) {
+				if (retryTimes >= 0) {
+					log.warn("reflushing access_token... " + retryTimes + " retries left.", e);
+				} else {
+					throw e;
+				}
+			} finally {
+				retryTimes--;
+			}
+		}
+		return wxResp;
 	}
 
 	@Override
@@ -293,7 +316,10 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 		WxJsapiTicket at = jsapiTicketStore.get();
 		if (at == null || at.getExpires() < (System.currentTimeMillis() - at.getLastCacheTimeMillis()) / 1000) {
 			synchronized (lock) {
-				reflushJsapiTicket();
+				WxJsapiTicket at_forupdate = jsapiTicketStore.get();
+				if (at_forupdate == null || at_forupdate.getExpires() < (System.currentTimeMillis() - at_forupdate.getLastCacheTimeMillis()) / 1000) {
+					reflushJsapiTicket();
+				}
 			}
 		}
 		return jsapiTicketStore.get().getTicket();
@@ -315,8 +341,8 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 
 		NutMap re = Json.fromJson(NutMap.class, str);
 		String ticket = re.getString("ticket");
-		//add by SK.Loda 微信token过期时间和返回的expires_in不匹配故此处采用外部配置过期时间
-		//int expires = re.getInt("expires_in") 
+		// add by SK.Loda 微信token过期时间和返回的expires_in并不匹配,故此处采用外部配置过期时间
+		// int expires = re.getInt("expires_in")
 		jsapiTicketStore.save(ticket, tokenExpires, System.currentTimeMillis());
 	}
 
@@ -325,7 +351,9 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 		WxAccessToken at = accessTokenStore.get();
 		if (at == null || at.getExpires() < (System.currentTimeMillis() - at.getLastCacheTimeMillis()) / 1000) {
 			synchronized (lock) {
-				if (at == null || at.getExpires() < System.currentTimeMillis() / 1000) {
+				//FIX多线程并非更新token的问题
+				WxAccessToken at_forupdate = accessTokenStore.get();
+				if (at_forupdate == null || at_forupdate.getExpires() < (System.currentTimeMillis() - at_forupdate.getLastCacheTimeMillis()) / 1000) {
 					reflushAccessToken();
 				}
 			}
@@ -334,10 +362,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	}
 
 	protected void reflushAccessToken() {
-		String url = String.format("%s/token?grant_type=client_credential&appid=%s&secret=%s",
-				base,
-				appid,
-				appsecret);
+		String url = String.format("%s/token?grant_type=client_credential&appid=%s&secret=%s", base, appid, appsecret);
 		if (log.isDebugEnabled())
 			log.debugf("ATS: reflush send: %s", url);
 
@@ -351,8 +376,8 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 
 		NutMap re = Json.fromJson(NutMap.class, str);
 		String token = re.getString("access_token");
-		//add by SK.Loda 微信token过期时间和返回的expires_in不匹配故此处采用外部配置过期时间
-		//int expires = re.getInt("expires_in");
+		// add by SK.Loda 微信token过期时间和返回的expires_in不匹配故此处采用外部配置过期时间
+		// int expires = re.getInt("expires_in");
 		accessTokenStore.save(token, tokenExpires, System.currentTimeMillis());
 	}
 
@@ -362,11 +387,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 		long timestamp = System.currentTimeMillis();
 		String nonceStr = R.UU64();
 
-		String str = String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%d&url=%s",
-				jt,
-				nonceStr,
-				timestamp,
-				url);
+		String str = String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%d&url=%s", jt, nonceStr, timestamp, url);
 		String signature = Lang.sha1(str);
 
 		NutMap map = new NutMap();
