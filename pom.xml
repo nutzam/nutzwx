@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nutz</groupId>
 	<artifactId>nutzwx</artifactId>
-	<version>1.r.60-SNAPSHOT</version>
+	<version>1.r.59</version>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -13,14 +13,14 @@
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.nutz</groupId>
 			<artifactId>nutz</artifactId>
-			<version>1.r.58</version>
+			<version>1.r.59</version>
 		</dependency>
 	</dependencies>
 
@@ -31,7 +31,7 @@
 		</license>
 	</licenses>
 
-	<name>nutzwk</name>
+	<name>nutzwx</name>
 	<url>http://github.com/nutzam/nutzwx</url>
 
 	<properties>
@@ -61,13 +61,27 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
+				<version>3.5.1</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			
+            <plugin>  
+                <artifactId>maven-source-plugin</artifactId>  
+                <version>2.4</version>  
+                <configuration>  
+                    <attach>true</attach>  
+                </configuration>  
+                <executions>  
+                    <execution>  
+                        <phase>compile</phase>  
+                        <goals>  
+                            <goal>jar</goal>  
+                        </goals>  
+                    </execution>  
+                </executions>  
+            </plugin> 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -78,14 +92,12 @@
 			</plugin>
 		</plugins>
 	</build>
-	
 	<distributionManagement>
 		<snapshotRepository>
 			<id>nutzcn-snapshots</id>
 			<name>NutzCN snapshot repository</name>
 			<url>https://jfrog.nutz.cn/artifactory/snapshots</url>
 		</snapshotRepository>
-
 		<repository>
 			<id>sonatype-release-staging</id>
 			<name>Sonatype Nexus release repository</name>
