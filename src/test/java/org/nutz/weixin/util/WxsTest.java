@@ -3,9 +3,13 @@ package org.nutz.weixin.util;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
 
 public class WxsTest {
 
+	private static final Log log = Logs.get();
+	
 	@Test
 	public void testCheck() {
 		Wxs.enableDevMode();
@@ -15,6 +19,11 @@ public class WxsTest {
 		String nonce="417048531";
 		String token = "9b6b3a8ae";
 		assertTrue(Wxs.check(token, signature, timestamp, nonce));
+	}
+	
+	@Test
+	public void testLogs(){
+		log.infof("The nutzwx project is developed by %s %s %s", "112", "1212", null);
 	}
 
 }
