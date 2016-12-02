@@ -48,18 +48,21 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	protected String base = "https://api.weixin.qq.com/cgi-bin";
 	protected String openid;
 	protected String encodingAesKey;
+	protected int tokenExpires = 1800;//默认值
 
 	public AbstractWxApi2(String token,
                           String appid,
                           String appsecret,
                           String openid,
-                          String encodingAesKey) {
+                          String encodingAesKey,
+                          int tokenExpires) {
         this();
         this.token = token;
         this.appid = appid;
         this.appsecret = appsecret;
         this.openid = openid;
         this.encodingAesKey = encodingAesKey;
+        this.tokenExpires = tokenExpires;
     }
 	
 	public WxApi2 configure(PropertiesProxy conf, String prefix){
@@ -69,6 +72,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
         appsecret = conf.get(prefix+"appsecret");
         openid = conf.get(prefix + "openid");
         encodingAesKey = conf.get(prefix+"aes");
+        tokenExpires = conf.getInt(prefix+"tokenExpires");
         return this;
     }
 
@@ -141,9 +145,16 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	public void setEncodingAesKey(String encodingAesKey) {
 		this.encodingAesKey = encodingAesKey;
 	}
+	
 
-	// protected String token;
-	// protected int access_token_expires;
+	public int getTokenExpires() {
+		return tokenExpires;
+	}
+
+	public void setTokenExpires(int tokenExpires) {
+		this.tokenExpires = tokenExpires;
+	}
+
 	protected Object lock = new Object();
 	protected WXBizMsgCrypt pc;
 
@@ -304,8 +315,9 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 
 		NutMap re = Json.fromJson(NutMap.class, str);
 		String ticket = re.getString("ticket");
-		int expires = re.getInt("expires_in") - 60;// 提前一分钟
-		jsapiTicketStore.save(ticket, expires, System.currentTimeMillis());
+		//add by SK.Loda 微信token过期时间和返回的expires_in不匹配故此处采用外部配置过期时间
+		//int expires = re.getInt("expires_in") 
+		jsapiTicketStore.save(ticket, tokenExpires, System.currentTimeMillis());
 	}
 
 	@Override
@@ -339,8 +351,9 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 
 		NutMap re = Json.fromJson(NutMap.class, str);
 		String token = re.getString("access_token");
-		int expires = re.getInt("expires_in") - 60;// 提前一分钟
-		accessTokenStore.save(token, expires, System.currentTimeMillis());
+		//add by SK.Loda 微信token过期时间和返回的expires_in不匹配故此处采用外部配置过期时间
+		//int expires = re.getInt("expires_in");
+		accessTokenStore.save(token, tokenExpires, System.currentTimeMillis());
 	}
 
 	@Override
