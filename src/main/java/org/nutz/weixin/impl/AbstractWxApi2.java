@@ -303,7 +303,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 				if (retryTimes >= 0) {
 					log.warn("reflushing access_token... " + retry + " retries left.", e);
 				} else {
-					throw e;
+					throw Lang.wrapThrow(e);
 				}
 			} finally {
 				retry--;
