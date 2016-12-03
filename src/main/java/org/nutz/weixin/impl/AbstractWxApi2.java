@@ -272,8 +272,9 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 			}
 		}
 
+		int retry = retryTimes;
 		WxResp wxResp = null;
-		while (retryTimes >= 0) {
+		while (retry >= 0) {
 			try {
 				String sendUrl = null;
 				if (!URL.startsWith("http"))
@@ -294,18 +295,18 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 				if (wxResp.errcode() != 40001) {
 					break;//正常直接跳出循环
 				} else {
-					log.warn("wxapi (" + URL + ") call finished, but the return code is 40001, try to reflush access_token right now...times -> " + retryTimes);
+					log.warn("wxapi (" + URL + ") call finished, but the return code is 40001, try to reflush access_token right now...times -> " + retry);
 					// 强制刷新一次acess_token
 					reflushAccessToken();
 				}
 			} catch (Exception e) {
 				if (retryTimes >= 0) {
-					log.warn("reflushing access_token... " + retryTimes + " retries left.", e);
+					log.warn("reflushing access_token... " + retry + " retries left.", e);
 				} else {
 					throw e;
 				}
 			} finally {
-				retryTimes--;
+				retry--;
 			}
 		}
 		return wxResp;
@@ -329,7 +330,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 		String at = this.getAccessToken();
 		String url = String.format("%s/ticket/getticket?access_token=%s&type=jsapi", base, at);
 		if (log.isDebugEnabled())
-			log.debugf("ATS: reflush send: %s", url);
+			log.debugf("ATS: reflush jsapi ticket send: %s", url);
 
 		Response resp = Http.get(url);
 		if (!resp.isOK())
@@ -337,7 +338,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 		String str = resp.getContent();
 
 		if (log.isDebugEnabled())
-			log.debugf("ATS: reflush done: %s", str);
+			log.debugf("ATS: reflush jsapi ticket done: %s", str);
 
 		NutMap re = Json.fromJson(NutMap.class, str);
 		String ticket = re.getString("ticket");
@@ -364,7 +365,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	protected void reflushAccessToken() {
 		String url = String.format("%s/token?grant_type=client_credential&appid=%s&secret=%s", base, appid, appsecret);
 		if (log.isDebugEnabled())
-			log.debugf("ATS: reflush send: %s", url);
+			log.debugf("ATS: reflush access_token send: %s", url);
 
 		Response resp = Http.get(url);
 		if (!resp.isOK())
@@ -372,7 +373,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 		String str = resp.getContent();
 
 		if (log.isDebugEnabled())
-			log.debugf("ATS: reflush done: %s", str);
+			log.debugf("ATS: reflush access_token done: %s", str);
 
 		NutMap re = Json.fromJson(NutMap.class, str);
 		String token = re.getString("access_token");
