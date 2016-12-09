@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>org.nutz</groupId>
 			<artifactId>nutz</artifactId>
-			<version>1.r.59</version>
+			<version>1.r.60-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
