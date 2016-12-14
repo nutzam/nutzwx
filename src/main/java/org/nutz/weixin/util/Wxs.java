@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
@@ -174,9 +176,12 @@ public class Wxs {
 	 */
 	public static <T> T convert(InputStream in, Class<T> klass) {
 		Map<String, Object> map;
+		String raw;
         try {
             // fix: DocumentBuilder不支持直接传入Reader,如果直接传InputStream的话又按系统默认编码,所以,用InputSource中转一下
-            map = Xmls.asMap(Xmls.xmls().parse(new InputSource(Streams.utf8r(in))).getDocumentElement());
+            Reader r = Streams.utf8r(in);
+            raw = Lang.readAll(r);
+            map = Xmls.asMap(Xmls.xmls().parse(new InputSource(new StringReader(raw))).getDocumentElement());
         }
         catch (Exception e) {
             throw Lang.wrapThrow(e);
@@ -191,7 +196,12 @@ public class Wxs {
 		if (DEV_MODE) {
 			log.debug("Income >> \n" + Json.toJson(map));
 		}
-		return Lang.map2Object(map, klass);
+		T t = Lang.map2Object(map, klass);
+		if (t instanceof WxInMsg)
+		    ((WxInMsg)t).raw(raw);
+		else if (t instanceof WxOutMsg)
+		    ((WxOutMsg)t).raw(raw);
+		return t;
 	}
 
 	/**
@@ -424,6 +434,8 @@ public class Wxs {
 	 * @see #asXml(Writer, WxOutMsg)
 	 */
 	public static String asXml(WxOutMsg msg) {
+	    if (msg.raw() != null)
+	        return msg.raw();
 		StringWriter sw = new StringWriter();
 		asXml(sw, msg);
 		return sw.toString();
