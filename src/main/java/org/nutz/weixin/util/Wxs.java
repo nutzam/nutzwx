@@ -156,11 +156,23 @@ public class Wxs {
 			throw Lang.makeThrow("e.wx.pay.re.sign.invalid : expect '%s' but '%s'", sign2, sign);
 		return map;
 	}
+	
+	public static WxInMsg convert(InputStream in) {
+	    return convert(in, WxInMsg.class);
+	}
+
+    public static WxInMsg convert(String data) {
+        return convert(new ByteArrayInputStream(data.getBytes()));
+    }
+    
+    public static <T> T convert(String data, Class<T> klass) {
+        return convert(new ByteArrayInputStream(data.getBytes()), klass);
+    }
 
 	/**
 	 * 将一个输入流转为WxInMsg
 	 */
-	public static WxInMsg convert(InputStream in) {
+	public static <T> T convert(InputStream in, Class<T> klass) {
 		Map<String, Object> map;
         try {
             // fix: DocumentBuilder不支持直接传入Reader,如果直接传InputStream的话又按系统默认编码,所以,用InputSource中转一下
@@ -179,11 +191,7 @@ public class Wxs {
 		if (DEV_MODE) {
 			log.debug("Income >> \n" + Json.toJson(map));
 		}
-		return Lang.map2Object(map, WxInMsg.class);
-	}
-
-	public static WxInMsg convert(String data) {
-		return convert(new ByteArrayInputStream(data.getBytes()));
+		return Lang.map2Object(map, klass);
 	}
 
 	/**
