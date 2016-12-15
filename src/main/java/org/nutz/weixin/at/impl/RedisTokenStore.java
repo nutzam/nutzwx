@@ -97,8 +97,8 @@ public class RedisTokenStore implements WxAccessTokenStore {
 		}
 		Map<String, String> hash = new HashMap<String, String>();
 		hash.put("token", token);//存入token值
-		hash.put("lastCacheMillis", String.valueOf(expires));//存入设置的过期时间
-		hash.put("expires", String.valueOf(lastCacheTimeMillis));//存入当前缓存时间
+		hash.put("lastCacheMillis", String.valueOf(lastCacheTimeMillis));//存入设置的过期时间
+		hash.put("expires", String.valueOf(expires));//存入当前缓存时间
 		String result = jedis.hmset(tokenKey, hash);
 		log.infof("A new wx access token generated and store to redis with key [%s], redus return code : %s", tokenKey, result);
 	}
