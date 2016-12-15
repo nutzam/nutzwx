@@ -48,18 +48,15 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	protected String base = "https://api.weixin.qq.com/cgi-bin";
 	protected String openid;
 	protected String encodingAesKey;
-	protected int tokenExpires = 1800;//默认access_token过期时间
 	protected int retryTimes = 3;//默认access_token时效时重试次数
 
-	public AbstractWxApi2(String token, String appid, String appsecret, String openid, String encodingAesKey,
-			int tokenExpires) {
+	public AbstractWxApi2(String token, String appid, String appsecret, String openid, String encodingAesKey) {
 		this();
 		this.token = token;
 		this.appid = appid;
 		this.appsecret = appsecret;
 		this.openid = openid;
 		this.encodingAesKey = encodingAesKey;
-		this.tokenExpires = tokenExpires;
 	}
 
 	public WxApi2 configure(PropertiesProxy conf, String prefix) {
@@ -69,7 +66,6 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 		appsecret = conf.get(prefix + "appsecret");
 		openid = conf.get(prefix + "openid");
 		encodingAesKey = conf.get(prefix + "aes");
-		tokenExpires = conf.getInt(prefix + "tokenExpires");
 		return this;
 	}
 
@@ -148,15 +144,8 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 		this.encodingAesKey = encodingAesKey;
 	}
 
-	public int getTokenExpires() {
-		return tokenExpires;
-	}
-
-	public void setTokenExpires(int tokenExpires) {
-		this.tokenExpires = tokenExpires;
-	}
-
 	protected Object lock = new Object();
+	
 	protected WXBizMsgCrypt pc;
 
 	protected WxAccessTokenStore accessTokenStore;
@@ -342,9 +331,8 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 
 		NutMap re = Json.fromJson(NutMap.class, str);
 		String ticket = re.getString("ticket");
-		// add by SK.Loda 微信token过期时间和返回的expires_in并不匹配,故此处采用外部配置过期时间
-		// int expires = re.getInt("expires_in")
-		jsapiTicketStore.save(ticket, tokenExpires, System.currentTimeMillis());
+		int expires = re.getInt("expires_in") - 200;//微信默认超时为7200秒，此处设置稍微短一点
+		jsapiTicketStore.save(ticket, expires, System.currentTimeMillis());
 	}
 
 	@Override
@@ -352,7 +340,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 		WxAccessToken at = accessTokenStore.get();
 		if (at == null || at.getExpires() < (System.currentTimeMillis() - at.getLastCacheTimeMillis()) / 1000) {
 			synchronized (lock) {
-				//FIX多线程并非更新token的问题
+				//FIX多线程更新token的问题
 				WxAccessToken at_forupdate = accessTokenStore.get();
 				if (at_forupdate == null || at_forupdate.getExpires() < (System.currentTimeMillis() - at_forupdate.getLastCacheTimeMillis()) / 1000) {
 					reflushAccessToken();
@@ -377,9 +365,8 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 
 		NutMap re = Json.fromJson(NutMap.class, str);
 		String token = re.getString("access_token");
-		// add by SK.Loda 微信token过期时间和返回的expires_in不匹配故此处采用外部配置过期时间
-		// int expires = re.getInt("expires_in");
-		accessTokenStore.save(token, tokenExpires, System.currentTimeMillis());
+		int expires = re.getInt("expires_in") - 200;//微信默认超时为7200秒，此处设置稍微短一点
+		accessTokenStore.save(token, expires, System.currentTimeMillis());
 	}
 
 	@Override
