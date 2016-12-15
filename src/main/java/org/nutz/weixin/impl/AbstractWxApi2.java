@@ -282,9 +282,9 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 				wxResp = Json.fromJson(WxResp.class, resp.getReader("UTF-8"));
 				// 处理微信返回  40001 invalid credential
 				if (wxResp.errcode() != 40001) {
-					break;//正常直接跳出循环
+					break;//正常直接返回
 				} else {
-					log.warn("wxapi (" + URL + ") call finished, but the return code is 40001, try to reflush access_token right now...times -> " + retry);
+					log.warnf("wxapi of access_token request [%s] finished, but the return code is 40001, try to reflush access_token right now, surplus retry times : %s" ,URL ,retry);
 					// 强制刷新一次acess_token
 					reflushAccessToken();
 				}
@@ -292,6 +292,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 				if (retryTimes >= 0) {
 					log.warn("reflushing access_token... " + retry + " retries left.", e);
 				} else {
+					log.errorf("%s times attempts to get a wx access_token , but all failed!", retryTimes);
 					throw e;
 				}
 			} finally {

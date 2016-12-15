@@ -46,7 +46,7 @@ poolConfig : {
  * @author JiangKun
  * @date 2016年12月14日 下午5:04:08
  */
-public class RedisTokenStore implements WxAccessTokenStore {
+public class RedisAccessTokenStore implements WxAccessTokenStore {
 	
 	private static final Log log = Logs.get();
 
@@ -85,7 +85,7 @@ public class RedisTokenStore implements WxAccessTokenStore {
 		at.setToken(hash.get("token"));
 		at.setLastCacheTimeMillis(Long.valueOf(hash.get("lastCacheMillis")));
 		at.setExpires(Integer.valueOf(hash.get("expires")));
-		log.debugf("wx access token fetched in redis : \n %s", Json.toJson(at, JsonFormat.nice()));
+		log.debugf("wx access_token fetched from redis with the key [%s] : \n %s", tokenKey, Json.toJson(at, JsonFormat.nice()));
 		return at;
 	}
 
@@ -93,14 +93,14 @@ public class RedisTokenStore implements WxAccessTokenStore {
 	public void save(String token, int expires, long lastCacheTimeMillis) {
 		Jedis jedis = jedisPool.getResource();
 		if (tokenKey == null) {
-			throw new RuntimeException("Redis token key should not be null!");
+			throw new RuntimeException("Redis access_token key should not be null!");
 		}
 		Map<String, String> hash = new HashMap<String, String>();
 		hash.put("token", token);//存入token值
 		hash.put("lastCacheMillis", String.valueOf(lastCacheTimeMillis));//存入设置的过期时间
 		hash.put("expires", String.valueOf(expires));//存入当前缓存时间
 		String result = jedis.hmset(tokenKey, hash);
-		log.infof("A new wx access token generated and store to redis with key [%s], redus return code : %s", tokenKey, result);
+		log.infof("A new wx access_token was generated and stored to redis with the key [%s] , redis return code : %s", tokenKey, result);
 	}
 
 }
