@@ -7,6 +7,8 @@ import org.nutz.lang.util.NutMap;
 @SuppressWarnings({"serial", "unchecked"})
 public class WxOutMsg extends NutMap {
     
+    protected transient String _raw;
+    
     public WxOutMsg() {}
     
     public WxOutMsg(String msgType) {
@@ -128,5 +130,13 @@ public class WxOutMsg extends NutMap {
 
     public WxCard getCard(){
         return (WxCard)get("card");
+    }
+    
+    public String raw() {
+        return _raw;
+    }
+    
+    public void raw(String raw) {
+        this._raw= raw;
     }
 }

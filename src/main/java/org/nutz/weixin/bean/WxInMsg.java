@@ -4,6 +4,8 @@ import org.nutz.lang.util.NutMap;
 
 @SuppressWarnings("serial")
 public class WxInMsg extends NutMap {
+    
+    protected transient String _raw;
 
     public WxInMsg setFromUserName(String fromUserName){
         put("fromUserName", fromUserName);
@@ -255,5 +257,13 @@ public class WxInMsg extends NutMap {
 
     public int getErrorCount(){
         return getInt("errorCount", 0);
+    }
+    
+    public String raw() {
+        return _raw;
+    }
+    
+    public void raw(String raw) {
+        this._raw= raw;
     }
 }

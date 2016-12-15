@@ -293,7 +293,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 					log.warn("reflushing access_token... " + retry + " retries left.", e);
 				} else {
 					log.errorf("%s times attempts to get a wx access_token , but all failed!", retryTimes);
-					throw e;
+					throw Lang.wrapThrow(e);
 				}
 			} finally {
 				retry--;
