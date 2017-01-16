@@ -67,7 +67,7 @@ Maven配置
 
 也可以将repositories配置放入$HOME/.m2/settings.xml中
 
-或者直接去[快照库下载](https://jfrog.nutz.cn/artifactory/snapshots/org/nutz/nutzwk/1.r.60-SNAPSHOT/)
+或者直接去[快照库下载](https://jfrog.nutz.cn/artifactory/snapshots/org/nutz/nutzwx/1.r.60-SNAPSHOT/)
 
 
 
