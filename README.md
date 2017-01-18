@@ -39,7 +39,7 @@ Maven配置
 		<dependency>
 			<groupId>org.nutz</groupId>
 			<artifactId>nutzwx</artifactId>
-			<version>1.r.59</version>
+			<version>1.r.60</version>
 		</dependency>
 ```
 
@@ -59,7 +59,7 @@ Maven配置
 		<dependency>
 			<groupId>org.nutz</groupId>
 			<artifactId>nutzwx</artifactId>
-			<version>1.r.60-SNAPSHOT</version>
+			<version>1.r.61-SNAPSHOT</version>
 		</dependency>
 		<!-- 其他依赖 -->
 	</dependencies>
