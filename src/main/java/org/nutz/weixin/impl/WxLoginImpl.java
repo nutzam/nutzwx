@@ -13,6 +13,7 @@ import org.nutz.weixin.spi.WxResp;
 
 public class WxLoginImpl implements WxLogin {
     
+    protected String host;
     protected String appid;
     protected String appsecret;
 
@@ -21,7 +22,10 @@ public class WxLoginImpl implements WxLogin {
         Request req = Request.create("https://open.weixin.qq.com/connect/qrconnect", METHOD.GET);
         NutMap params = new NutMap();
         params.put("appid", appid);
-        params.put("redirect_uri", redirect_uri);
+        if (redirect_uri.startsWith("http"))
+            params.put("redirect_uri", redirect_uri);
+        else
+            params.put("redirect_uri", host + redirect_uri);
         params.put("response_type", "code");
         params.put("scope", Strings.sBlank("snsapi_login"));
         req.setParams(params);
@@ -36,6 +40,7 @@ public class WxLoginImpl implements WxLogin {
         params.put("secret", appsecret);
         params.put("code", code);
         params.put("grant_type", "authorization_code");
+        req.setParams(params);
         Response resp = Sender.create(req).send();
         if (!resp.isOK()) {
             return null;
@@ -51,6 +56,7 @@ public class WxLoginImpl implements WxLogin {
         params.put("secret", appsecret);
         params.put("refresh_token", refresh_token);
         params.put("grant_type", "refresh_token");
+        req.setParams(params);
         Response resp = Sender.create(req).send();
         if (!resp.isOK()) {
             return null;
@@ -70,6 +76,7 @@ public class WxLoginImpl implements WxLogin {
         NutMap params = new NutMap();
         params.put("access_token", access_token);
         params.put("openid", openid);
+        req.setParams(params);
         Response resp = Sender.create(req).send();
         if (!resp.isOK()) {
             return null;
@@ -81,6 +88,7 @@ public class WxLoginImpl implements WxLogin {
         prefix = Strings.sBlank(prefix);
         appid = conf.get(prefix + "appid");
         appsecret = conf.get(prefix + "appsecret");
+        host = conf.get(prefix + "host");
         return this;
     }
 }
