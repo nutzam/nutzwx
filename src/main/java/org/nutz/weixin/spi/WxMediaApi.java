@@ -1,7 +1,6 @@
 package org.nutz.weixin.spi;
 
 import java.io.File;
-import java.io.InputStream;
 
 import org.nutz.resource.NutResource;
 
@@ -13,8 +12,6 @@ import org.nutz.resource.NutResource;
 public interface WxMediaApi {
 
     WxResp media_upload(String type, File f);
-
-    WxResp media_upload(String type, InputStream inputStream);
     
     NutResource media_get(String mediaId);
 
