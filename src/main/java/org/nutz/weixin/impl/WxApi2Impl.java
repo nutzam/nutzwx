@@ -230,6 +230,23 @@ public class WxApi2Impl extends AbstractWxApi2 {
         return Json.fromJson(WxResp.class, resp.getReader("UTF-8"));
     }
 
+    // 多媒体上传下载
+
+    @Override
+    public WxResp media_upload(String type, InputStream inputStream) {
+        if (type == null)
+            throw new NullPointerException("media type is NULL");
+        if (inputStream == null)
+            throw new NullPointerException("meida file is NULL");
+        String url = String.format("http://file.api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s", getAccessToken(), type);
+        Request req = Request.create(url, METHOD.POST);
+        req.getParams().put("media", inputStream);
+        Response resp = new FilePostSender(req).send();
+        if (!resp.isOK())
+            throw new IllegalStateException("media upload file, resp code=" + resp.getStatus());
+        return Json.fromJson(WxResp.class, resp.getReader("UTF-8"));
+    }
+
     @Override
     public NutResource media_get(String mediaId) {
         String url = String.format("http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s", getAccessToken(), mediaId);
