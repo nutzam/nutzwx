@@ -657,7 +657,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
         sender.setSSLSocketFactory(sslSocketFactory);
         Response resp = sender.send();
         if (!resp.isOK())
-            throw new IllegalStateException("send_redpack, resp code=" + resp.getStatus());
+            throw new IllegalStateException("redpack, resp code=" + resp.getStatus());
         return Xmls.xmlToMap(resp.getContent("UTF-8"));
     }
 
@@ -689,7 +689,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
         sender.setSSLSocketFactory(sslSocketFactory);
         Response resp = sender.send();
         if (!resp.isOK())
-            throw new IllegalStateException("send_redpackgroup, resp code=" + resp.getStatus());
+            throw new IllegalStateException("redpackgroup, resp code=" + resp.getStatus());
         return Xmls.xmlToMap(resp.getContent("UTF-8"));
     }
 
