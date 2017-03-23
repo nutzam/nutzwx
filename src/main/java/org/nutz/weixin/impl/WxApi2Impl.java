@@ -3,10 +3,7 @@ package org.nutz.weixin.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.nutz.castor.Castors;
 import org.nutz.http.Request;
@@ -16,18 +13,14 @@ import org.nutz.http.Sender;
 import org.nutz.http.sender.FilePostSender;
 import org.nutz.json.Json;
 import org.nutz.json.JsonFormat;
-import org.nutz.lang.ContinueLoop;
-import org.nutz.lang.Each;
-import org.nutz.lang.ExitLoop;
-import org.nutz.lang.Lang;
-import org.nutz.lang.LoopException;
-import org.nutz.lang.Strings;
+import org.nutz.lang.*;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.resource.NutResource;
 import org.nutz.weixin.bean.*;
 import org.nutz.weixin.spi.WxResp;
+import org.nutz.weixin.util.WxPaySign;
 import org.nutz.weixin.util.Wxs;
 
 public class WxApi2Impl extends AbstractWxApi2 {
@@ -610,5 +603,18 @@ public class WxApi2Impl extends AbstractWxApi2 {
         return postJson("/customservice/kfaccount/del", "kf_account", kf_account);
     }
 
-
+    @Override
+    public NutMap pay_unifiedorder(String key, WxPayUnifiedOrder wxPayUnifiedOrder) {
+        String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+        Map<String, Object> params = Lang.obj2map(wxPayUnifiedOrder);
+        params.remove("sign");
+        String sign = WxPaySign.createSign(key, params);
+        params.put("sign", sign);
+        Request req = Request.create(url, METHOD.POST);
+        req.setData(Xmls.mapToXml(params));
+        Response resp = Sender.create(req).send();
+        if (!resp.isOK())
+            throw new IllegalStateException("unifiedorder, resp code=" + resp.getStatus());
+        return Xmls.xmlToMap(resp.getContent("UTF-8"));
+    }
 }
