@@ -1,10 +1,10 @@
 package org.nutz.weixin.bean;
 
 /**
- * 裂变红包
+ * 普通红包
  * Created by wizzer on 2017/3/23.
  */
-public class WxRedPackGroup {
+public class WxPayRedPack {
     private String nonce_str;
     private String sign;
     private String mch_billno;
@@ -14,8 +14,8 @@ public class WxRedPackGroup {
     private String re_openid;
     private int total_amount;
     private int total_num;
-    private String amt_type;
     private String wishing;
+    private String client_ip;
     private String act_name;
     private String remark;
     private String scene_id;
@@ -94,20 +94,20 @@ public class WxRedPackGroup {
         this.total_num = total_num;
     }
 
-    public String getAmt_type() {
-        return amt_type;
-    }
-
-    public void setAmt_type(String amt_type) {
-        this.amt_type = amt_type;
-    }
-
     public String getWishing() {
         return wishing;
     }
 
     public void setWishing(String wishing) {
         this.wishing = wishing;
+    }
+
+    public String getClient_ip() {
+        return client_ip;
+    }
+
+    public void setClient_ip(String client_ip) {
+        this.client_ip = client_ip;
     }
 
     public String getAct_name() {

@@ -1,7 +1,6 @@
 package org.nutz.weixin.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -608,16 +607,15 @@ public class WxApi2Impl extends AbstractWxApi2 {
     }
 
     /**
-     * 统一下单
+     * 微信支付公共POST方法（不带证书）
      *
-     * @param key               商户KEY
-     * @param wxPayUnifiedOrder 交易订单内容
+     * @param url    请求路径
+     * @param key    商户KEY
+     * @param params 参数
      * @return
      */
     @Override
-    public NutMap pay_unifiedorder(String key, WxPayUnifiedOrder wxPayUnifiedOrder) {
-        String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-        Map<String, Object> params = Lang.obj2map(wxPayUnifiedOrder);
+    public NutMap postPay(String url, String key, Map<String, Object> params) {
         params.remove("sign");
         String sign = WxPaySign.createSign(key, params);
         params.put("sign", sign);
@@ -630,50 +628,17 @@ public class WxApi2Impl extends AbstractWxApi2 {
     }
 
     /**
-     * 企业向个人付款
+     * 微信支付公共POST方法（带证书）
      *
-     * @param key            商户KEY
-     * @param wxPayTransfers 付款内容
-     * @param file           证书文件
-     * @param password       证书密码
+     * @param url      请求路径
+     * @param key      商户KEY
+     * @param params   参数
+     * @param file     证书文件
+     * @param password 证书密码
      * @return
      */
     @Override
-    public NutMap pay_transfers(String key, WxPayTransfers wxPayTransfers, File file, String password) {
-        String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
-        Map<String, Object> params = Lang.obj2map(wxPayTransfers);
-        params.remove("sign");
-        String sign = WxPaySign.createSign(key, params);
-        params.put("sign", sign);
-        Request req = Request.create(url, METHOD.POST);
-        req.setData(Xmls.mapToXml(params));
-        Sender sender = Sender.create(req);
-        SSLSocketFactory sslSocketFactory;
-        try {
-            sslSocketFactory = WxSSL.buildSSL(file, password);
-        } catch (Exception e) {
-            throw Lang.wrapThrow(e);
-        }
-        sender.setSSLSocketFactory(sslSocketFactory);
-        Response resp = sender.send();
-        if (!resp.isOK())
-            throw new IllegalStateException("transfers, resp code=" + resp.getStatus());
-        return Xmls.xmlToMap(resp.getContent("UTF-8"));
-    }
-
-    /**
-     * 企业向个人付款查询
-     *
-     * @param key                商户KEY
-     * @param wxPayTransfersInfo 查询内容
-     * @param file               证书文件
-     * @param password           证书密码
-     * @return
-     */
-    @Override
-    public NutMap pay_transfersinfo(String key, WxPayTransfersInfo wxPayTransfersInfo, File file, String password) {
-        String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/gettransferinfo";
-        Map<String, Object> params = Lang.obj2map(wxPayTransfersInfo);
+    public NutMap postPay(String url, String key, Map<String, Object> params, File file, String password) {
         params.remove("sign");
         String sign = WxPaySign.createSign(key, params);
         params.put("sign", sign);
@@ -694,6 +659,37 @@ public class WxApi2Impl extends AbstractWxApi2 {
     }
 
     /**
+     * 统一下单
+     *
+     * @param key               商户KEY
+     * @param wxPayUnifiedOrder 交易订单内容
+     * @return
+     */
+    @Override
+    public NutMap pay_unifiedorder(String key, WxPayUnifiedOrder wxPayUnifiedOrder) {
+        String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+        Map<String, Object> params = Lang.obj2map(wxPayUnifiedOrder);
+        return this.postPay(url, key, params);
+    }
+
+    /**
+     * 企业向个人付款
+     *
+     * @param key            商户KEY
+     * @param wxPayTransfers 付款内容
+     * @param file           证书文件
+     * @param password       证书密码
+     * @return
+     */
+    @Override
+    public NutMap pay_transfers(String key, WxPayTransfers wxPayTransfers, File file, String password) {
+        String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
+        Map<String, Object> params = Lang.obj2map(wxPayTransfers);
+        return this.postPay(url, key, params, file, password);
+    }
+
+
+    /**
      * 发送普通红包
      *
      * @param key       商户KEY
@@ -703,26 +699,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
      * @return
      */
     @Override
-    public NutMap send_redpack(String key, WxRedPack wxRedPack, File file, String password) {
+    public NutMap send_redpack(String key, WxPayRedPack wxRedPack, File file, String password) {
         String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack";
         Map<String, Object> params = Lang.obj2map(wxRedPack);
-        params.remove("sign");
-        String sign = WxPaySign.createSign(key, params);
-        params.put("sign", sign);
-        Request req = Request.create(url, METHOD.POST);
-        req.setData(Xmls.mapToXml(params));
-        Sender sender = Sender.create(req);
-        SSLSocketFactory sslSocketFactory;
-        try {
-            sslSocketFactory = WxSSL.buildSSL(file, password);
-        } catch (Exception e) {
-            throw Lang.wrapThrow(e);
-        }
-        sender.setSSLSocketFactory(sslSocketFactory);
-        Response resp = sender.send();
-        if (!resp.isOK())
-            throw new IllegalStateException("redpack, resp code=" + resp.getStatus());
-        return Xmls.xmlToMap(resp.getContent("UTF-8"));
+        return this.postPay(url, key, params, file, password);
     }
 
     /**
@@ -735,27 +715,25 @@ public class WxApi2Impl extends AbstractWxApi2 {
      * @return
      */
     @Override
-    public NutMap send_redpackgroup(String key, WxRedPackGroup wxRedPackGroup, File file, String password) {
+    public NutMap send_redpackgroup(String key, WxPayRedPackGroup wxRedPackGroup, File file, String password) {
         String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/sendgroupredpack";
         Map<String, Object> params = Lang.obj2map(wxRedPackGroup);
-        params.remove("sign");
-        String sign = WxPaySign.createSign(key, params);
-        params.put("sign", sign);
-        Request req = Request.create(url, METHOD.POST);
-        req.setData(Xmls.mapToXml(params));
-        Sender sender = Sender.create(req);
-        SSLSocketFactory sslSocketFactory;
-        try {
-            sslSocketFactory = WxSSL.buildSSL(file, password);
-        } catch (Exception e) {
-            throw Lang.wrapThrow(e);
-        }
-        sender.setSSLSocketFactory(sslSocketFactory);
-        Response resp = sender.send();
-        if (!resp.isOK())
-            throw new IllegalStateException("redpackgroup, resp code=" + resp.getStatus());
-        return Xmls.xmlToMap(resp.getContent("UTF-8"));
+        return this.postPay(url, key, params, file, password);
     }
 
-
+    /**
+     * 发送代金卷
+     *
+     * @param key         商户KEY
+     * @param wxPayCoupon 代金卷内容
+     * @param file        证书文件
+     * @param password    证书密码
+     * @return
+     */
+    @Override
+    public NutMap send_coupon(String key, WxPayCoupon wxPayCoupon, File file, String password) {
+        String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/send_coupon";
+        Map<String, Object> params = Lang.obj2map(wxPayCoupon);
+        return this.postPay(url, key, params, file, password);
+    }
 }
