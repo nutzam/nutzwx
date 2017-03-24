@@ -630,6 +630,70 @@ public class WxApi2Impl extends AbstractWxApi2 {
     }
 
     /**
+     * 企业向个人付款
+     *
+     * @param key            商户KEY
+     * @param wxPayTransfers 付款内容
+     * @param file           证书文件
+     * @param password       证书密码
+     * @return
+     */
+    @Override
+    public NutMap pay_transfers(String key, WxPayTransfers wxPayTransfers, File file, String password) {
+        String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
+        Map<String, Object> params = Lang.obj2map(wxPayTransfers);
+        params.remove("sign");
+        String sign = WxPaySign.createSign(key, params);
+        params.put("sign", sign);
+        Request req = Request.create(url, METHOD.POST);
+        req.setData(Xmls.mapToXml(params));
+        Sender sender = Sender.create(req);
+        SSLSocketFactory sslSocketFactory;
+        try {
+            sslSocketFactory = WxSSL.buildSSL(file, password);
+        } catch (Exception e) {
+            throw Lang.wrapThrow(e);
+        }
+        sender.setSSLSocketFactory(sslSocketFactory);
+        Response resp = sender.send();
+        if (!resp.isOK())
+            throw new IllegalStateException("transfers, resp code=" + resp.getStatus());
+        return Xmls.xmlToMap(resp.getContent("UTF-8"));
+    }
+
+    /**
+     * 企业向个人付款查询
+     *
+     * @param key                商户KEY
+     * @param wxPayTransfersInfo 查询内容
+     * @param file               证书文件
+     * @param password           证书密码
+     * @return
+     */
+    @Override
+    public NutMap pay_transfersinfo(String key, WxPayTransfersInfo wxPayTransfersInfo, File file, String password) {
+        String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/gettransferinfo";
+        Map<String, Object> params = Lang.obj2map(wxPayTransfersInfo);
+        params.remove("sign");
+        String sign = WxPaySign.createSign(key, params);
+        params.put("sign", sign);
+        Request req = Request.create(url, METHOD.POST);
+        req.setData(Xmls.mapToXml(params));
+        Sender sender = Sender.create(req);
+        SSLSocketFactory sslSocketFactory;
+        try {
+            sslSocketFactory = WxSSL.buildSSL(file, password);
+        } catch (Exception e) {
+            throw Lang.wrapThrow(e);
+        }
+        sender.setSSLSocketFactory(sslSocketFactory);
+        Response resp = sender.send();
+        if (!resp.isOK())
+            throw new IllegalStateException("transfersinfo, resp code=" + resp.getStatus());
+        return Xmls.xmlToMap(resp.getContent("UTF-8"));
+    }
+
+    /**
      * 发送普通红包
      *
      * @param key       商户KEY
