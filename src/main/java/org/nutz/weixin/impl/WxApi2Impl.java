@@ -21,7 +21,7 @@ import org.nutz.resource.NutResource;
 import org.nutz.weixin.bean.*;
 import org.nutz.weixin.spi.WxResp;
 import org.nutz.weixin.util.WxPaySign;
-import org.nutz.weixin.util.WxSSL;
+import org.nutz.weixin.util.WxPaySSL;
 import org.nutz.weixin.util.Wxs;
 
 import javax.net.ssl.*;
@@ -647,7 +647,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
         Sender sender = Sender.create(req);
         SSLSocketFactory sslSocketFactory;
         try {
-            sslSocketFactory = WxSSL.buildSSL(file, password);
+            sslSocketFactory = WxPaySSL.buildSSL(file, password);
         } catch (Exception e) {
             throw Lang.wrapThrow(e);
         }
