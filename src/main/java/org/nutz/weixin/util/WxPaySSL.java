@@ -11,7 +11,7 @@ import java.security.cert.X509Certificate;
 /**
  * Created by wizzer on 2017/3/23.
  */
-public class WxSSL {
+public class WxPaySSL {
     public static SSLSocketFactory buildSSL(File file, String password) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
         FileInputStream instream = new FileInputStream(file);
