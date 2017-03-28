@@ -23,6 +23,8 @@ public interface WxTemplateMsgApi {
                          String url,
                          Map<String, WxTemplateData> data);
 
+    WxResp template_send(String touser, String template_id, String url, Map<String, Object> miniprogram, Map<String, WxTemplateData> data);
+
     WxResp get_all_private_template();
 
     WxResp get_industry();

@@ -186,6 +186,11 @@ public class WxApi2Impl extends AbstractWxApi2 {
         return postJson("/message/template/send", "touser", touser, "template_id", template_id, "url", url, "data", data);
     }
 
+    @Override
+    public WxResp template_send(String touser, String template_id, String url, Map<String, Object> miniprogram, Map<String, WxTemplateData> data) {
+        return postJson("/message/template/send", "touser", touser, "template_id", template_id, miniprogram, miniprogram, "url", url, "data", data);
+    }
+
     // ------------------------------------------------------------
     // 自定义菜单
 
