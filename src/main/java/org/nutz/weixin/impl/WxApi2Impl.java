@@ -628,7 +628,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
         req.setData(Xmls.mapToXml(params));
         Response resp = Sender.create(req).send();
         if (!resp.isOK())
-            throw new IllegalStateException("unifiedorder, resp code=" + resp.getStatus());
+            throw new IllegalStateException("postPay, resp code=" + resp.getStatus());
         return Xmls.xmlToMap(resp.getContent("UTF-8"));
     }
 
@@ -659,7 +659,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
         sender.setSSLSocketFactory(sslSocketFactory);
         Response resp = sender.send();
         if (!resp.isOK())
-            throw new IllegalStateException("transfersinfo, resp code=" + resp.getStatus());
+            throw new IllegalStateException("postPay with SSL, resp code=" + resp.getStatus());
         return Xmls.xmlToMap(resp.getContent("UTF-8"));
     }
 
