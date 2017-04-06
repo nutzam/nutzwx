@@ -11,67 +11,10 @@ nutzwx
 
 
 
-需要全功能的测试号吗?
----------------
-
-* 测试帐号申请地址 http://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login
-* 你的微信帐号必须绑定手机哦
-
-没公网ip?80端口被封? 有ngrok
-------------------------------
-
-* https://nutz.cn/yvr/links/ngrok.html
-
-异常java.security.InvalidKeyException:illegal Key Size的解决方案
--------------------------------------------------------------------
+文档地址 http://nutzam.com/core/weixin/helloworld.html
 
 下载JCE无限制权限策略文件
 
 * 下载(jdk官网或本项目的jdk-patch目录下有)后解压，可以看到local_policy.jar和US_export_policy.jar以及readme.txt
 * 如果安装了JRE，将两个jar文件放到%JRE_HOME%/lib/security目录下覆盖原来的文件
 * 如果安装了JDK，将两个jar文件放到%JDK_HOME%/jre/lib/security目录下覆盖原来文件
-	
-Maven配置
-=============================
-
-```xml
-
-		<dependency>
-			<groupId>org.nutz</groupId>
-			<artifactId>nutzwx</artifactId>
-			<version>1.r.59</version>
-		</dependency>
-```
-
-快照版本在每次提交后会自动deploy到sonatype快照库,享受各种bug fix和新功能
-
-```xml
-	<repositories>
-		<repository>
-			<id>nutzcn-snapshots</id>
-			<url>https://jfrog.nutz.cn/artifactory/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	<dependencies>
-		<dependency>
-			<groupId>org.nutz</groupId>
-			<artifactId>nutzwx</artifactId>
-			<version>1.r.60-SNAPSHOT</version>
-		</dependency>
-		<!-- 其他依赖 -->
-	</dependencies>
-```
-
-也可以将repositories配置放入$HOME/.m2/settings.xml中
-
-或者直接去[快照库下载](https://jfrog.nutz.cn/artifactory/snapshots/org/nutz/nutzwk/1.r.60-SNAPSHOT/)
-
-
-
-LICENSE
-=============================
-
-Apache License

@@ -44,10 +44,11 @@ public class BasicWxHandler extends AbstractWxHandler {
 	    return msgCrypt;
 	}
 	
-	public void configure(PropertiesProxy conf, String prefix){
+	public BasicWxHandler configure(PropertiesProxy conf, String prefix){
 	    prefix = Strings.sBlank(prefix);
 	    token = conf.check(prefix+"token");
 	    aeskey = conf.get(prefix+"aes");
 	    appid = conf.get(prefix+"appid");
+	    return this;
 	}
 }

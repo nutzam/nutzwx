@@ -7,54 +7,104 @@ import org.nutz.dao.Sqls;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.sql.Sql;
 import org.nutz.weixin.at.WxAccessToken;
+import org.nutz.weixin.spi.WxAccessTokenStore;
 
-public class DaoAccessTokenStore extends CacheableAccessTokenStore {
+public class DaoAccessTokenStore implements WxAccessTokenStore {
+    private Dao dao;
+    private Map<String, Object> params;
+    private String tableAccessToken = "access_token";
+    private String tableAccessTokenExpires = "access_token_expires";
+    private String tableAccessTokenLastat = "access_token_lastat";
 
-	protected Dao dao;
-	protected Map<String, Object> params;
-	
-	protected String fetch = "select access_token from t_wx_at";
-	protected String update = "update t_wx_at set access_token=@token, access_token_expires=@access_token_expires";
-	
-	public DaoAccessTokenStore() {
-	}
-	
-	public DaoAccessTokenStore(Dao dao) {
-		super();
-		this.dao = dao;
-	}
+    private String fetch = "select access_token,access_token_expires,access_token_lastat from wx_config where id=@id";
+    private String update = "update wx_config set access_token=@access_token, access_token_expires=@access_token_expires, access_token_lastat=@access_token_lastat where id=@id";
 
-	public WxAccessToken _getAccessToken() {
-		Sql sql = Sqls.fetchRecord(fetch);
-		if (params != null)
-			sql.params().putAll(params);
-		dao.execute(sql);
-		WxAccessToken tmp = sql.getObject(Record.class).toPojo(WxAccessToken.class);
-		return tmp;
-	}
+    public DaoAccessTokenStore() {
+    }
 
-	public void _saveAccessToken(String token, int time) {
-		Sql sql = Sqls.create(update);
-		if (params != null)
-			sql.params().putAll(params);
-		sql.params().set("token", token);
-		sql.params().set("access_token_expires", time);
-		dao.execute(sql);
-	}
+    public DaoAccessTokenStore(Dao dao) {
+        super();
+        this.dao = dao;
+    }
 
-	public void setParams(Map<String, Object> params) {
-		this.params = params;
-	}
-	
-	public void setDao(Dao dao) {
-		this.dao = dao;
-	}
-	
-	public void setFetch(String fetch) {
-		this.fetch = fetch;
-	}
-	
-	public void setUpdate(String update) {
-		this.update = update;
-	}
+    @Override
+    public WxAccessToken get() {
+        Sql sql = Sqls.fetchRecord(fetch);
+        if (params != null)
+            sql.params().putAll(params);
+        dao.execute(sql);
+        Record record = sql.getObject(Record.class);
+        WxAccessToken at = new WxAccessToken();
+        at.setToken(record.getString(tableAccessToken));
+        at.setExpires(record.getInt(tableAccessTokenExpires));
+        at.setLastCacheTimeMillis(record.getLong(tableAccessTokenLastat));
+        return at;
+    }
+
+    @Override
+    public void save(String token, int time, long lastCacheTimeMillis) {
+        Sql sql = Sqls.create(update);
+        if (params != null)
+            sql.params().putAll(params);
+        sql.params().set(tableAccessToken, token);
+        sql.params().set(tableAccessTokenExpires, time);
+        sql.params().set(tableAccessTokenLastat, lastCacheTimeMillis);
+        dao.execute(sql);
+    }
+
+    public Dao getDao() {
+        return dao;
+    }
+
+    public void setDao(Dao dao) {
+        this.dao = dao;
+    }
+
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
+    }
+
+    public String getTableAccessToken() {
+        return tableAccessToken;
+    }
+
+    public void setTableAccessToken(String tableAccessToken) {
+        this.tableAccessToken = tableAccessToken;
+    }
+
+    public String getTableAccessTokenExpires() {
+        return tableAccessTokenExpires;
+    }
+
+    public void setTableAccessTokenExpires(String tableAccessTokenExpires) {
+        this.tableAccessTokenExpires = tableAccessTokenExpires;
+    }
+
+    public String getTableAccessTokenLastat() {
+        return tableAccessTokenLastat;
+    }
+
+    public void setTableAccessTokenLastat(String tableAccessTokenLastat) {
+        this.tableAccessTokenLastat = tableAccessTokenLastat;
+    }
+
+    public String getFetch() {
+        return fetch;
+    }
+
+    public void setFetch(String fetch) {
+        this.fetch = fetch;
+    }
+
+    public String getUpdate() {
+        return update;
+    }
+
+    public void setUpdate(String update) {
+        this.update = update;
+    }
 }
