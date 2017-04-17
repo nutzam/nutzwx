@@ -4,7 +4,6 @@ nutzwx
 微信(weixin) IN Nutz
 
 [![Build Status](https://travis-ci.org/nutzam/nutzwx.png?branch=master)](https://travis-ci.org/nutzam/nutzwx)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.nutz/nutzwx/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.nutz/nutzwx/)
 [![codecov.io](http://codecov.io/github/nutzam/nutz/coverage.svg?branch=master)](http://codecov.io/github/nutzam/nutzwx?branch=master)
 [![GitHub release](https://img.shields.io/github/release/nutzam/nutz.svg)](https://github.com/nutzam/nutzwx/releases)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)

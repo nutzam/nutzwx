@@ -27,7 +27,23 @@ public class WxLoginImpl implements WxLogin {
         else
             params.put("redirect_uri", host + redirect_uri);
         params.put("response_type", "code");
-        params.put("scope", Strings.sBlank("snsapi_login"));
+        params.put("scope", Strings.sBlank(scope, "snsapi_login"));
+        req.setParams(params);
+        return req.getUrl().toString() + "#wechat_redirect";
+    }
+    
+
+    @Override
+    public String authorize(String redirect_uri, String scope, String state) {
+        Request req = Request.create("https://open.weixin.qq.com/connect/oauth2/authorize", METHOD.GET);
+        NutMap params = new NutMap();
+        params.put("appid", appid);
+        if (redirect_uri.startsWith("http"))
+            params.put("redirect_uri", redirect_uri);
+        else
+            params.put("redirect_uri", host + redirect_uri);
+        params.put("response_type", "code");
+        params.put("scope", Strings.sBlank(scope, "snsapi_userinfo"));
         req.setParams(params);
         return req.getUrl().toString() + "#wechat_redirect";
     }

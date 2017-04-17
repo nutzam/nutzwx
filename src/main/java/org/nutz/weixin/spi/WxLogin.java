@@ -8,6 +8,8 @@ public interface WxLogin {
      * @return
      */
     String qrconnect(String redirect_uri, String scope, String state);
+
+    String authorize(String redirect_uri, String scope, String state);
     
     /**
      * 根据code换取access_token
