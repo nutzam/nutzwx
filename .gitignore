@@ -13,5 +13,9 @@ hs_err_pid*
 target/
 .classpath
 .project
+*.iml
+.idea
 .settings/
+.idea/
+
 mail.properties
