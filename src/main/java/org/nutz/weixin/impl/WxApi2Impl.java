@@ -3,7 +3,12 @@ package org.nutz.weixin.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import javax.net.ssl.SSLSocketFactory;
 
 import org.nutz.castor.Castors;
 import org.nutz.http.Request;
@@ -13,18 +18,33 @@ import org.nutz.http.Sender;
 import org.nutz.http.sender.FilePostSender;
 import org.nutz.json.Json;
 import org.nutz.json.JsonFormat;
-import org.nutz.lang.*;
+import org.nutz.lang.ContinueLoop;
+import org.nutz.lang.Each;
+import org.nutz.lang.ExitLoop;
+import org.nutz.lang.Lang;
+import org.nutz.lang.LoopException;
+import org.nutz.lang.Strings;
+import org.nutz.lang.Xmls;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.resource.NutResource;
-import org.nutz.weixin.bean.*;
+import org.nutz.weixin.bean.WxArticle;
+import org.nutz.weixin.bean.WxGroup;
+import org.nutz.weixin.bean.WxKfAccount;
+import org.nutz.weixin.bean.WxMassArticle;
+import org.nutz.weixin.bean.WxMenu;
+import org.nutz.weixin.bean.WxOutMsg;
+import org.nutz.weixin.bean.WxPayCoupon;
+import org.nutz.weixin.bean.WxPayRedPack;
+import org.nutz.weixin.bean.WxPayRedPackGroup;
+import org.nutz.weixin.bean.WxPayTransfers;
+import org.nutz.weixin.bean.WxPayUnifiedOrder;
+import org.nutz.weixin.bean.WxTemplateData;
 import org.nutz.weixin.spi.WxResp;
-import org.nutz.weixin.util.WxPaySign;
 import org.nutz.weixin.util.WxPaySSL;
+import org.nutz.weixin.util.WxPaySign;
 import org.nutz.weixin.util.Wxs;
-
-import javax.net.ssl.*;
 
 public class WxApi2Impl extends AbstractWxApi2 {
 
@@ -33,8 +53,17 @@ public class WxApi2Impl extends AbstractWxApi2 {
     public WxApi2Impl() {
     }
 
+    public WxApi2Impl(String token,
+                      String appid,
+                      String appsecret,
+                      String openid,
+                      String encodingAesKey) {
+        super(token, appid, appsecret, openid, encodingAesKey);
+    }
+
     // ===============================
     // 基本API
+
 
     @Override
     public WxResp send(WxOutMsg out) {
