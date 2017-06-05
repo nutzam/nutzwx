@@ -16,6 +16,8 @@ public interface WxPayApi {
 
     NutMap pay_unifiedorder(String key, WxPayUnifiedOrder wxPayUnifiedOrder);
 
+    NutMap pay_jsapi(String key, WxPayUnifiedOrder wxPayUnifiedOrder);
+
     NutMap pay_transfers(String key, WxPayTransfers wxPayTransfers, File file, String password);
 
     NutMap send_redpack(String key, WxPayRedPack wxRedPack, File file, String password);

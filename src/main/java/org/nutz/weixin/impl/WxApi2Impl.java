@@ -3,10 +3,7 @@ package org.nutz.weixin.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.net.ssl.SSLSocketFactory;
 
@@ -25,6 +22,7 @@ import org.nutz.lang.Lang;
 import org.nutz.lang.LoopException;
 import org.nutz.lang.Strings;
 import org.nutz.lang.Xmls;
+import org.nutz.lang.random.R;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
@@ -704,6 +702,26 @@ public class WxApi2Impl extends AbstractWxApi2 {
         String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
         Map<String, Object> params = Lang.obj2map(wxPayUnifiedOrder);
         return this.postPay(url, key, params);
+    }
+
+    /**
+     * 微信公众号JS支付
+     * @param key 商户KEY
+     * @param wxPayUnifiedOrder 交易订单内容
+     * @return
+     */
+    @Override
+    public NutMap pay_jsapi(String key, WxPayUnifiedOrder wxPayUnifiedOrder) {
+        NutMap map = this.pay_unifiedorder(key, wxPayUnifiedOrder);
+        NutMap params = NutMap.NEW();
+        params.put("appId", wxPayUnifiedOrder.getAppid());
+        params.put("timeStamp", String.valueOf((int) (System.currentTimeMillis() / 1000)));
+        params.put("nonceStr", R.UU32());
+        params.put("package", "prepay_id=" + map.getString("prepay_id"));
+        params.put("signType", "MD5");
+        String sign = WxPaySign.createSign(key, params);
+        params.put("paySign", sign);
+        return params;
     }
 
     /**
