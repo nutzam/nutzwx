@@ -19,8 +19,7 @@ public class DaoAccessTokenStore implements WxAccessTokenStore {
     private String fetch = "select access_token,access_token_expires,access_token_lastat from wx_config where id=@id";
     private String update = "update wx_config set access_token=@access_token, access_token_expires=@access_token_expires, access_token_lastat=@access_token_lastat where id=@id";
 
-    public DaoAccessTokenStore() {
-    }
+    public DaoAccessTokenStore() {}
 
     public DaoAccessTokenStore(Dao dao) {
         super();

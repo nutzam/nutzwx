@@ -8,23 +8,23 @@ import org.nutz.weixin.at.WxAccessToken;
 import org.nutz.weixin.spi.WxAccessTokenStore;
 
 public class MemoryAccessTokenStore implements WxAccessTokenStore {
-	
-	private static final Log log = Logs.get();
 
-	WxAccessToken at;
+    private static final Log log = Logs.get();
 
-	@Override
-	public WxAccessToken get() {
-		return at;
-	}
+    WxAccessToken at;
 
-	@Override
-	public void save(String token, int time, long lastCacheTimeMillis) {
-		at = new WxAccessToken();
-		at.setToken(token);
-		at.setExpires(time);
-		at.setLastCacheTimeMillis(lastCacheTimeMillis);
-		log.debugf("new wx access token generated : \n %s", Json.toJson(at, JsonFormat.nice()));
-	}
+    @Override
+    public WxAccessToken get() {
+        return at;
+    }
+
+    @Override
+    public void save(String token, int time, long lastCacheTimeMillis) {
+        at = new WxAccessToken();
+        at.setToken(token);
+        at.setExpires(time);
+        at.setLastCacheTimeMillis(lastCacheTimeMillis);
+        log.debugf("new wx access token generated : \n %s", Json.toJson(at, JsonFormat.nice()));
+    }
 
 }

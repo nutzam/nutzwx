@@ -49,6 +49,9 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 	protected String openid;
 	protected String encodingAesKey;
 	protected int retryTimes = 3;//默认access_token时效时重试次数
+	
+	protected PropertiesProxy conf;
+	protected String confKeyPrefix = "weixin.";
 
 	public AbstractWxApi2(String token, String appid, String appsecret, String openid, String encodingAesKey) {
 		this();
@@ -57,6 +60,10 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 		this.appsecret = appsecret;
 		this.openid = openid;
 		this.encodingAesKey = encodingAesKey;
+	}
+	
+	public void init() {
+	    this.configure(conf, confKeyPrefix);
 	}
 
 	public WxApi2 configure(PropertiesProxy conf, String prefix) {

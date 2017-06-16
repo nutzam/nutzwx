@@ -15,6 +15,7 @@ public class WxPaySign {
      * @param params
      * @return
      */
+    @SuppressWarnings("rawtypes")
     public static String createSign(String key, Map<String, Object> params) {
         SortedMap<Object, Object> parameters = new TreeMap<Object, Object>();
         Set es = params.entrySet();
