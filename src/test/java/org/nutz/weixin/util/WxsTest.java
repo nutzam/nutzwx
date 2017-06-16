@@ -3,7 +3,6 @@ package org.nutz.weixin.util;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.nutz.ioc.Ioc;
 import org.nutz.ioc.ObjectProxy;
 import org.nutz.ioc.impl.NutIoc;
 import org.nutz.ioc.impl.PropertiesProxy;
