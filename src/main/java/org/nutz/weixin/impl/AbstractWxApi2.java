@@ -26,6 +26,7 @@ import org.nutz.weixin.WxException;
 import org.nutz.weixin.at.WxAccessToken;
 import org.nutz.weixin.at.WxJsapiTicket;
 import org.nutz.weixin.at.impl.MemoryAccessTokenStore;
+import org.nutz.weixin.at.impl.MemoryJsapiTicketStore;
 import org.nutz.weixin.bean.WxInMsg;
 import org.nutz.weixin.bean.WxOutMsg;
 import org.nutz.weixin.repo.com.qq.weixin.mp.aes.AesException;
@@ -161,6 +162,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 
 	public AbstractWxApi2() {
 		this.accessTokenStore = new MemoryAccessTokenStore();
+		this.jsapiTicketStore = new MemoryJsapiTicketStore();
 	}
 
 	@Override
@@ -358,7 +360,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 		return accessTokenStore.get().getToken();
 	}
 
-	protected void reflushAccessToken() {
+	protected synchronized void reflushAccessToken() {
 		String url = String.format("%s/token?grant_type=client_credential&appid=%s&secret=%s", base, appid, appsecret);
 		if (log.isDebugEnabled())
 			log.debugf("ATS: reflush access_token send: %s", url);
