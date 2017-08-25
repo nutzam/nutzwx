@@ -14,7 +14,7 @@ import org.nutz.weixin.bean.WxMassArticle;
  */
 public interface WxMaterialApi {
 
-    WxResp add_news(WxArticle...news);
+    WxResp add_news(WxMassArticle...news);
 
     WxResp uploadimg(File f);
 
