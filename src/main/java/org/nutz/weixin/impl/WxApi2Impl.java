@@ -249,7 +249,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
             throw new NullPointerException("media type is NULL");
         if (f == null)
             throw new NullPointerException("meida file is NULL");
-        String url = String.format("http://file.api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s", getAccessToken(), type);
+        String url = String.format("http://api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s", getAccessToken(), type);
         Request req = Request.create(url, METHOD.POST);
         req.getParams().put("media", f);
         Response resp = new FilePostSender(req).send();
@@ -467,8 +467,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
         return postJson("/template/get_industry", NutMap.NEW());
     }
 
-    public WxResp add_news(WxArticle... news) {
-        return postJson("/material/add_news", new NutMap().put("articles", Arrays.asList(news)));
+    public WxResp add_news(WxMassArticle... news) {
+        return postJson("/material/add_news", "articles",  Arrays.asList(news));
     }
 
     @Override
@@ -522,7 +522,9 @@ public class WxApi2Impl extends AbstractWxApi2 {
     public NutResource get_material(String media_id) {
         String url = String.format("https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=%s", getAccessToken());
         Request req = Request.create(url, METHOD.POST);
-        req.getParams().put("media_id", media_id);
+        NutMap body = new NutMap();
+        body.put("media_id", media_id);
+        req.setData(Json.toJson(body));
         final Response resp = Sender.create(req).send();
         if (!resp.isOK())
             throw new IllegalStateException("download media file, resp code=" + resp.getStatus());
