@@ -161,10 +161,17 @@ public class WxApi2Impl extends AbstractWxApi2 {
         NutMap scene;
         // 临时二维码
         if (expire_seconds > 0) {
-            params.put("action_name", "QR_SCENE");
             params.put("expire_seconds", expire_seconds);
-
-            scene = Lang.map("scene_id", Castors.me().castTo(scene_id, Integer.class));
+            
+            // 临时整型二维码
+            if (scene_id instanceof Number) {
+            	params.put("action_name", "QR_SCENE");
+                scene = Lang.map("scene_id", Castors.me().castTo(scene_id, Integer.class));
+            // 临时字符串二维码
+            } else {
+            	params.put("action_name", "QR_STR_SCENE");
+                scene = Lang.map("scene_str", scene_id.toString());
+            }
         }
         // 永久二维码
         else if (scene_id instanceof Number) {
