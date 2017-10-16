@@ -39,6 +39,8 @@ import org.nutz.weixin.bean.WxPayRedPackGroup;
 import org.nutz.weixin.bean.WxPayTransfers;
 import org.nutz.weixin.bean.WxPayUnifiedOrder;
 import org.nutz.weixin.bean.WxTemplateData;
+import org.nutz.weixin.bean.WxPayRefund;
+import org.nutz.weixin.bean.WxPayRefundQuery;
 import org.nutz.weixin.spi.WxResp;
 import org.nutz.weixin.util.WxPaySSL;
 import org.nutz.weixin.util.WxPaySign;
@@ -796,5 +798,33 @@ public class WxApi2Impl extends AbstractWxApi2 {
         String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/send_coupon";
         Map<String, Object> params = Lang.obj2map(wxPayCoupon);
         return this.postPay(url, key, params, file, password);
+    }
+
+    /**
+     *
+     * @param key          商户KEY
+     * @param wxPayRefund  退款申请参数
+     * @param file         证书文件
+     * @param password     证书密码
+     * @return
+     */
+    @Override
+    public NutMap pay_refund(String key, WxPayRefund wxPayRefund, File file, String password) {
+        String url = "https://api.mch.weixin.qq.com/secapi/pay/refund";
+        Map<String, Object> params = Lang.obj2map(wxPayRefund);
+        return this.postPay(url, key, params, file, password);
+    }
+
+    /**
+     *
+     * @param key          商户KEY
+     * @param wxPayRefundQuery  退款查询参数
+     * @return
+     */
+    @Override
+    public NutMap pay_refundquery(String key, WxPayRefundQuery wxPayRefundQuery) {
+        String url = "https://api.mch.weixin.qq.com/pay/refundquery";
+        Map<String, Object> params = Lang.obj2map(wxPayRefundQuery);
+        return this.postPay(url, key, params);
     }
 }

@@ -25,4 +25,8 @@ public interface WxPayApi {
     NutMap send_redpackgroup(String key, WxPayRedPackGroup wxRedPackGroup, File file, String password);
 
     NutMap send_coupon(String key, WxPayCoupon wxPayCoupon, File file, String password);
+
+    NutMap pay_refund(String key, WxPayRefund wxPayRefund, File file, String password);
+
+    NutMap pay_refundquery(String key, WxPayRefundQuery wxPayRefundQuery);
 }
