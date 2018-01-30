@@ -7,6 +7,8 @@ package org.nutz.weixin.bean;
 public class WxPayUnifiedOrder {
     private String appid;
     private String mch_id;
+    private String sub_appid;
+    private String sub_mch_id;
     private String device_info;
     private String nonce_str;
     private String sign;
@@ -193,5 +195,21 @@ public class WxPayUnifiedOrder {
 
     public void setOpenid(String openid) {
         this.openid = openid;
+    }
+
+    public String getSub_appid() {
+        return sub_appid;
+    }
+
+    public void setSub_appid(String sub_appid) {
+        this.sub_appid = sub_appid;
+    }
+
+    public String getSub_mch_id() {
+        return sub_mch_id;
+    }
+
+    public void setSub_mch_id(String sub_mch_id) {
+        this.sub_mch_id = sub_mch_id;
     }
 }
