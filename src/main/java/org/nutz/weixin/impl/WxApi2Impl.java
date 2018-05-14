@@ -50,8 +50,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     private static final Log log = Logs.get().setTag("weixin");
 
-    public WxApi2Impl() {
-    }
+    public WxApi2Impl() {}
 
     public WxApi2Impl(String token,
                       String appid,
@@ -63,7 +62,6 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     // ===============================
     // 基本API
-
 
     @Override
     public WxResp send(WxOutMsg out) {
@@ -85,7 +83,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     @Override
     public WxResp user_info(String openid, String lang) {
-        return get("/user/info", "openid", openid, "lang", lang);
+        return get("/user/info", "openid", openid, "lang", Strings.sBlank(lang, "zh_CN"));
     }
 
     @Override
@@ -117,11 +115,14 @@ public class WxApi2Impl extends AbstractWxApi2 {
             for (String openid : openids) {
                 try {
                     each.invoke(index, openid, total);
-                } catch (ExitLoop e) {
+                }
+                catch (ExitLoop e) {
                     return;
-                } catch (ContinueLoop e) {
+                }
+                catch (ContinueLoop e) {
                     continue;
-                } catch (LoopException e) {
+                }
+                catch (LoopException e) {
                     throw e;
                 }
                 index++;
@@ -164,14 +165,14 @@ public class WxApi2Impl extends AbstractWxApi2 {
         // 临时二维码
         if (expire_seconds > 0) {
             params.put("expire_seconds", expire_seconds);
-            
+
             // 临时整型二维码
             if (scene_id instanceof Number) {
-            	params.put("action_name", "QR_SCENE");
+                params.put("action_name", "QR_SCENE");
                 scene = Lang.map("scene_id", Castors.me().castTo(scene_id, Integer.class));
-            // 临时字符串二维码
+                // 临时字符串二维码
             } else {
-            	params.put("action_name", "QR_STR_SCENE");
+                params.put("action_name", "QR_STR_SCENE");
                 scene = Lang.map("scene_str", scene_id.toString());
             }
         }
@@ -196,7 +197,9 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     @Override
     public String shorturl(String long_url) {
-        return postJson("/shorturl", new NutMap().setv("long_url", long_url).setv("action", "long2short")).getString("short_url");
+        return postJson("/shorturl",
+                        new NutMap().setv("long_url", long_url).setv("action", "long2short"))
+                                                                                             .getString("short_url");
     }
 
     // --------------------------------------------------------
@@ -204,7 +207,11 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     @Override
     public WxResp template_api_set_industry(String industry_id1, String industry_id2) {
-        return postJson("/template/api_set_industry", "industry_id1", industry_id1, "industry_id2", industry_id2);
+        return postJson("/template/api_set_industry",
+                        "industry_id1",
+                        industry_id1,
+                        "industry_id2",
+                        industry_id2);
     }
 
     @Override
@@ -218,13 +225,38 @@ public class WxApi2Impl extends AbstractWxApi2 {
     }
 
     @Override
-    public WxResp template_send(String touser, String template_id, String url, Map<String, WxTemplateData> data) {
-        return postJson("/message/template/send", "touser", touser, "template_id", template_id, "url", url, "data", data);
+    public WxResp template_send(String touser,
+                                String template_id,
+                                String url,
+                                Map<String, WxTemplateData> data) {
+        return postJson("/message/template/send",
+                        "touser",
+                        touser,
+                        "template_id",
+                        template_id,
+                        "url",
+                        url,
+                        "data",
+                        data);
     }
 
     @Override
-    public WxResp template_send(String touser, String template_id, String url, Map<String, Object> miniprogram, Map<String, WxTemplateData> data) {
-        return postJson("/message/template/send", "touser", touser, "template_id", template_id, "url", url, miniprogram, miniprogram, "data", data);
+    public WxResp template_send(String touser,
+                                String template_id,
+                                String url,
+                                Map<String, Object> miniprogram,
+                                Map<String, WxTemplateData> data) {
+        return postJson("/message/template/send",
+                        "touser",
+                        touser,
+                        "template_id",
+                        template_id,
+                        "url",
+                        url,
+                        miniprogram,
+                        miniprogram,
+                        "data",
+                        data);
     }
 
     // ------------------------------------------------------------
@@ -258,7 +290,9 @@ public class WxApi2Impl extends AbstractWxApi2 {
             throw new NullPointerException("media type is NULL");
         if (f == null)
             throw new NullPointerException("meida file is NULL");
-        String url = String.format("http://api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s", getAccessToken(), type);
+        String url = String.format("http://api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s",
+                                   getAccessToken(),
+                                   type);
         Request req = Request.create(url, METHOD.POST);
         req.getParams().put("media", f);
         Response resp = new FilePostSender(req).send();
@@ -269,7 +303,9 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     @Override
     public NutResource media_get(String mediaId) {
-        String url = String.format("http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s", getAccessToken(), mediaId);
+        String url = String.format("http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s",
+                                   getAccessToken(),
+                                   mediaId);
         final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();
         if (!resp.isOK())
             throw new IllegalStateException("download media file, resp code=" + resp.getStatus());
@@ -315,14 +351,17 @@ public class WxApi2Impl extends AbstractWxApi2 {
         } else if ("news".equals(tp)) {
             params.put("news", msg.getArticles());
         } else if ("wxcard".equals(tp)) {
-            params.put("wxcard", new NutMap().setv("card_id", msg.getCard().getId()).setv("card_ext", msg.getCard().getExt()));
+            params.put("wxcard",
+                       new NutMap().setv("card_id", msg.getCard().getId())
+                                   .setv("card_ext", msg.getCard().getExt()));
         } else {
             params.put(msg.getMsgType(), new NutMap().setv("media_id", msg.getMedia_id()));
         }
         params.setv("msgtype", msg.getMsgType());
 
         if (msg.getKfAccount() != null) {
-            params.setv("customservice", new NutMap().setv("kf_account", msg.getKfAccount().getAccount()));
+            params.setv("customservice",
+                        new NutMap().setv("kf_account", msg.getKfAccount().getAccount()));
         }
 
         if (filter != null)
@@ -368,7 +407,13 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     @Override
     public WxResp applyId(int quantity, String apply_reason, String comment, int poi_id) {
-        return postJson(ShakeUrlBase + "/device/applyid", "quantity", quantity, "apply_reason", apply_reason, "comment", comment);
+        return postJson(ShakeUrlBase + "/device/applyid",
+                        "quantity",
+                        quantity,
+                        "apply_reason",
+                        apply_reason,
+                        "comment",
+                        comment);
     }
 
     @Override
@@ -387,7 +432,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
     @Override
     public WxResp update(String uuid, int major, int minor, String comment) {
         NutMap params = new NutMap();
-        params.put("device_identifier", new NutMap().setv("uuid", uuid).setv("major", major).setv("minor", minor));
+        params.put("device_identifier",
+                   new NutMap().setv("uuid", uuid).setv("major", major).setv("minor", minor));
         params.put("comment", comment);
         return postJson(ShakeUrlBase + "/device/update", params);
     }
@@ -403,7 +449,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
     @Override
     public WxResp bindLocation(String uuid, int major, int minor, int poi_id) {
         NutMap params = new NutMap();
-        params.put("device_identifier", new NutMap().setv("uuid", uuid).setv("major", major).setv("minor", minor));
+        params.put("device_identifier",
+                   new NutMap().setv("uuid", uuid).setv("major", major).setv("minor", minor));
         params.put("poi_id", poi_id);
         return postJson(ShakeUrlBase + "/device/bindlocation", params);
     }
@@ -418,7 +465,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
     @Override
     public WxResp search(String uuid, int major, int minor) {
         NutMap params = new NutMap();
-        params.put("device_identifier", new NutMap().setv("uuid", uuid).setv("major", major).setv("minor", minor));
+        params.put("device_identifier",
+                   new NutMap().setv("uuid", uuid).setv("major", major).setv("minor", minor));
         return postJson(ShakeUrlBase + "/device/search", params);
     }
 
@@ -429,12 +477,22 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     @Override
     public WxResp search(int apply_id, int begin, int count) {
-        return postJson(ShakeUrlBase + "/device/search", "apply_id", apply_id, "begin", begin, "count", count);
+        return postJson(ShakeUrlBase + "/device/search",
+                        "apply_id",
+                        apply_id,
+                        "begin",
+                        begin,
+                        "count",
+                        count);
     }
 
     @Override
     public WxResp getShakeInfo(String ticket, int need_poi) {
-        return postJson(ShakeUrlBase + "/user/getshakeinfo", "ticket", ticket, "need_poi", need_poi);
+        return postJson(ShakeUrlBase + "/user/getshakeinfo",
+                        "ticket",
+                        ticket,
+                        "need_poi",
+                        need_poi);
     }
 
     @Override
@@ -477,14 +535,15 @@ public class WxApi2Impl extends AbstractWxApi2 {
     }
 
     public WxResp add_news(WxMassArticle... news) {
-        return postJson("/material/add_news", "articles",  Arrays.asList(news));
+        return postJson("/material/add_news", "articles", Arrays.asList(news));
     }
 
     @Override
     public WxResp uploadimg(File f) {
         if (f == null)
             throw new NullPointerException("meida file is NULL");
-        String url = String.format("https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=%s", getAccessToken());
+        String url = String.format("https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=%s",
+                                   getAccessToken());
         Request req = Request.create(url, METHOD.POST);
         req.getParams().put("media", f);
         Response resp = new FilePostSender(req).send();
@@ -495,15 +554,19 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     @Override
     public WxResp uploadnews(List<WxMassArticle> articles) {
-        //用postJson方法总是抛空指针异常,只好用下面写法了,不知道原因
-        return call("/media/uploadnews", METHOD.POST, Json.toJson(new NutMap().setv("articles", articles)));
+        // 用postJson方法总是抛空指针异常,只好用下面写法了,不知道原因
+        return call("/media/uploadnews",
+                    METHOD.POST,
+                    Json.toJson(new NutMap().setv("articles", articles)));
     }
 
     @Override
     public WxResp add_material(String type, File f) {
         if (f == null)
             throw new NullPointerException("meida file is NULL");
-        String url = String.format("https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=%s&type=%s", getAccessToken(), type);
+        String url = String.format("https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=%s&type=%s",
+                                   getAccessToken(),
+                                   type);
         Request req = Request.create(url, METHOD.POST);
         req.getParams().put("media", f);
         Response resp = new FilePostSender(req).send();
@@ -516,12 +579,14 @@ public class WxApi2Impl extends AbstractWxApi2 {
     public WxResp add_video(File f, String title, String introduction) {
         if (f == null)
             throw new NullPointerException("meida file is NULL");
-        String url = String.format("https://api.weixin.qq.com/cgi-bin/material/add_material?type=video&access_token=%s", getAccessToken());
+        String url = String.format("https://api.weixin.qq.com/cgi-bin/material/add_material?type=video&access_token=%s",
+                                   getAccessToken());
         Request req = Request.create(url, METHOD.POST);
         req.getParams().put("media", f);
         req.getParams().put("description",
-                Json.toJson(new NutMap().setv("title", title).setv("introduction", introduction),
-                        JsonFormat.compact().setQuoteName(true)));
+                            Json.toJson(new NutMap().setv("title", title).setv("introduction",
+                                                                               introduction),
+                                        JsonFormat.compact().setQuoteName(true)));
         Response resp = new FilePostSender(req).send();
         if (!resp.isOK())
             throw new IllegalStateException("add_material, resp code=" + resp.getStatus());
@@ -529,7 +594,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
     }
 
     public NutResource get_material(String media_id) {
-        String url = String.format("https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=%s", getAccessToken());
+        String url = String.format("https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=%s",
+                                   getAccessToken());
         Request req = Request.create(url, METHOD.POST);
         NutMap body = new NutMap();
         body.put("media_id", media_id);
@@ -550,7 +616,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
                 list.add(Lang.map2Object((Map) obj, WxArticle.class));
             }
             return list;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw Lang.wrapThrow(e);
         }
     }
@@ -564,7 +631,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
     }
 
     public WxResp update_material(String media_id, int index, WxArticle article) {
-        return postJson("/material/update_news", new NutMap().setv("media_id", media_id).setv("index", index).setv("articles", article));
+        return postJson("/material/update_news",
+                        new NutMap().setv("media_id", media_id)
+                                    .setv("index", index)
+                                    .setv("articles", article));
     }
 
     @Override
@@ -574,9 +644,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     @Override
     public WxResp batchget_material(String type, int offset, int count) {
-        return postJson("/material/batchget_material", new NutMap().setv("type", type).setv("offset", offset).setv("count", count));
+        return postJson("/material/batchget_material",
+                        new NutMap().setv("type", type).setv("offset", offset).setv("count",
+                                                                                    count));
     }
-
 
     static class WxResource extends NutResource {
         String disposition;
@@ -610,7 +681,6 @@ public class WxApi2Impl extends AbstractWxApi2 {
         }
     }
 
-
     @Override
     public List<WxKfAccount> getkflist() {
         return get("/customservice/getkflist").check().getTo("kf_list", WxKfAccount.class);
@@ -618,24 +688,38 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     @Override
     public List<WxKfAccount> getonlinekflist() {
-        return get("/customservice/getonlinekflist").check().getTo("kf_online_list", WxKfAccount.class);
+        return get("/customservice/getonlinekflist").check().getTo("kf_online_list",
+                                                                   WxKfAccount.class);
     }
 
     @Override
     public WxResp kfaccount_add(String kf_account, String nickname, String password) {
-        return postJson("/customservice/kfaccount/add", "kf_account", kf_account, "nickname", nickname, "password", password);
+        return postJson("/customservice/kfaccount/add",
+                        "kf_account",
+                        kf_account,
+                        "nickname",
+                        nickname,
+                        "password",
+                        password);
     }
 
     @Override
     public WxResp kfaccount_update(String kf_account, String nickname, String password) {
-        return postJson("/customservice/kfaccount/update", "kf_account", kf_account, "nickname", nickname, "password", password);
+        return postJson("/customservice/kfaccount/update",
+                        "kf_account",
+                        kf_account,
+                        "nickname",
+                        nickname,
+                        "password",
+                        password);
     }
 
     @Override
     public WxResp kfaccount_uploadheadimg(String kf_account, File f) {
         if (f == null)
             throw new NullPointerException("meida file is NULL");
-        String url = String.format("https://api.weixin.qq.com/customservice/kfaccount/uploadheadimg?access_token=%s", getAccessToken());
+        String url = String.format("https://api.weixin.qq.com/customservice/kfaccount/uploadheadimg?access_token=%s",
+                                   getAccessToken());
         Request req = Request.create(url, METHOD.POST);
         req.getParams().put("media", f);
         Response resp = new FilePostSender(req).send();
@@ -652,9 +736,12 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 微信支付公共POST方法（不带证书）
      *
-     * @param url    请求路径
-     * @param key    商户KEY
-     * @param params 参数
+     * @param url
+     *            请求路径
+     * @param key
+     *            商户KEY
+     * @param params
+     *            参数
      * @return
      */
     @Override
@@ -673,15 +760,24 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 微信支付公共POST方法（带证书）
      *
-     * @param url      请求路径
-     * @param key      商户KEY
-     * @param params   参数
-     * @param file     证书文件
-     * @param password 证书密码
+     * @param url
+     *            请求路径
+     * @param key
+     *            商户KEY
+     * @param params
+     *            参数
+     * @param file
+     *            证书文件
+     * @param password
+     *            证书密码
      * @return
      */
     @Override
-    public NutMap postPay(String url, String key, Map<String, Object> params, File file, String password) {
+    public NutMap postPay(String url,
+                          String key,
+                          Map<String, Object> params,
+                          File file,
+                          String password) {
         params.remove("sign");
         String sign = WxPaySign.createSign(key, params);
         params.put("sign", sign);
@@ -691,7 +787,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
         SSLSocketFactory sslSocketFactory;
         try {
             sslSocketFactory = WxPaySSL.buildSSL(file, password);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw Lang.wrapThrow(e);
         }
         sender.setSSLSocketFactory(sslSocketFactory);
@@ -704,8 +801,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 统一下单
      *
-     * @param key               商户KEY
-     * @param wxPayUnifiedOrder 交易订单内容
+     * @param key
+     *            商户KEY
+     * @param wxPayUnifiedOrder
+     *            交易订单内容
      * @return
      */
     @Override
@@ -717,8 +816,11 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     /**
      * 微信公众号JS支付
-     * @param key 商户KEY
-     * @param wxPayUnifiedOrder 交易订单内容
+     * 
+     * @param key
+     *            商户KEY
+     * @param wxPayUnifiedOrder
+     *            交易订单内容
      * @return
      */
     @Override
@@ -738,27 +840,37 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 企业向个人付款
      *
-     * @param key            商户KEY
-     * @param wxPayTransfers 付款内容
-     * @param file           证书文件
-     * @param password       证书密码
+     * @param key
+     *            商户KEY
+     * @param wxPayTransfers
+     *            付款内容
+     * @param file
+     *            证书文件
+     * @param password
+     *            证书密码
      * @return
      */
     @Override
-    public NutMap pay_transfers(String key, WxPayTransfers wxPayTransfers, File file, String password) {
+    public NutMap pay_transfers(String key,
+                                WxPayTransfers wxPayTransfers,
+                                File file,
+                                String password) {
         String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
         Map<String, Object> params = Lang.obj2map(wxPayTransfers);
         return this.postPay(url, key, params, file, password);
     }
 
-
     /**
      * 发送普通红包
      *
-     * @param key       商户KEY
-     * @param wxRedPack 红包内容
-     * @param file      证书文件
-     * @param password  证书密码
+     * @param key
+     *            商户KEY
+     * @param wxRedPack
+     *            红包内容
+     * @param file
+     *            证书文件
+     * @param password
+     *            证书密码
      * @return
      */
     @Override
@@ -771,14 +883,21 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 发送裂变红包
      *
-     * @param key            商户KEY
-     * @param wxRedPackGroup 红包内容
-     * @param file           证书文件
-     * @param password       证书密码
+     * @param key
+     *            商户KEY
+     * @param wxRedPackGroup
+     *            红包内容
+     * @param file
+     *            证书文件
+     * @param password
+     *            证书密码
      * @return
      */
     @Override
-    public NutMap send_redpackgroup(String key, WxPayRedPackGroup wxRedPackGroup, File file, String password) {
+    public NutMap send_redpackgroup(String key,
+                                    WxPayRedPackGroup wxRedPackGroup,
+                                    File file,
+                                    String password) {
         String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/sendgroupredpack";
         Map<String, Object> params = Lang.obj2map(wxRedPackGroup);
         return this.postPay(url, key, params, file, password);
@@ -787,10 +906,14 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 发送代金卷
      *
-     * @param key         商户KEY
-     * @param wxPayCoupon 代金卷内容
-     * @param file        证书文件
-     * @param password    证书密码
+     * @param key
+     *            商户KEY
+     * @param wxPayCoupon
+     *            代金卷内容
+     * @param file
+     *            证书文件
+     * @param password
+     *            证书密码
      * @return
      */
     @Override
@@ -802,10 +925,14 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     /**
      *
-     * @param key          商户KEY
-     * @param wxPayRefund  退款申请参数
-     * @param file         证书文件
-     * @param password     证书密码
+     * @param key
+     *            商户KEY
+     * @param wxPayRefund
+     *            退款申请参数
+     * @param file
+     *            证书文件
+     * @param password
+     *            证书密码
      * @return
      */
     @Override
@@ -817,8 +944,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     /**
      *
-     * @param key          商户KEY
-     * @param wxPayRefundQuery  退款查询参数
+     * @param key
+     *            商户KEY
+     * @param wxPayRefundQuery
+     *            退款查询参数
      * @return
      */
     @Override
