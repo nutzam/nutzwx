@@ -10,6 +10,7 @@ import org.nutz.weixin.bean.WxOutMsg;
 
 /**
  *  @author wendal(wendal1985@gmail.com)
+ *  @author wizzercn(wizzer.cn@gmail.com)
  */
 public interface WxBaseApi {
 
@@ -20,4 +21,10 @@ public interface WxBaseApi {
     void handle(HttpServletRequest req, HttpServletResponse resp, WxHandler handler);
     
     List<String> getcallbackip();
+
+    void setPayBase(String url);
+
+    void setWxBase(String url);
+
+    void setMpBase(String url);
 }
