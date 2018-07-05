@@ -57,6 +57,7 @@ import org.nutz.weixin.repo.com.qq.weixin.mp.aes.AesException;
 import org.nutz.weixin.repo.com.qq.weixin.mp.aes.WXBizMsgCrypt;
 import org.nutz.weixin.spi.WxHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class Wxs {
 
@@ -804,7 +805,7 @@ public class Wxs {
         sb.append(tmpl.render(ctx));
     }
 
-    public static DocumentBuilder xmls() throws ParserConfigurationException {
+    public static DocumentBuilder xmls() throws ParserConfigurationException, SAXException, IOException {
         //修复XXE form https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=23_5
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         String FEATURE = null;
