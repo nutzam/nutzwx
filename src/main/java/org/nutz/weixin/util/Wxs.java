@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.nutz.http.Http;
 import org.nutz.http.Response;
@@ -149,11 +152,11 @@ public class Wxs {
      *      支付平台文档</a>
      */
     public static NutMap checkPayReturn(String xml, String key) {
-        NutMap map = Xmls.xmlToMap(xml);
         try {
+            NutMap map = Xmls.asMap(xmls().parse(new InputSource(new StringReader(key))).getDocumentElement());
             return checkPayReturnMap(map, key);
         }
-        catch (RuntimeException e) {
+        catch (Exception e) {
             throw Lang.makeThrow("e.wx.pay.re.error : %s", xml);
         }
     }
@@ -207,7 +210,7 @@ public class Wxs {
             // DocumentBuilder不支持直接传入Reader,如果直接传InputStream的话又按系统默认编码,所以,用InputSource中转一下
             Reader r = Streams.utf8r(in);
             raw = Lang.readAll(r);
-            map = Xmls.asMap(Xmls.xmls()
+            map = Xmls.asMap(xmls()
                                  .parse(new InputSource(new StringReader(raw)))
                                  .getDocumentElement());
         }
@@ -801,7 +804,9 @@ public class Wxs {
         sb.append(tmpl.render(ctx));
     }
 
-    // public static void main(String[] args) {
-    // System.out.println(pojoClass2MapClass(WxOutMsg.class));
-    // }
+    public static DocumentBuilder xmls() throws ParserConfigurationException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setExpandEntityReferences(false);
+        return factory.newDocumentBuilder();
+    }
 }
