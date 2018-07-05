@@ -805,7 +805,18 @@ public class Wxs {
     }
 
     public static DocumentBuilder xmls() throws ParserConfigurationException {
+        //修复XXE form https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=23_5
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        String FEATURE = null;
+        FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+        factory.setFeature(FEATURE, true);
+        FEATURE = "http://xml.org/sax/features/external-general-entities";
+        factory.setFeature(FEATURE, false);
+        FEATURE = "http://xml.org/sax/features/external-parameter-entities";
+        factory.setFeature(FEATURE, false);
+        FEATURE = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+        factory.setFeature(FEATURE, false);
+        factory.setXIncludeAware(false);
         factory.setExpandEntityReferences(false);
         return factory.newDocumentBuilder();
     }
