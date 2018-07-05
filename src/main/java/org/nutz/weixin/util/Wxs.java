@@ -154,7 +154,7 @@ public class Wxs {
      */
     public static NutMap checkPayReturn(String xml, String key) {
         try {
-            NutMap map = Xmls.asMap(xmls().parse(new InputSource(new StringReader(key))).getDocumentElement());
+            NutMap map = Xmls.asMap(xmls().parse(new InputSource(new StringReader(xml))).getDocumentElement());
             return checkPayReturnMap(map, key);
         }
         catch (Exception e) {
