@@ -57,6 +57,7 @@ import org.nutz.weixin.repo.com.qq.weixin.mp.aes.AesException;
 import org.nutz.weixin.repo.com.qq.weixin.mp.aes.WXBizMsgCrypt;
 import org.nutz.weixin.spi.WxHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class Wxs {
 
@@ -804,40 +805,20 @@ public class Wxs {
         sb.append(tmpl.render(ctx));
     }
 
-    public static DocumentBuilder xmls() throws ParserConfigurationException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    public static DocumentBuilder xmls() throws ParserConfigurationException, SAXException, IOException {
+        //修复XXE form https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=23_5
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         String FEATURE = null;
-        
-        // This is the PRIMARY defense. If DTDs (doctypes) are disallowed, almost all XML entity attacks are prevented
-        // Xerces 2 only - http://xerces.apache.org/xerces2-j/features.html#disallow-doctype-decl
-
         FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
-        dbf.setFeature(FEATURE, true);
-
-        // If you can't completely disable DTDs, then at least do the following:
-        // Xerces 1 - http://xerces.apache.org/xerces-j/features.html#external-general-entities
-
-        // Xerces 2 - http://xerces.apache.org/xerces2-j/features.html#external-general-entities
-
-        // JDK7+ - http://xml.org/sax/features/external-general-entities 
+        factory.setFeature(FEATURE, true);
         FEATURE = "http://xml.org/sax/features/external-general-entities";
-        dbf.setFeature(FEATURE, false);
-
-        // Xerces 1 - http://xerces.apache.org/xerces-j/features.html#external-parameter-entities
-
-        // Xerces 2 - http://xerces.apache.org/xerces2-j/features.html#external-parameter-entities
-
-        // JDK7+ - http://xml.org/sax/features/external-parameter-entities 
+        factory.setFeature(FEATURE, false);
         FEATURE = "http://xml.org/sax/features/external-parameter-entities";
-        dbf.setFeature(FEATURE, false);
-
-        // Disable external DTDs as well
+        factory.setFeature(FEATURE, false);
         FEATURE = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
-        dbf.setFeature(FEATURE, false);
-
-        // and these as well, per Timothy Morgan's 2014 paper: "XML Schema, DTD, and Entity Attacks"
-        dbf.setXIncludeAware(false);
-        dbf.setExpandEntityReferences(false);
-        return dbf.newDocumentBuilder();
+        factory.setFeature(FEATURE, false);
+        factory.setXIncludeAware(false);
+        factory.setExpandEntityReferences(false);
+        return factory.newDocumentBuilder();
     }
 }
