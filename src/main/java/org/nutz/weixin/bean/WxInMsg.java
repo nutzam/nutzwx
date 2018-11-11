@@ -4,7 +4,12 @@ import org.nutz.lang.util.NutMap;
 
 public class WxInMsg extends NutMap {
 
-    protected transient String _raw;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	protected transient String _raw;
 
     public WxInMsg setFromUserName(String fromUserName) {
         put("fromUserName", fromUserName);

@@ -15,7 +15,15 @@ public class WxPayRefundQuery {
         return appid;
     }
 
-    public void setAppid(String appid) {
+    public String getRefund_id() {
+		return refund_id;
+	}
+
+	public void setRefund_id(String refund_id) {
+		this.refund_id = refund_id;
+	}
+
+	public void setAppid(String appid) {
         this.appid = appid;
     }
 
