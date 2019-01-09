@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nutz</groupId>
 	<artifactId>nutzwx</artifactId>
-	<version>1.r.67-SNAPSHOT</version>
+	<version>1.r.68-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.nutz</groupId>
