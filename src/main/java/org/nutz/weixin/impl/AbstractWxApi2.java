@@ -272,9 +272,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
         WxResp wxResp = null;
         while (retry >= 0) {
             try {
-                String sendUrl = null;
-                if (!URL.startsWith("http"))
-                    sendUrl = base + URL;
+                String sendUrl = URL.startsWith("http") ? URL : base + URL;
                 if (URL.contains("?")) {
                     sendUrl += "&access_token=" + token;
                 } else {
