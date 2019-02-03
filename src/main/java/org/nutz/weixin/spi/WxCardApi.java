@@ -18,4 +18,13 @@ public interface WxCardApi {
      */
     WxResp card_create(NutMap card);
 
+    /**
+     * 投放卡券，创建二维码
+     *
+     * @author JinYi
+     * @param body
+     * @return
+     */
+    WxResp card_qrcode_create(NutMap body);
+
 }

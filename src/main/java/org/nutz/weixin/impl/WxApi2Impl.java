@@ -308,6 +308,19 @@ public class WxApi2Impl extends AbstractWxApi2 {
         return postJson("https://api.weixin.qq.com/card/create", "card", card);
     }
 
+    /**
+     * 投放卡券，创建二维码
+     *
+     * @author JinYi
+     * @param body
+     * @return
+     */
+    @Override
+    public WxResp card_qrcode_create(NutMap body) {
+        // 由于创建卡券API中没有“/cgi-bin”，所以uri不能只写“/card/qrcode/create”
+        return postJson("https://api.weixin.qq.com/card/qrcode/create", body);
+    }
+
     // 自定义菜单
 
     @Override
