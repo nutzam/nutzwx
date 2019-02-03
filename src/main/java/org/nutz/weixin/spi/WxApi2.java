@@ -7,7 +7,7 @@ package org.nutz.weixin.spi;
  * 
  */
 public interface WxApi2 extends WxBaseApi, WxMassApi, WxUserApi, WxQrApi, WxTemplateMsgApi,
-		WxMediaApi, WxMenuApi, WxAccessTokenApi, WxJsapiTicketApi, WxShakeApi, WXAccountApi, WxMaterialApi,
-		WxCustomServiceApi,WxPayApi {
+	WxMediaApi, WxMenuApi, WxAccessTokenApi, WxJsapiTicketApi, WxShakeApi, WXAccountApi, WxMaterialApi,
+	WxCustomServiceApi, WxPayApi, WxCardApi {
 
 }

@@ -293,6 +293,21 @@ public class WxApi2Impl extends AbstractWxApi2 {
     }
 
     // ------------------------------------------------------------
+    // 微信卡券
+
+    /**
+     * 创建卡券
+     *
+     * @author JinYi
+     * @param card
+     * @return
+     */
+    @Override
+    public WxResp card_create(NutMap card) {
+        // 由于创建卡券API中没有“/cgi-bin”，所以uri不能只写“/card/create”
+        return postJson("https://api.weixin.qq.com/card/create", "card", card);
+    }
+
     // 自定义菜单
 
     @Override
