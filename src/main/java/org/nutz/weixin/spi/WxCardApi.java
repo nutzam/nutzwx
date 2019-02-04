@@ -58,7 +58,9 @@ public interface WxCardApi {
     WxResp card_code_get(String code);
 
     /**
-     * 微信卡券：核销卡券
+     * 微信卡券：核销卡券<br/>
+     * 建议在调用核销卡券接口之前调用查询Code接口<br/>
+     * 以便在核销之前对非法状态的Code（如转赠中、已删除、已核销等）做出处理
      *
      * @author JinYi
      * @param code 需核销的Code码，必填
@@ -68,7 +70,9 @@ public interface WxCardApi {
     WxResp card_code_consume(String code, String cardId);
 
     /**
-     * 微信卡券：核销卡券
+     * 微信卡券：核销卡券<br/>
+     * 建议在调用核销卡券接口之前调用查询Code接口<br/>
+     * 以便在核销之前对非法状态的Code（如转赠中、已删除、已核销等）做出处理
      *
      * @author JinYi
      * @param code 需核销的Code码，必填
