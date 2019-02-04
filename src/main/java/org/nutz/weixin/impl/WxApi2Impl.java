@@ -296,7 +296,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
     // 微信卡券
 
     /**
-     * 创建卡券
+     * 微信卡券：创建卡券
      *
      * @author JinYi
      * @param card
@@ -309,7 +309,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
     }
 
     /**
-     * 投放卡券，创建二维码
+     * 微信卡券：投放卡券，创建二维码
      *
      * @author JinYi
      * @param body
@@ -317,8 +317,91 @@ public class WxApi2Impl extends AbstractWxApi2 {
      */
     @Override
     public WxResp card_qrcode_create(NutMap body) {
-        // 由于创建卡券API中没有“/cgi-bin”，所以uri不能只写“/card/qrcode/create”
+        // 由于投放卡券创建二维码API中没有“/cgi-bin”，所以uri不能只写“/card/qrcode/create”
         return postJson("https://api.weixin.qq.com/card/qrcode/create", body);
+    }
+
+    /**
+     * 微信卡券：查询Code
+     *
+     * @author JinYi
+     * @param code 卡券Code码，一张卡券的唯一标识，必填
+     * @param cardId 卡券ID代表一类卡券，null表示不填此参数。自定义code卡券必填
+     * @param checkConsume 是否校验code核销状态，填入true和false时的code异常状态返回数据不同，null表示不填此参数
+     * @return
+     */
+    @Override
+    public WxResp card_code_get(String code, String cardId, Boolean checkConsume) {
+    	NutMap body = NutMap.NEW().addv("code", code);
+    	if (cardId != null) {
+    		body.addv("card_id", cardId);
+    	}
+    	if (checkConsume != null) {
+    		body.addv("check_consume", checkConsume);
+    	}
+
+    	// 由于查询Code API中没有“/cgi-bin”，所以uri不能只写“/card/code/get”
+    	return postJson("https://api.weixin.qq.com/card/code/get", body);
+    }
+
+    /**
+     * 微信卡券：查询Code
+     *
+     * @author JinYi
+     * @param code 卡券Code码，一张卡券的唯一标识，必填
+     * @param cardId 卡券ID代表一类卡券，null表示不填此参数。自定义code卡券必填
+     * @return
+     */
+    @Override
+    public WxResp card_code_get(String code, String cardId) {
+    	return card_code_get(code, cardId, null);
+    }
+
+    /**
+     * 微信卡券：查询Code
+     *
+     * @author JinYi
+     * @param code 卡券Code码，一张卡券的唯一标识，必填
+     * @return
+     */
+    @Override
+    public WxResp card_code_get(String code) {
+    	return card_code_get(code, null, null);
+    }
+
+    /**
+     * 微信卡券：核销卡券<br/>
+     * 建议在调用核销卡券接口之前调用查询Code接口<br/>
+     * 以便在核销之前对非法状态的Code（如转赠中、已删除、已核销等）做出处理
+     *
+     * @author JinYi
+     * @param code 需核销的Code码，必填
+     * @param cardId 卡券ID代表一类卡券，null表示不填此参数。创建卡券时use_custom_code填写true时必填。非自定义Code不必填写
+     * @return
+     */
+    @Override
+    public WxResp card_code_consume(String code, String cardId) {
+    	NutMap body = NutMap.NEW().addv("code", code);
+    	if (cardId != null) {
+    		body.addv("card_id", cardId);
+    	}
+
+    	// 由于核销卡券API中没有“/cgi-bin”，所以uri不能只写“/card/code/consume”
+    	return postJson("https://api.weixin.qq.com/card/code/consume", body);
+    }
+
+    /**
+     * 微信卡券：核销卡券<br/>
+     * 建议在调用核销卡券接口之前调用查询Code接口<br/>
+     * 以便在核销之前对非法状态的Code（如转赠中、已删除、已核销等）做出处理
+     *
+     * @author JinYi
+     * @param code 需核销的Code码，必填
+     * @return
+     */
+    @Override
+    public WxResp card_code_consume(String code) {
+    	return card_code_consume(code, null);
     }
 
     // 自定义菜单
