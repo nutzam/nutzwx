@@ -258,7 +258,6 @@ public abstract class AbstractWxApi2 implements WxApi2 {
         return call(uri, METHOD.POST, Json.toJson(body));
     }
 
-
     protected WxResp call(String URL, METHOD method, String body) {
         String token = getAccessToken();
         if (log.isInfoEnabled()) {
