@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.nutz.http.Http;
 import org.nutz.http.Request;
 import org.nutz.http.Request.METHOD;
-import org.nutz.ioc.impl.PropertiesProxy;
 import org.nutz.http.Response;
 import org.nutz.http.Sender;
+import org.nutz.ioc.impl.PropertiesProxy;
 import org.nutz.json.Json;
 import org.nutz.lang.Encoding;
 import org.nutz.lang.Lang;
@@ -24,8 +24,10 @@ import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.weixin.WxException;
 import org.nutz.weixin.at.WxAccessToken;
+import org.nutz.weixin.at.WxCardTicket;
 import org.nutz.weixin.at.WxJsapiTicket;
 import org.nutz.weixin.at.impl.MemoryAccessTokenStore;
+import org.nutz.weixin.at.impl.MemoryCardTicketStore;
 import org.nutz.weixin.at.impl.MemoryJsapiTicketStore;
 import org.nutz.weixin.bean.WxInMsg;
 import org.nutz.weixin.bean.WxOutMsg;
@@ -33,6 +35,7 @@ import org.nutz.weixin.repo.com.qq.weixin.mp.aes.AesException;
 import org.nutz.weixin.repo.com.qq.weixin.mp.aes.WXBizMsgCrypt;
 import org.nutz.weixin.spi.WxAccessTokenStore;
 import org.nutz.weixin.spi.WxApi2;
+import org.nutz.weixin.spi.WxCardTicketStore;
 import org.nutz.weixin.spi.WxHandler;
 import org.nutz.weixin.spi.WxJsapiTicketStore;
 import org.nutz.weixin.spi.WxResp;
@@ -158,9 +161,12 @@ public abstract class AbstractWxApi2 implements WxApi2 {
 
     protected WxJsapiTicketStore jsapiTicketStore;
 
+    protected WxCardTicketStore cardTicketStore;
+
     public AbstractWxApi2() {
         this.accessTokenStore = new MemoryAccessTokenStore();
         this.jsapiTicketStore = new MemoryJsapiTicketStore();
+        this.cardTicketStore = new MemoryCardTicketStore();
     }
 
     @Override
@@ -181,6 +187,16 @@ public abstract class AbstractWxApi2 implements WxApi2 {
     @Override
     public void setJsapiTicketStore(WxJsapiTicketStore jsapiTicketStore) {
         this.jsapiTicketStore = jsapiTicketStore;
+    }
+
+    @Override
+    public WxCardTicketStore getCardTicketStore() {
+        return cardTicketStore;
+    }
+
+    @Override
+    public void setCardTicketStore(WxCardTicketStore cardTicketStore) {
+        this.cardTicketStore = cardTicketStore;
     }
 
     protected synchronized void checkWXBizMsgCrypt() {
@@ -338,6 +354,43 @@ public abstract class AbstractWxApi2 implements WxApi2 {
         String ticket = re.getString("ticket");
         int expires = re.getInt("expires_in") - 200;//微信默认超时为7200秒，此处设置稍微短一点
         jsapiTicketStore.save(ticket, expires, System.currentTimeMillis());
+    }
+
+    @Override
+    public String getCardTicket() {
+        WxCardTicket ct = cardTicketStore.get();
+        if (ct == null || ct.getExpires() < (System.currentTimeMillis() - ct.getLastCacheTimeMillis()) / 1000) {
+            synchronized (lock) {
+            	WxCardTicket ct_forupdate = cardTicketStore.get();
+                if (ct_forupdate == null || ct_forupdate.getExpires() < (System.currentTimeMillis() - ct_forupdate.getLastCacheTimeMillis()) / 1000) {
+                    reflushCardTicket();
+                }
+            }
+        }
+        return cardTicketStore.get().getTicket();
+    }
+
+    protected void reflushCardTicket() {
+        String at = this.getAccessToken();
+        String url = String.format("%s/ticket/getticket?access_token=%s&type=wx_card", base, at);
+        if (log.isDebugEnabled()) {
+        	log.debugf("ATS: reflush wx_card ticket send: %s", url);
+        }
+
+        Response resp = Http.get(url);
+        if (!resp.isOK()) {
+            throw new IllegalArgumentException("reflushCardTicket FAIL , openid=" + openid);
+        }
+        String str = resp.getContent();
+
+        if (log.isDebugEnabled()) {
+            log.debugf("ATS: reflush wx_card ticket done: %s", str);
+        }
+
+        NutMap re = Json.fromJson(NutMap.class, str);
+        String ticket = re.getString("ticket");
+        int expires = re.getInt("expires_in") - 200;//微信默认超时为7200秒，此处设置稍微短一点
+        cardTicketStore.save(ticket, expires, System.currentTimeMillis());
     }
 
     @Override
