@@ -13,6 +13,10 @@ public class WxCardTicket {
 
 	protected long lastCacheTimeMillis;
 
+	public WxCardTicket() {
+		super();
+	}
+
 	public WxCardTicket(String ticket, int expires, long lastCacheTimeMillis) {
 		super();
 		this.ticket = ticket;
