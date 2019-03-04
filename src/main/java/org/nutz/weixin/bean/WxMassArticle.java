@@ -11,11 +11,14 @@ public class WxMassArticle {
     private String content;
     private String digest;
     private int show_cover_pic;
+    private int need_open_comment;
+    private int only_fans_can_comment;
 
     public WxMassArticle() {
     }
 
-    public WxMassArticle(String title, String author, String thumb_media_id, String content_source_url, String content, String digest, int show_cover_pic) {
+    public WxMassArticle(String title, String author, String thumb_media_id, String content_source_url, String content, String digest,
+                         int show_cover_pic,int need_open_comment,int only_fans_can_comment) {
         super();
         this.title = title;
         this.author = author;
@@ -24,6 +27,8 @@ public class WxMassArticle {
         this.content = content;
         this.digest = digest;
         this.show_cover_pic = show_cover_pic;
+        this.need_open_comment=need_open_comment;
+        this.only_fans_can_comment=only_fans_can_comment;
     }
 
     public String getTitle() {
@@ -80,5 +85,21 @@ public class WxMassArticle {
 
     public void setShow_cover_pic(int show_cover_pic) {
         this.show_cover_pic = show_cover_pic;
+    }
+
+    public int getNeed_open_comment() {
+        return need_open_comment;
+    }
+
+    public void setNeed_open_comment(int need_open_comment) {
+        this.need_open_comment = need_open_comment;
+    }
+
+    public int getOnly_fans_can_comment() {
+        return only_fans_can_comment;
+    }
+
+    public void setOnly_fans_can_comment(int only_fans_can_comment) {
+        this.only_fans_can_comment = only_fans_can_comment;
     }
 }
