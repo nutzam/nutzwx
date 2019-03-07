@@ -11,8 +11,8 @@ package org.nutz.weixin.repo.com.qq.weixin.mp.aes;
 import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.nutz.weixin.util.Wxs;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -34,8 +34,7 @@ class XMLParse {
 	public static Object[] extract(String xmltext) throws AesException     {
 		Object[] result = new Object[3];
 		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
+			DocumentBuilder db = Wxs.xmls();
 			StringReader sr = new StringReader(xmltext);
 			InputSource is = new InputSource(sr);
 			Document document = db.parse(is);
