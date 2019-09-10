@@ -153,7 +153,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     @Override
     public WxResp groups_member_update(String openid, String to_groupid) {
-        return postJson("/groups/member/update", "openid", openid, "to_groupid", to_groupid);
+        return postJson("/groups/members/update", "openid", openid, "to_groupid", to_groupid);
     }
 
     @Override
