@@ -154,8 +154,24 @@ public class Wxs {
      */
     public static NutMap checkPayReturn(String xml, String key) {
         try {
-            NutMap map = Xmls.asMap(xmls().parse(new InputSource(new StringReader(xml))).getDocumentElement());
+            NutMap map = getkPayReturn(xml);
             return checkPayReturnMap(map, key);
+        }
+        catch (RuntimeException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw Lang.makeThrow("e.wx.pay.re.error : %s", xml);
+        }
+    }
+
+    public static NutMap getkPayReturn(String xml) {
+        try {
+            return Xmls.asMap(xmls().parse(new InputSource(new StringReader(xml)))
+                                          .getDocumentElement());
+        }
+        catch (RuntimeException e) {
+            throw e;
         }
         catch (Exception e) {
             throw Lang.makeThrow("e.wx.pay.re.error : %s", xml);
@@ -211,9 +227,8 @@ public class Wxs {
             // DocumentBuilder不支持直接传入Reader,如果直接传InputStream的话又按系统默认编码,所以,用InputSource中转一下
             Reader r = Streams.utf8r(in);
             raw = Lang.readAll(r);
-            map = Xmls.asMap(xmls()
-                                 .parse(new InputSource(new StringReader(raw)))
-                                 .getDocumentElement());
+            map = Xmls.asMap(xmls().parse(new InputSource(new StringReader(raw)))
+                                   .getDocumentElement());
         }
         catch (Exception e) {
             throw Lang.wrapThrow(e);
@@ -805,8 +820,10 @@ public class Wxs {
         sb.append(tmpl.render(ctx));
     }
 
-    public static DocumentBuilder xmls() throws ParserConfigurationException, SAXException, IOException {
-        //修复XXE form https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=23_5
+    public static DocumentBuilder xmls()
+            throws ParserConfigurationException, SAXException, IOException {
+        // 修复XXE form
+        // https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=23_5
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         String FEATURE = null;
         FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
