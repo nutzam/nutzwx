@@ -1,6 +1,7 @@
 sudo: false
 language: java
 script: mvn -Dmaven.test.skip=true package source:jar
+dist: trusty
 jdk:
   - oraclejdk8
 # whitelist
