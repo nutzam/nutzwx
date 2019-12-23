@@ -901,7 +901,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
      * @return
      */
     @Override
-    public NutMap postPay(String url, String key, Map<String, Object> params, File file, String password) {
+    public NutMap postPay(String url, String key, Map<String, Object> params, Object data, String password) {
         params.remove("sign");
         String sign = WxPaySign.createSign(key, params);
         params.put("sign", sign);
@@ -910,7 +910,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
         Sender sender = Sender.create(req);
         SSLSocketFactory sslSocketFactory;
         try {
-            sslSocketFactory = WxPaySSL.buildSSL(file, password);
+            sslSocketFactory = WxPaySSL.buildSSL(data, password);
         }
         catch (Exception e) {
             throw Lang.wrapThrow(e);
@@ -975,10 +975,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
      * @return
      */
     @Override
-    public NutMap pay_transfers(String key, WxPayTransfers wxPayTransfers, File file, String password) {
+    public NutMap pay_transfers(String key, WxPayTransfers wxPayTransfers, Object keydata, String password) {
         String url = payBase + "/mmpaymkttransfers/promotion/transfers";
         Map<String, Object> params = Lang.obj2map(wxPayTransfers);
-        return this.postPay(url, key, params, file, password);
+        return this.postPay(url, key, params, keydata, password);
     }
 
     /**
@@ -995,10 +995,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
      * @return
      */
     @Override
-    public NutMap send_redpack(String key, WxPayRedPack wxRedPack, File file, String password) {
+    public NutMap send_redpack(String key, WxPayRedPack wxRedPack, Object keydata, String password) {
         String url = payBase + "/mmpaymkttransfers/sendredpack";
         Map<String, Object> params = Lang.obj2map(wxRedPack);
-        return this.postPay(url, key, params, file, password);
+        return this.postPay(url, key, params, keydata, password);
     }
 
     /**
@@ -1015,10 +1015,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
      * @return
      */
     @Override
-    public NutMap send_redpackgroup(String key, WxPayRedPackGroup wxRedPackGroup, File file, String password) {
+    public NutMap send_redpackgroup(String key, WxPayRedPackGroup wxRedPackGroup, Object keydata, String password) {
         String url = payBase + "/mmpaymkttransfers/sendgroupredpack";
         Map<String, Object> params = Lang.obj2map(wxRedPackGroup);
-        return this.postPay(url, key, params, file, password);
+        return this.postPay(url, key, params, keydata, password);
     }
 
     /**
@@ -1035,10 +1035,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
      * @return
      */
     @Override
-    public NutMap send_coupon(String key, WxPayCoupon wxPayCoupon, File file, String password) {
+    public NutMap send_coupon(String key, WxPayCoupon wxPayCoupon, Object keydata, String password) {
         String url = payBase + "/mmpaymkttransfers/send_coupon";
         Map<String, Object> params = Lang.obj2map(wxPayCoupon);
-        return this.postPay(url, key, params, file, password);
+        return this.postPay(url, key, params, keydata, password);
     }
 
     /**
@@ -1053,10 +1053,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
      * @return
      */
     @Override
-    public NutMap pay_refund(String key, WxPayRefund wxPayRefund, File file, String password) {
+    public NutMap pay_refund(String key, WxPayRefund wxPayRefund, Object keydata, String password) {
         String url = payBase + "/secapi/pay/refund";
         Map<String, Object> params = Lang.obj2map(wxPayRefund);
-        return this.postPay(url, key, params, file, password);
+        return this.postPay(url, key, params, keydata, password);
     }
 
     /**
@@ -1101,5 +1101,30 @@ public class WxApi2Impl extends AbstractWxApi2 {
     @Override
     public WxResp menu_trymatch(String user_id) {
         return postJson("/menu/trymatch", NutMap.NEW().addv("user_id", user_id));
+    }
+
+    @Override
+    public NutMap pay_transfers(String key, WxPayTransfers wxPayTransfers, File keydata, String password) {
+        return pay_transfers(key, wxPayTransfers, (Object)keydata, password);
+    }
+
+    @Override
+    public NutMap send_redpack(String key, WxPayRedPack wxRedPack, File keydata, String password) {
+        return send_redpack(key, wxRedPack, (Object)keydata, password);
+    }
+
+    @Override
+    public NutMap send_redpackgroup(String key, WxPayRedPackGroup wxRedPackGroup, File keydata, String password) {
+        return send_redpackgroup(key, wxRedPackGroup, (Object)keydata, password);
+    }
+
+    @Override
+    public NutMap send_coupon(String key, WxPayCoupon wxPayCoupon, File keydata, String password) {
+        return send_coupon(key, wxPayCoupon, (Object)keydata, password);
+    }
+
+    @Override
+    public NutMap pay_refund(String key, WxPayRefund wxPayRefund, File keydata, String password) {
+        return pay_refund(key, wxPayRefund, (Object)keydata, password);
     }
 }

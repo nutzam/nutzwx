@@ -1,25 +1,45 @@
 package org.nutz.weixin.util;
 
-import javax.net.ssl.*;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+
+import org.nutz.lang.Files;
+import org.nutz.lang.Streams;
+
 /**
  * Created by wizzer on 2017/3/23.
  */
 public class WxPaySSL {
-    public static SSLSocketFactory buildSSL(File file, String password) throws Exception {
+    public static SSLSocketFactory buildSSL(Object f, String password) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
-        FileInputStream instream = new FileInputStream(file);
-        try {
-            keyStore.load(instream, password.toCharArray());
-        } finally {
-            instream.close();
+        byte[] buf = null;
+        if (f instanceof File) {
+            buf = Files.readBytes((File) f);
         }
+        else if (f instanceof byte[]) {
+            buf = (byte[])f;
+        }
+        else if (f instanceof InputStream) {
+            buf = Streams.readBytes((InputStream)f);
+        }
+        else {
+            throw new IllegalArgumentException("buildSSL need file or byte[] or InputStream");
+        }
+
+        keyStore.load(new ByteArrayInputStream(buf), password.toCharArray());
+
         TrustManagerFactory tmfactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         tmfactory.init(keyStore);
         TrustManager[] tms = {new X509TrustManager() {
