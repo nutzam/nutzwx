@@ -36,7 +36,8 @@ public class RedisAccessTokenStore implements WxAccessTokenStore {
 
     protected JedisPool jedisPool;
 
-    public RedisAccessTokenStore() {}
+    public RedisAccessTokenStore() {
+    }
 
     public RedisAccessTokenStore(String tokenKey, JedisPool jedisPool) {
         if (!Strings.isBlank(tokenKey))
@@ -78,14 +79,12 @@ public class RedisAccessTokenStore implements WxAccessTokenStore {
             at.setLastCacheTimeMillis(Long.valueOf(hash.get("lastCacheMillis")));
             at.setExpires(Integer.valueOf(hash.get("expires")));
             log.debugf("wx access_token fetched from redis with the key [%s] : \n %s",
-                       tokenKey,
-                       Json.toJson(at, JsonFormat.nice()));
+                    tokenKey,
+                    Json.toJson(at, JsonFormat.nice()));
             return at;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
+        } catch (Exception e) {
+            log.error(e);
+        } finally {
             // jedisPool.returnResource(jedis); //这是老版本归还连接的方法 已经deprecated
             jedis.close();// 2.9.0的方法直接close
         }
@@ -106,13 +105,11 @@ public class RedisAccessTokenStore implements WxAccessTokenStore {
             hash.put("expires", String.valueOf(expires));// 存入当前缓存时间
             String result = jedis.hmset(tokenKey, hash);
             log.infof("A new wx access_token was generated and stored to redis with the key [%s] , redis return code : %s",
-                      tokenKey,
-                      result);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
+                    tokenKey,
+                    result);
+        } catch (Exception e) {
+            log.error(e);
+        } finally {
             jedis.close();
         }
     }
