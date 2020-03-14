@@ -325,48 +325,54 @@ public class WxApi2Impl extends AbstractWxApi2 {
      * 微信卡券：查询Code
      *
      * @author JinYi
-     * @param code 卡券Code码，一张卡券的唯一标识，必填
-     * @param cardId 卡券ID代表一类卡券，null表示不填此参数。自定义code卡券必填
-     * @param checkConsume 是否校验code核销状态，填入true和false时的code异常状态返回数据不同，null表示不填此参数
+     * @param code
+     *            卡券Code码，一张卡券的唯一标识，必填
+     * @param cardId
+     *            卡券ID代表一类卡券，null表示不填此参数。自定义code卡券必填
+     * @param checkConsume
+     *            是否校验code核销状态，填入true和false时的code异常状态返回数据不同，null表示不填此参数
      * @return
      */
     @Override
     public WxResp card_code_get(String code, String cardId, Boolean checkConsume) {
-    	NutMap body = NutMap.NEW().addv("code", code);
-    	if (cardId != null) {
-    		body.addv("card_id", cardId);
-    	}
-    	if (checkConsume != null) {
-    		body.addv("check_consume", checkConsume);
-    	}
+        NutMap body = NutMap.NEW().addv("code", code);
+        if (cardId != null) {
+            body.addv("card_id", cardId);
+        }
+        if (checkConsume != null) {
+            body.addv("check_consume", checkConsume);
+        }
 
-    	// 由于查询Code API中没有“/cgi-bin”，所以uri不能只写“/card/code/get”
-    	return postJson("https://api.weixin.qq.com/card/code/get", body);
+        // 由于查询Code API中没有“/cgi-bin”，所以uri不能只写“/card/code/get”
+        return postJson("https://api.weixin.qq.com/card/code/get", body);
     }
 
     /**
      * 微信卡券：查询Code
      *
      * @author JinYi
-     * @param code 卡券Code码，一张卡券的唯一标识，必填
-     * @param cardId 卡券ID代表一类卡券，null表示不填此参数。自定义code卡券必填
+     * @param code
+     *            卡券Code码，一张卡券的唯一标识，必填
+     * @param cardId
+     *            卡券ID代表一类卡券，null表示不填此参数。自定义code卡券必填
      * @return
      */
     @Override
     public WxResp card_code_get(String code, String cardId) {
-    	return card_code_get(code, cardId, null);
+        return card_code_get(code, cardId, null);
     }
 
     /**
      * 微信卡券：查询Code
      *
      * @author JinYi
-     * @param code 卡券Code码，一张卡券的唯一标识，必填
+     * @param code
+     *            卡券Code码，一张卡券的唯一标识，必填
      * @return
      */
     @Override
     public WxResp card_code_get(String code) {
-    	return card_code_get(code, null, null);
+        return card_code_get(code, null, null);
     }
 
     /**
@@ -375,19 +381,21 @@ public class WxApi2Impl extends AbstractWxApi2 {
      * 以便在核销之前对非法状态的Code（如转赠中、已删除、已核销等）做出处理
      *
      * @author JinYi
-     * @param code 需核销的Code码，必填
-     * @param cardId 卡券ID代表一类卡券，null表示不填此参数。创建卡券时use_custom_code填写true时必填。非自定义Code不必填写
+     * @param code
+     *            需核销的Code码，必填
+     * @param cardId
+     *            卡券ID代表一类卡券，null表示不填此参数。创建卡券时use_custom_code填写true时必填。非自定义Code不必填写
      * @return
      */
     @Override
     public WxResp card_code_consume(String code, String cardId) {
-    	NutMap body = NutMap.NEW().addv("code", code);
-    	if (cardId != null) {
-    		body.addv("card_id", cardId);
-    	}
+        NutMap body = NutMap.NEW().addv("code", code);
+        if (cardId != null) {
+            body.addv("card_id", cardId);
+        }
 
-    	// 由于核销卡券API中没有“/cgi-bin”，所以uri不能只写“/card/code/consume”
-    	return postJson("https://api.weixin.qq.com/card/code/consume", body);
+        // 由于核销卡券API中没有“/cgi-bin”，所以uri不能只写“/card/code/consume”
+        return postJson("https://api.weixin.qq.com/card/code/consume", body);
     }
 
     /**
@@ -396,12 +404,13 @@ public class WxApi2Impl extends AbstractWxApi2 {
      * 以便在核销之前对非法状态的Code（如转赠中、已删除、已核销等）做出处理
      *
      * @author JinYi
-     * @param code 需核销的Code码，必填
+     * @param code
+     *            需核销的Code码，必填
      * @return
      */
     @Override
     public WxResp card_code_consume(String code) {
-    	return card_code_consume(code, null);
+        return card_code_consume(code, null);
     }
 
     // 自定义菜单
@@ -620,6 +629,9 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     @Override
     public WxResp createQRTicket(long expire, Type type, int id) {
+        if (type != Type.EVER || type != Type.TEMP) {// 非整形场景自动适配一下
+            return createQRTicket(expire, type, id + "");
+        }
         NutMap json = NutMap.NEW();
         json.put("expire_seconds", expire);
         json.put("action_name", type.getValue());
@@ -1105,26 +1117,26 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     @Override
     public NutMap pay_transfers(String key, WxPayTransfers wxPayTransfers, File keydata, String password) {
-        return pay_transfers(key, wxPayTransfers, (Object)keydata, password);
+        return pay_transfers(key, wxPayTransfers, (Object) keydata, password);
     }
 
     @Override
     public NutMap send_redpack(String key, WxPayRedPack wxRedPack, File keydata, String password) {
-        return send_redpack(key, wxRedPack, (Object)keydata, password);
+        return send_redpack(key, wxRedPack, (Object) keydata, password);
     }
 
     @Override
     public NutMap send_redpackgroup(String key, WxPayRedPackGroup wxRedPackGroup, File keydata, String password) {
-        return send_redpackgroup(key, wxRedPackGroup, (Object)keydata, password);
+        return send_redpackgroup(key, wxRedPackGroup, (Object) keydata, password);
     }
 
     @Override
     public NutMap send_coupon(String key, WxPayCoupon wxPayCoupon, File keydata, String password) {
-        return send_coupon(key, wxPayCoupon, (Object)keydata, password);
+        return send_coupon(key, wxPayCoupon, (Object) keydata, password);
     }
 
     @Override
     public NutMap pay_refund(String key, WxPayRefund wxPayRefund, File keydata, String password) {
-        return pay_refund(key, wxPayRefund, (Object)keydata, password);
+        return pay_refund(key, wxPayRefund, (Object) keydata, password);
     }
 }
