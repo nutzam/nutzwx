@@ -56,9 +56,9 @@ public class WxTemplateData {
         this.value = Strings.sBlank(value);
         this.color = Strings.sBlank(color);
 
-        if (Strings.isBlank(this.value)) {
-            throw Lang.makeThrow("blank value");
-        }
+        // if (Strings.isBlank(this.value)) {
+        // //throw Lang.makeThrow("blank value");
+        // }
 
         if (Strings.isBlank(this.color)) {
             this.color = DFT_COLOR;
