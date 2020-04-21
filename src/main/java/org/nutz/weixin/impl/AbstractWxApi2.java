@@ -422,8 +422,8 @@ public abstract class AbstractWxApi2 implements WxApi2 {
             log.debugf("ATS: reflush access_token done: %s", str);
 
         NutMap re = Json.fromJson(NutMap.class, str);
-		if(re.getInt("errcode")!=0)
-			throw new IllegalArgumentException("reflushAccessToken FAIL , " + re.getInt("errmsg"));
+		if(re.getInt("errcode", 0)!=0)
+			throw new IllegalArgumentException("reflushAccessToken FAIL : " + str);
         String token = re.getString("access_token");
         int expires = re.getInt("expires_in") - 200;//微信默认超时为7200秒，此处设置稍微短一点
         accessTokenStore.save(token, expires, System.currentTimeMillis());
