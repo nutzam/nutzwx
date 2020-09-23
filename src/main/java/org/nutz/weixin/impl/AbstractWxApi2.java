@@ -50,6 +50,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
     protected String appid;
     protected String appsecret;
     protected String wxBase = "https://api.weixin.qq.com";
+    protected String wxFileBase = "https://file.api.weixin.qq.com";
     protected String base = wxBase + "/cgi-bin";
     protected String mpBase = "https://mp.weixin.qq.com";
     protected String payBase = "https://api.mch.weixin.qq.com";

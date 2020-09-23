@@ -55,7 +55,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     private static final Log log = Logs.get().setTag("weixin");
 
-    public WxApi2Impl() {}
+    public WxApi2Impl() {
+    }
 
     public WxApi2Impl(String token, String appid, String appsecret, String openid, String encodingAesKey) {
         super(token, appid, appsecret, openid, encodingAesKey);
@@ -116,14 +117,11 @@ public class WxApi2Impl extends AbstractWxApi2 {
             for (String openid : openids) {
                 try {
                     each.invoke(index, openid, total);
-                }
-                catch (ExitLoop e) {
+                } catch (ExitLoop e) {
                     return;
-                }
-                catch (ContinueLoop e) {
+                } catch (ContinueLoop e) {
                     continue;
-                }
-                catch (LoopException e) {
+                } catch (LoopException e) {
                     throw e;
                 }
                 index++;
@@ -239,7 +237,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
     @Override
     public String shorturl(String long_url) {
         return postJson("/shorturl", new NutMap().setv("long_url", long_url).setv("action", "long2short"))
-                                                                                                          .getString("short_url");
+                .getString("short_url");
     }
 
     // --------------------------------------------------------
@@ -263,14 +261,14 @@ public class WxApi2Impl extends AbstractWxApi2 {
     @Override
     public WxResp template_send(String touser, String template_id, String url, Map<String, WxTemplateData> data) {
         return postJson("/message/template/send",
-                        "touser",
-                        touser,
-                        "template_id",
-                        template_id,
-                        "url",
-                        url,
-                        "data",
-                        data);
+                "touser",
+                touser,
+                "template_id",
+                template_id,
+                "url",
+                url,
+                "data",
+                data);
     }
 
     @Override
@@ -280,16 +278,16 @@ public class WxApi2Impl extends AbstractWxApi2 {
                                 Map<String, Object> miniprogram,
                                 Map<String, WxTemplateData> data) {
         return postJson("/message/template/send",
-                        "touser",
-                        touser,
-                        "template_id",
-                        template_id,
-                        "url",
-                        url,
-                        miniprogram,
-                        miniprogram,
-                        "data",
-                        data);
+                "touser",
+                touser,
+                "template_id",
+                template_id,
+                "url",
+                url,
+                miniprogram,
+                miniprogram,
+                "data",
+                data);
     }
 
     // ------------------------------------------------------------
@@ -298,9 +296,9 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 微信卡券：创建卡券
      *
-     * @author JinYi
      * @param card
      * @return
+     * @author JinYi
      */
     @Override
     public WxResp card_create(NutMap card) {
@@ -311,9 +309,9 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 微信卡券：投放卡券，创建二维码
      *
-     * @author JinYi
      * @param body
      * @return
+     * @author JinYi
      */
     @Override
     public WxResp card_qrcode_create(NutMap body) {
@@ -324,14 +322,11 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 微信卡券：查询Code
      *
-     * @author JinYi
-     * @param code
-     *            卡券Code码，一张卡券的唯一标识，必填
-     * @param cardId
-     *            卡券ID代表一类卡券，null表示不填此参数。自定义code卡券必填
-     * @param checkConsume
-     *            是否校验code核销状态，填入true和false时的code异常状态返回数据不同，null表示不填此参数
+     * @param code         卡券Code码，一张卡券的唯一标识，必填
+     * @param cardId       卡券ID代表一类卡券，null表示不填此参数。自定义code卡券必填
+     * @param checkConsume 是否校验code核销状态，填入true和false时的code异常状态返回数据不同，null表示不填此参数
      * @return
+     * @author JinYi
      */
     @Override
     public WxResp card_code_get(String code, String cardId, Boolean checkConsume) {
@@ -350,12 +345,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 微信卡券：查询Code
      *
-     * @author JinYi
-     * @param code
-     *            卡券Code码，一张卡券的唯一标识，必填
-     * @param cardId
-     *            卡券ID代表一类卡券，null表示不填此参数。自定义code卡券必填
+     * @param code   卡券Code码，一张卡券的唯一标识，必填
+     * @param cardId 卡券ID代表一类卡券，null表示不填此参数。自定义code卡券必填
      * @return
+     * @author JinYi
      */
     @Override
     public WxResp card_code_get(String code, String cardId) {
@@ -365,10 +358,9 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 微信卡券：查询Code
      *
-     * @author JinYi
-     * @param code
-     *            卡券Code码，一张卡券的唯一标识，必填
+     * @param code 卡券Code码，一张卡券的唯一标识，必填
      * @return
+     * @author JinYi
      */
     @Override
     public WxResp card_code_get(String code) {
@@ -380,12 +372,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
      * 建议在调用核销卡券接口之前调用查询Code接口<br/>
      * 以便在核销之前对非法状态的Code（如转赠中、已删除、已核销等）做出处理
      *
-     * @author JinYi
-     * @param code
-     *            需核销的Code码，必填
-     * @param cardId
-     *            卡券ID代表一类卡券，null表示不填此参数。创建卡券时use_custom_code填写true时必填。非自定义Code不必填写
+     * @param code   需核销的Code码，必填
+     * @param cardId 卡券ID代表一类卡券，null表示不填此参数。创建卡券时use_custom_code填写true时必填。非自定义Code不必填写
      * @return
+     * @author JinYi
      */
     @Override
     public WxResp card_code_consume(String code, String cardId) {
@@ -403,10 +393,9 @@ public class WxApi2Impl extends AbstractWxApi2 {
      * 建议在调用核销卡券接口之前调用查询Code接口<br/>
      * 以便在核销之前对非法状态的Code（如转赠中、已删除、已核销等）做出处理
      *
-     * @author JinYi
-     * @param code
-     *            需核销的Code码，必填
+     * @param code 需核销的Code码，必填
      * @return
+     * @author JinYi
      */
     @Override
     public WxResp card_code_consume(String code) {
@@ -454,9 +443,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
 
     @Override
     public NutResource media_get(String mediaId) {
-        String url = String.format("http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s",
-                                   getAccessToken(),
-                                   mediaId);
+        String url = String.format("%s/cgi-bin/media/get?access_token=%s&media_id=%s",
+                wxFileBase,
+                getAccessToken(),
+                mediaId);
         final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();
         if (!resp.isOK())
             throw new IllegalStateException("download media file, resp code=" + resp.getStatus());
@@ -503,7 +493,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
             params.put("news", msg.getArticles());
         } else if ("wxcard".equals(tp)) {
             params.put("wxcard",
-                       new NutMap().setv("card_id", msg.getCard().getId()).setv("card_ext", msg.getCard().getExt()));
+                    new NutMap().setv("card_id", msg.getCard().getId()).setv("card_ext", msg.getCard().getExt()));
         } else {
             params.put(msg.getMsgType(), new NutMap().setv("media_id", msg.getMedia_id()));
         }
@@ -553,12 +543,12 @@ public class WxApi2Impl extends AbstractWxApi2 {
     @Override
     public WxResp applyId(int quantity, String apply_reason, String comment, int poi_id) {
         return postJson(wxBase + "/shakearound/device/applyid",
-                        "quantity",
-                        quantity,
-                        "apply_reason",
-                        apply_reason,
-                        "comment",
-                        comment);
+                "quantity",
+                quantity,
+                "apply_reason",
+                apply_reason,
+                "comment",
+                comment);
     }
 
     @Override
@@ -700,9 +690,9 @@ public class WxApi2Impl extends AbstractWxApi2 {
         if (f == null)
             throw new NullPointerException("meida file is NULL");
         String url = String.format("%s/cgi-bin/material/add_material?access_token=%s&type=%s",
-                                   wxBase,
-                                   getAccessToken(),
-                                   type);
+                wxBase,
+                getAccessToken(),
+                type);
         Request req = Request.create(url, METHOD.POST);
         req.getParams().put("media", f);
         Response resp = new FilePostSender(req).send();
@@ -716,14 +706,14 @@ public class WxApi2Impl extends AbstractWxApi2 {
         if (f == null)
             throw new NullPointerException("meida file is NULL");
         String url = String.format("%s/cgi-bin/material/add_material?type=video&access_token=%s",
-                                   wxBase,
-                                   getAccessToken());
+                wxBase,
+                getAccessToken());
         Request req = Request.create(url, METHOD.POST);
         req.getParams().put("media", f);
         req.getParams()
-           .put("description",
-                Json.toJson(new NutMap().setv("title", title).setv("introduction", introduction),
-                            JsonFormat.compact().setQuoteName(true)));
+                .put("description",
+                        Json.toJson(new NutMap().setv("title", title).setv("introduction", introduction),
+                                JsonFormat.compact().setQuoteName(true)));
         Response resp = new FilePostSender(req).send();
         if (!resp.isOK())
             throw new IllegalStateException("add_material, resp code=" + resp.getStatus());
@@ -754,8 +744,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
                 list.add(Lang.map2Object((Map) obj, WxArticle.class));
             }
             return list;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw Lang.wrapThrow(e);
         }
     }
@@ -773,7 +762,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
     @Override
     public WxResp update_material(String media_id, int index, WxArticle article) {
         return postJson("/material/update_news",
-                        new NutMap().setv("media_id", media_id).setv("index", index).setv("articles", article));
+                new NutMap().setv("media_id", media_id).setv("index", index).setv("articles", article));
     }
 
     @Override
@@ -784,7 +773,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
     @Override
     public WxResp batchget_material(String type, int offset, int count) {
         return postJson("/material/batchget_material",
-                        new NutMap().setv("type", type).setv("offset", offset).setv("count", count));
+                new NutMap().setv("type", type).setv("offset", offset).setv("count", count));
     }
 
     static class WxResource extends NutResource {
@@ -834,23 +823,23 @@ public class WxApi2Impl extends AbstractWxApi2 {
     @Override
     public WxResp kfaccount_add(String kf_account, String nickname, String password) {
         return postJson("/customservice/kfaccount/add",
-                        "kf_account",
-                        kf_account,
-                        "nickname",
-                        nickname,
-                        "password",
-                        password);
+                "kf_account",
+                kf_account,
+                "nickname",
+                nickname,
+                "password",
+                password);
     }
 
     @Override
     public WxResp kfaccount_update(String kf_account, String nickname, String password) {
         return postJson("/customservice/kfaccount/update",
-                        "kf_account",
-                        kf_account,
-                        "nickname",
-                        nickname,
-                        "password",
-                        password);
+                "kf_account",
+                kf_account,
+                "nickname",
+                nickname,
+                "password",
+                password);
     }
 
     @Override
@@ -858,8 +847,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
         if (f == null)
             throw new NullPointerException("meida file is NULL");
         String url = String.format("%s/customservice/kfaccount/uploadheadimg?access_token=%s",
-                                   wxBase,
-                                   getAccessToken());
+                wxBase,
+                getAccessToken());
         Request req = Request.create(url, METHOD.POST);
         req.getParams().put("media", f);
         Response resp = new FilePostSender(req).send();
@@ -876,12 +865,9 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 微信支付公共POST方法（不带证书）
      *
-     * @param url
-     *            请求路径
-     * @param key
-     *            商户KEY
-     * @param params
-     *            参数
+     * @param url    请求路径
+     * @param key    商户KEY
+     * @param params 参数
      * @return
      */
     @Override
@@ -900,16 +886,11 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 微信支付公共POST方法（带证书）
      *
-     * @param url
-     *            请求路径
-     * @param key
-     *            商户KEY
-     * @param params
-     *            参数
-     * @param file
-     *            证书文件
-     * @param password
-     *            证书密码
+     * @param url      请求路径
+     * @param key      商户KEY
+     * @param params   参数
+     * @param file     证书文件
+     * @param password 证书密码
      * @return
      */
     @Override
@@ -923,8 +904,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
         SSLSocketFactory sslSocketFactory;
         try {
             sslSocketFactory = WxPaySSL.buildSSL(data, password);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw Lang.wrapThrow(e);
         }
         sender.setSSLSocketFactory(sslSocketFactory);
@@ -937,10 +917,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 统一下单
      *
-     * @param key
-     *            商户KEY
-     * @param wxPayUnifiedOrder
-     *            交易订单内容
+     * @param key               商户KEY
+     * @param wxPayUnifiedOrder 交易订单内容
      * @return
      */
     @Override
@@ -953,10 +931,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 微信公众号JS支付
      *
-     * @param key
-     *            商户KEY
-     * @param wxPayUnifiedOrder
-     *            交易订单内容
+     * @param key               商户KEY
+     * @param wxPayUnifiedOrder 交易订单内容
      * @return
      */
     @Override
@@ -976,14 +952,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 企业向个人付款
      *
-     * @param key
-     *            商户KEY
-     * @param wxPayTransfers
-     *            付款内容
-     * @param file
-     *            证书文件
-     * @param password
-     *            证书密码
+     * @param key            商户KEY
+     * @param wxPayTransfers 付款内容
+     * @param file           证书文件
+     * @param password       证书密码
      * @return
      */
     @Override
@@ -996,14 +968,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 发送普通红包
      *
-     * @param key
-     *            商户KEY
-     * @param wxRedPack
-     *            红包内容
-     * @param file
-     *            证书文件
-     * @param password
-     *            证书密码
+     * @param key       商户KEY
+     * @param wxRedPack 红包内容
+     * @param file      证书文件
+     * @param password  证书密码
      * @return
      */
     @Override
@@ -1016,14 +984,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 发送裂变红包
      *
-     * @param key
-     *            商户KEY
-     * @param wxRedPackGroup
-     *            红包内容
-     * @param file
-     *            证书文件
-     * @param password
-     *            证书密码
+     * @param key            商户KEY
+     * @param wxRedPackGroup 红包内容
+     * @param file           证书文件
+     * @param password       证书密码
      * @return
      */
     @Override
@@ -1036,14 +1000,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * 发送代金卷
      *
-     * @param key
-     *            商户KEY
-     * @param wxPayCoupon
-     *            代金卷内容
-     * @param file
-     *            证书文件
-     * @param password
-     *            证书密码
+     * @param key         商户KEY
+     * @param wxPayCoupon 代金卷内容
+     * @param file        证书文件
+     * @param password    证书密码
      * @return
      */
     @Override
@@ -1054,14 +1014,10 @@ public class WxApi2Impl extends AbstractWxApi2 {
     }
 
     /**
-     * @param key
-     *            商户KEY
-     * @param wxPayRefund
-     *            退款申请参数
-     * @param file
-     *            证书文件
-     * @param password
-     *            证书密码
+     * @param key         商户KEY
+     * @param wxPayRefund 退款申请参数
+     * @param file        证书文件
+     * @param password    证书密码
      * @return
      */
     @Override
@@ -1072,10 +1028,8 @@ public class WxApi2Impl extends AbstractWxApi2 {
     }
 
     /**
-     * @param key
-     *            商户KEY
-     * @param wxPayRefundQuery
-     *            退款查询参数
+     * @param key              商户KEY
+     * @param wxPayRefundQuery 退款查询参数
      * @return
      */
     @Override
