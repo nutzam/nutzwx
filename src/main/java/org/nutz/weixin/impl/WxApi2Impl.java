@@ -444,7 +444,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
     @Override
     public NutResource media_get(String mediaId) {
         String url = String.format("%s/cgi-bin/media/get?access_token=%s&media_id=%s",
-                wxFileBase,
+                wxBase,
                 getAccessToken(),
                 mediaId);
         final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();
