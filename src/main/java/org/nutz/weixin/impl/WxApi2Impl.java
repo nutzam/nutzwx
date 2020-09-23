@@ -889,12 +889,12 @@ public class WxApi2Impl extends AbstractWxApi2 {
      * @param url      请求路径
      * @param key      商户KEY
      * @param params   参数
-     * @param file     证书文件
+     * @param keydata     证书文件
      * @param password 证书密码
      * @return
      */
     @Override
-    public NutMap postPay(String url, String key, Map<String, Object> params, Object data, String password) {
+    public NutMap postPay(String url, String key, Map<String, Object> params, Object keydata, String password) {
         params.remove("sign");
         String sign = WxPaySign.createSign(key, params);
         params.put("sign", sign);
@@ -903,7 +903,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
         Sender sender = Sender.create(req);
         SSLSocketFactory sslSocketFactory;
         try {
-            sslSocketFactory = WxPaySSL.buildSSL(data, password);
+            sslSocketFactory = WxPaySSL.buildSSL(keydata, password);
         } catch (Exception e) {
             throw Lang.wrapThrow(e);
         }
@@ -954,7 +954,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
      *
      * @param key            商户KEY
      * @param wxPayTransfers 付款内容
-     * @param file           证书文件
+     * @param keydata           证书文件
      * @param password       证书密码
      * @return
      */
@@ -970,7 +970,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
      *
      * @param key       商户KEY
      * @param wxRedPack 红包内容
-     * @param file      证书文件
+     * @param keydata      证书文件
      * @param password  证书密码
      * @return
      */
@@ -986,7 +986,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
      *
      * @param key            商户KEY
      * @param wxRedPackGroup 红包内容
-     * @param file           证书文件
+     * @param keydata           证书文件
      * @param password       证书密码
      * @return
      */
@@ -1002,7 +1002,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
      *
      * @param key         商户KEY
      * @param wxPayCoupon 代金卷内容
-     * @param file        证书文件
+     * @param keydata        证书文件
      * @param password    证书密码
      * @return
      */
@@ -1016,7 +1016,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
     /**
      * @param key         商户KEY
      * @param wxPayRefund 退款申请参数
-     * @param file        证书文件
+     * @param keydata        证书文件
      * @param password    证书密码
      * @return
      */
