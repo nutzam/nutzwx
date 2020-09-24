@@ -441,6 +441,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
         return Json.fromJson(WxResp.class, resp.getReader("UTF-8"));
     }
 
+    //获取临时素材
     @Override
     public NutResource media_get(String mediaId) {
         String url = String.format("%s/cgi-bin/media/get?access_token=%s&media_id=%s",
@@ -450,6 +451,20 @@ public class WxApi2Impl extends AbstractWxApi2 {
         final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();
         if (!resp.isOK())
             throw new IllegalStateException("download media file, resp code=" + resp.getStatus());
+        String disposition = resp.getHeader().get("Content-disposition");
+        return new WxResource(disposition, resp.getStream());
+    }
+
+    //获取从JSSDK的uploadVoice接口上传的临时语音素材，格式为speex
+    @Override
+    public NutResource media_get_jssdk(String mediaId) {
+        String url = String.format("%s/cgi-bin/media/get/jssdk?access_token=%s&media_id=%s",
+                wxBase,
+                getAccessToken(),
+                mediaId);
+        final Response resp = Sender.create(Request.create(url, METHOD.GET)).send();
+        if (!resp.isOK())
+            throw new IllegalStateException("download media jssdk file, resp code=" + resp.getStatus());
         String disposition = resp.getHeader().get("Content-disposition");
         return new WxResource(disposition, resp.getStream());
     }
