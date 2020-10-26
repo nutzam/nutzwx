@@ -6,6 +6,7 @@ import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 import org.nutz.lang.random.R;
 import org.nutz.lang.util.NutMap;
+import org.nutz.weixin.bean.WxPay3Response;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -26,6 +27,7 @@ import java.util.*;
  * 微信支付V3工具类
  * 参考项目 https://github.com/Javen205/IJPay
  * 实例详见 https://github.com/budwk/budwk-nutzboot
+ *
  * @author wizzer@qq.com
  */
 public class WxPay3Util {
@@ -368,6 +370,25 @@ public class WxPay3Util {
         headers.put("Authorization", authorization);
         headers.put("User-Agent", userAgent);
         return headers;
+    }
+
+    /**
+     * 验证微信服务返回的数据签名
+     *
+     * @param wxPay3Response 微信服务器返回的对象
+     * @param platfromCert   平台证书内容
+     * @return
+     * @throws Exception
+     */
+    public static boolean verifySignature(WxPay3Response wxPay3Response, String platfromCert) throws Exception {
+        InputStream inputStream = new ByteArrayInputStream(platfromCert.getBytes());
+        // 获取平台证书序列号
+        X509Certificate certificate = getCertificate(inputStream);
+        String body = wxPay3Response.getBody();
+        String signature = wxPay3Response.getHeader().get("Wechatpay-Signature");
+        String nonce = wxPay3Response.getHeader().get("Wechatpay-Nonce");
+        String timestamp = wxPay3Response.getHeader().get("Wechatpay-Timestamp");
+        return verifySignature(signature, body, nonce, timestamp, certificate.getPublicKey());
     }
 
     /**

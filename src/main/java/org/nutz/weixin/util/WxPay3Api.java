@@ -7,11 +7,13 @@ import org.nutz.json.Json;
 import org.nutz.lang.Strings;
 import org.nutz.lang.random.R;
 import org.nutz.lang.util.NutMap;
+import org.nutz.weixin.bean.WxPay3Response;
 
 /**
  * 微信支付V3 API请求类
  * 参考项目 https://github.com/Javen205/IJPay
  * 实例详见 https://github.com/budwk/budwk-nutzboot
+ *
  * @author wizzer@qq.com
  */
 public class WxPay3Api {
@@ -26,7 +28,7 @@ public class WxPay3Api {
      * @return
      * @throws Exception
      */
-    public static NutMap v3_certificates(String mchId, String serialNo, String keyPath) throws Exception {
+    public static WxPay3Response v3_certificates(String mchId, String serialNo, String keyPath) throws Exception {
         String url = "/v3/certificates";
         long timestamp = System.currentTimeMillis() / 1000;
         String authType = "WECHATPAY2-SHA256-RSA2048";
@@ -45,7 +47,7 @@ public class WxPay3Api {
      * @return
      * @throws Exception
      */
-    public static NutMap v3_order_jsapi(String mchId, String serialNo, String keyPath, String body) throws Exception {
+    public static WxPay3Response v3_order_jsapi(String mchId, String serialNo, String keyPath, String body) throws Exception {
         String url = "/v3/pay/transactions/jsapi";
         long timestamp = System.currentTimeMillis() / 1000;
         String authType = "WECHATPAY2-SHA256-RSA2048";
@@ -64,7 +66,7 @@ public class WxPay3Api {
      * @return
      * @throws Exception
      */
-    public static NutMap v3_order_app(String mchId, String serialNo, String keyPath, String body) throws Exception {
+    public static WxPay3Response v3_order_app(String mchId, String serialNo, String keyPath, String body) throws Exception {
         String url = "/v3/pay/transactions/app";
         long timestamp = System.currentTimeMillis() / 1000;
         String authType = "WECHATPAY2-SHA256-RSA2048";
@@ -83,7 +85,7 @@ public class WxPay3Api {
      * @return
      * @throws Exception
      */
-    public static NutMap v3_order_native(String mchId, String serialNo, String keyPath, String body) throws Exception {
+    public static WxPay3Response v3_order_native(String mchId, String serialNo, String keyPath, String body) throws Exception {
         String url = "/v3/pay/transactions/native";
         long timestamp = System.currentTimeMillis() / 1000;
         String authType = "WECHATPAY2-SHA256-RSA2048";
@@ -102,7 +104,7 @@ public class WxPay3Api {
      * @return
      * @throws Exception
      */
-    public static NutMap v3_order_h5(String mchId, String serialNo, String keyPath, String body) throws Exception {
+    public static WxPay3Response v3_order_h5(String mchId, String serialNo, String keyPath, String body) throws Exception {
         String url = "/v3/pay/transactions/h5";
         long timestamp = System.currentTimeMillis() / 1000;
         String authType = "WECHATPAY2-SHA256-RSA2048";
@@ -120,7 +122,7 @@ public class WxPay3Api {
      * @return
      * @throws Exception
      */
-    public static NutMap v3_order_close(String mchId, String serialNo, String keyPath, String out_trade_no) throws Exception {
+    public static WxPay3Response v3_order_close(String mchId, String serialNo, String keyPath, String out_trade_no) throws Exception {
         String url = "/v3/pay/transactions/out-trade-no/" + out_trade_no + "/close?mchid=" + mchId;
         long timestamp = System.currentTimeMillis() / 1000;
         String body = Json.toJson(NutMap.NEW().addv("mchid", mchId));
@@ -139,7 +141,7 @@ public class WxPay3Api {
      * @return
      * @throws Exception
      */
-    public static NutMap v3_order_query_transaction_id(String mchId, String serialNo, String keyPath, String transaction_id) throws Exception {
+    public static WxPay3Response v3_order_query_transaction_id(String mchId, String serialNo, String keyPath, String transaction_id) throws Exception {
         String url = "/v3/pay/transactions/id/" + transaction_id;
         long timestamp = System.currentTimeMillis() / 1000;
         String authType = "WECHATPAY2-SHA256-RSA2048";
@@ -157,7 +159,7 @@ public class WxPay3Api {
      * @return
      * @throws Exception
      */
-    public static NutMap v3_order_query_out_trade_no(String mchId, String serialNo, String keyPath, String out_trade_no) throws Exception {
+    public static WxPay3Response v3_order_query_out_trade_no(String mchId, String serialNo, String keyPath, String out_trade_no) throws Exception {
         String url = "/v3/pay/transactions/out_trade_no/" + out_trade_no + "?mchid=" + mchId;
         long timestamp = System.currentTimeMillis() / 1000;
         String authType = "WECHATPAY2-SHA256-RSA2048";
@@ -181,8 +183,8 @@ public class WxPay3Api {
      * @return
      * @throws Exception
      */
-    public static NutMap v3_call(String method, String url, String mchId, String serialNo, String platSerialNo, String keyPath,
-                                 String body, String nonceStr, long timestamp, String authType) throws Exception {
+    public static WxPay3Response v3_call(String method, String url, String mchId, String serialNo, String platSerialNo, String keyPath,
+                                         String body, String nonceStr, long timestamp, String authType) throws Exception {
         String authorization = WxPay3Util.buildAuthorization(method, url, mchId, serialNo,
                 keyPath, body, nonceStr, timestamp, authType);
         if (Strings.isBlank(platSerialNo)) {
@@ -206,14 +208,18 @@ public class WxPay3Api {
      * @return
      * @throws Exception
      */
-    public static NutMap v3_call_get(String url, String authorization, String serialNumber) throws Exception {
+    public static WxPay3Response v3_call_get(String url, String authorization, String serialNumber) throws Exception {
         Request req = Request.create(url, Request.METHOD.GET);
         req.getHeader().addAll(WxPay3Util.getHeaders(authorization, serialNumber));
         Sender sender = Sender.create(req);
         Response resp = sender.send();
         if (!resp.isOK())
             throw new IllegalStateException("resp code=" + resp.getStatus());
-        return Json.fromJson(NutMap.class, resp.getContent("UTF-8"));
+        WxPay3Response wxPay3Response = new WxPay3Response();
+        wxPay3Response.setBody(resp.getContent("UTF-8"));
+        wxPay3Response.setHeader(resp.getHeader());
+        wxPay3Response.setStatus(resp.getStatus());
+        return wxPay3Response;
     }
 
     /**
@@ -226,7 +232,7 @@ public class WxPay3Api {
      * @return
      * @throws Exception
      */
-    public static NutMap v3_call_post(String url, String authorization, String serialNumber, String body) throws Exception {
+    public static WxPay3Response v3_call_post(String url, String authorization, String serialNumber, String body) throws Exception {
         Request req = Request.create(url, Request.METHOD.POST);
         req.setData(body);
         req.getHeader().addAll(WxPay3Util.getHeaders(authorization, serialNumber));
@@ -234,6 +240,10 @@ public class WxPay3Api {
         Response resp = sender.send();
         if (!resp.isOK())
             throw new IllegalStateException("resp code=" + resp.getStatus());
-        return Json.fromJson(NutMap.class, resp.getContent("UTF-8"));
+        WxPay3Response wxPay3Response = new WxPay3Response();
+        wxPay3Response.setBody(resp.getContent("UTF-8"));
+        wxPay3Response.setHeader(resp.getHeader());
+        wxPay3Response.setStatus(resp.getStatus());
+        return wxPay3Response;
     }
 }
