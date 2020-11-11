@@ -168,6 +168,42 @@ public class WxPay3Api {
     }
 
     /**
+     * 申请退款
+     *
+     * @param mchId    商户号
+     * @param serialNo V3API证书序列号
+     * @param keyPath  V3Key证书文件路径
+     * @param body     传参
+     * @return
+     * @throws Exception
+     */
+    public static WxPay3Response v3_refunds_apply(String mchId, String serialNo, String keyPath, String body) throws Exception {
+        String url = "/v3/ecommerce/refunds/apply";
+        long timestamp = System.currentTimeMillis() / 1000;
+        String authType = "WECHATPAY2-SHA256-RSA2048";
+        String nonceStr = R.UU32().toUpperCase();
+        return v3_call("POST", url, mchId, serialNo, null, keyPath, body, nonceStr, timestamp, authType);
+    }
+
+    /**
+     * 退款查询
+     *
+     * @param mchId     商户号
+     * @param serialNo  V3API证书序列号
+     * @param keyPath   V3Key证书文件路径
+     * @param refund_id 微信退款单号
+     * @return
+     * @throws Exception
+     */
+    public static WxPay3Response v3_refunds_query_refund_id(String mchId, String serialNo, String keyPath, String refund_id) throws Exception {
+        String url = "/v3/ecommerce/refunds/id/" + refund_id + "?sub_mchid=" + mchId;
+        long timestamp = System.currentTimeMillis() / 1000;
+        String authType = "WECHATPAY2-SHA256-RSA2048";
+        String nonceStr = R.UU32().toUpperCase();
+        return v3_call("GET", url, mchId, serialNo, null, keyPath, "", nonceStr, timestamp, authType);
+    }
+
+    /**
      * 发起http请求
      *
      * @param method       请求方法

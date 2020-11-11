@@ -35,7 +35,6 @@ public class WxPay3Util {
      * 加密算法RSA
      */
     private static final String KEY_ALGORITHM = "RSA";
-    //private static final int KEY_LENGTH_BYTE = 32;
     private static final int TAG_LENGTH_BIT = 128;
     private static final String OS = System.getProperty("os.name") + "/" + System.getProperty("os.version");
     private static final String VERSION = System.getProperty("java.version");
