@@ -123,7 +123,7 @@ public class WxPay3Api {
      * @throws Exception
      */
     public static WxPay3Response v3_order_close(String mchId, String serialNo, String keyPath, String out_trade_no) throws Exception {
-        String url = "/v3/pay/transactions/out-trade-no/" + out_trade_no + "/close?mchid=" + mchId;
+        String url = "/v3/pay/transactions/out-trade-no/" + out_trade_no + "/close";
         long timestamp = System.currentTimeMillis() / 1000;
         String body = Json.toJson(NutMap.NEW().addv("mchid", mchId));
         String authType = "WECHATPAY2-SHA256-RSA2048";
@@ -177,7 +177,7 @@ public class WxPay3Api {
      * @return
      * @throws Exception
      */
-    public static WxPay3Response v3_refunds_apply(String mchId, String serialNo, String keyPath, String body) throws Exception {
+    public static WxPay3Response v3_ecommerce_refunds_apply(String mchId, String serialNo, String keyPath, String body) throws Exception {
         String url = "/v3/ecommerce/refunds/apply";
         long timestamp = System.currentTimeMillis() / 1000;
         String authType = "WECHATPAY2-SHA256-RSA2048";
@@ -191,12 +191,30 @@ public class WxPay3Api {
      * @param mchId     商户号
      * @param serialNo  V3API证书序列号
      * @param keyPath   V3Key证书文件路径
-     * @param refund_id 微信退款单号
+     * @param refund_id 微信退款ID
      * @return
      * @throws Exception
      */
-    public static WxPay3Response v3_refunds_query_refund_id(String mchId, String serialNo, String keyPath, String refund_id) throws Exception {
+    public static WxPay3Response v3_ecommerce_refunds_query_refund_id(String mchId, String serialNo, String keyPath, String refund_id) throws Exception {
         String url = "/v3/ecommerce/refunds/id/" + refund_id + "?sub_mchid=" + mchId;
+        long timestamp = System.currentTimeMillis() / 1000;
+        String authType = "WECHATPAY2-SHA256-RSA2048";
+        String nonceStr = R.UU32().toUpperCase();
+        return v3_call("GET", url, mchId, serialNo, null, keyPath, "", nonceStr, timestamp, authType);
+    }
+
+    /**
+     * 退款查询
+     *
+     * @param mchId     商户号
+     * @param serialNo  V3API证书序列号
+     * @param keyPath   V3Key证书文件路径
+     * @param out_refund_no 微信退款单号
+     * @return
+     * @throws Exception
+     */
+    public static WxPay3Response v3_ecommerce_refunds_query_out_refund_no(String mchId, String serialNo, String keyPath, String out_refund_no) throws Exception {
+        String url = "/v3/ecommerce/refunds/out-refund-no/" + out_refund_no + "?sub_mchid=" + mchId;
         long timestamp = System.currentTimeMillis() / 1000;
         String authType = "WECHATPAY2-SHA256-RSA2048";
         String nonceStr = R.UU32().toUpperCase();
