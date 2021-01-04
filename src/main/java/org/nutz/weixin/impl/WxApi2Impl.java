@@ -284,7 +284,7 @@ public class WxApi2Impl extends AbstractWxApi2 {
                 template_id,
                 "url",
                 url,
-                miniprogram,
+                "miniprogram",
                 miniprogram,
                 "data",
                 data);
