@@ -275,7 +275,6 @@ public abstract class AbstractWxApi2 implements WxApi2 {
     }
 
     protected WxResp call(String URL, METHOD method, String body) {
-        String token = getAccessToken();
         if (log.isInfoEnabled()) {
             log.info("wxapi call: " + URL);
             if (log.isDebugEnabled()) {
@@ -287,6 +286,7 @@ public abstract class AbstractWxApi2 implements WxApi2 {
         WxResp wxResp = null;
         while (retry >= 0) {
             try {
+                String token = getAccessToken();
                 String sendUrl = URL.startsWith("http") ? URL : base + URL;
                 if (URL.contains("?")) {
                     sendUrl += "&access_token=" + token;
