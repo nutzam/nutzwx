@@ -10,7 +10,22 @@ public enum WxEventType {
 	/**
 	 * 取消订阅
 	 */
-	unsubscribe, 
+	unsubscribe,
+
+	/**
+	 * 用户操作订阅通知弹窗
+	 */
+	subscribe_msg_popup_event,
+
+	/**
+	 * 用户管理订阅通知
+	 */
+	subscribe_msg_change_event,
+	/**
+	 * 发送订阅通知
+	 * 场景：调用 bizsend 接口发送通知
+	 */
+	subscribe_msg_sent_event,
 	
 	/**
 	 * 

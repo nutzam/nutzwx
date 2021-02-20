@@ -327,6 +327,15 @@ public class Wxs {
         case unsubscribe:
             out = handler.eventUnsubscribe(msg);
             break;
+        case subscribe_msg_popup_event:
+            out = handler.eventSubscribeMsgPopup(msg);
+            break;
+        case subscribe_msg_change_event:
+            out = handler.eventSubscribeMsgChange(msg);
+            break;
+        case subscribe_msg_sent_event:
+            out = handler.eventSubscribeMsgSent(msg);
+            break;
         case LOCATION:
             out = handler.eventLocation(msg);
             break;
